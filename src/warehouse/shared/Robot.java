@@ -2,11 +2,11 @@ package warehouse.shared;
 
 public class Robot {
 	private String name;
-	private int xPos;
-	private int yPos;
-	private Direction facing;
+	private double xPos;
+	private double yPos;
+	private double facing;
 	
-	public Robot(String name, int xPos, int yPos, Direction facing) {
+	public Robot(String name, double xPos, double yPos, double facing) {
 		this.name = name;
 		this.xPos = xPos;
 		this.yPos = yPos;
@@ -17,27 +17,30 @@ public class Robot {
 		return name;
 	}
 
-	public int getX() {
+	public double getX() {
 		return xPos;
 	}
 
-	public void setX(int xPos) {
+	public void setX(double xPos) {
 		this.xPos = xPos;
 	}
 
-	public int getY() {
+	public double getY() {
 		return yPos;
 	}
 
-	public void setY(int yPos) {
+	public void setY(double yPos) {
 		this.yPos = yPos;
 	}
 
-	public Direction getFacing() {
+	/**
+	 * Gets the current angle of the robot, clockwise in degrees from Y+ vector
+	 */
+	public double getFacing() {
 		return facing;
 	}
 
-	public void setFacing(Direction facing) {
+	public void setFacing(double facing) {
 		this.facing = facing;
 	}
 }
