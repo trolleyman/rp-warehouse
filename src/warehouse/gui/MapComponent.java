@@ -4,15 +4,18 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Rectangle2D.Double;
 import java.util.ArrayList;
 
+import javax.swing.JComponent;
+
 import warehouse.shared.Robot;
 
 @SuppressWarnings("serial")
-public class MapComponent extends Component {
+public class MapComponent extends JComponent {
 	private final int PADDING;
 	
 	private Robot[] robots;
@@ -24,8 +27,8 @@ public class MapComponent extends Component {
 	}
 	
 	@Override
-	public void paint(Graphics g) {
-		Graphics2D g2 = (Graphics2D) g;
+	public void paintComponent(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g.create();
 		int width = getWidth() - PADDING * 2;
 		int height = getHeight() - PADDING * 2;
 		
@@ -36,6 +39,7 @@ public class MapComponent extends Component {
 		double yScale = height / mapHeight;
 		xScale = Math.min(xScale, yScale);
 		yScale = xScale;
+		//g2.transform();
 		
 		paintGrid(g2, xScale, yScale);
 		paintJunctions(g2, xScale, yScale);
@@ -46,11 +50,18 @@ public class MapComponent extends Component {
 	private void paintRobots(Graphics2D g2, double xScale, double yScale) {
 		g2.setColor(Color.BLUE);
 		for (Robot robot : robots) {
+			Graphics2D g = (Graphics2D) g2.create();
+			
 			double x = robot.getX() * xScale + PADDING;
 			double y = robot.getY() * yScale + PADDING;
-			double w = 0.2 * xScale;
-			double h = 0.2 * yScale;
-			g2.drawRect((int) (x - w / 2), (int)(y - h / 2), (int)w, (int)h);
+			double w = 0.4 * xScale;
+			double h = 0.6 * yScale;
+			
+			g.translate(x, y);
+			g.rotate(Math.toRadians(robot.getFacing()));
+			g.drawRect(-(int)(w / 2.0), -(int)(h / 2.0), (int)w, (int)h);
+			
+			g.dispose();
 		}
 	}
 
@@ -72,8 +83,8 @@ public class MapComponent extends Component {
 				
 				double w = 7.0;
 				double h = 7.0;
-				g2.fillOval((int) (j.getX() * xScale + PADDING - w / 2) + 1,
-							(int) (j.getY() * yScale + PADDING - h / 2) + 1,
+				g2.fillOval((int) (j.getX() * xScale + PADDING - w / 2.0) + 1,
+							(int) (j.getY() * yScale + PADDING - h / 2.0) + 1,
 							(int) (w), (int) (h));
 			}
 		}

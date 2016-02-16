@@ -4,9 +4,6 @@ import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
-import warehouse.shared.Direction;
-import warehouse.shared.Robot;
-
 public class Map {
 	private Junction[][] js;
 	private ArrayList<Line2D> grid;
