@@ -6,9 +6,9 @@ public class State {
 	private Map map;
 	private Robot[] robots;
 	
-	public State(Map map, Robot[] robots) {
-		this.map = map;
-		this.robots = robots;
+	public State(Map _map, Robot[] _robots) {
+		this.map = _map;
+		this.robots = _robots;
 	}
 	
 	public Robot[] getRobots() {
