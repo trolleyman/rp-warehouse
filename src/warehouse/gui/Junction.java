@@ -2,8 +2,6 @@ package warehouse.gui;
 
 import java.util.HashMap;
 
-import warehouse.shared.Direction;
-
 public class Junction {
 	private int x;
 	private int y;
