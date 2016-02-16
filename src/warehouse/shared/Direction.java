@@ -1,4 +1,4 @@
-package shared;
+package warehouse.shared;
 
 /**
  * Based on a co-ordinate system with 0,0 in the bottom-left.
