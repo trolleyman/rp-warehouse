@@ -1,10 +1,8 @@
 package warehouse.gui;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Rectangle2D.Double;
@@ -20,12 +18,12 @@ public class MapComponent extends JComponent {
 	
 	private Robot[] robots;
 	private Map m;
-	public MapComponent(Map m, Robot[] robots) {
+	public MapComponent(State state) {
 		PADDING = 20;
-		this.robots = robots;
-		this.m = m;
+		robots = state.getRobots();
+		m = state.getMap();
 	}
-	
+
 	@Override
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g.create();
