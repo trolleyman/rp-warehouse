@@ -6,11 +6,11 @@ public class Robot {
 	private double yPos;
 	private double facing;
 	
-	public Robot(String name, double xPos, double yPos, double facing) {
-		this.name = name;
-		this.xPos = xPos;
-		this.yPos = yPos;
-		this.facing = facing;
+	public Robot(String _name, double _xPos, double _yPos, double _facing) {
+		this.name = _name;
+		this.xPos = _xPos;
+		this.yPos = _yPos;
+		this.facing = _facing;
 	}
 	
 	public String getName() {
@@ -21,16 +21,16 @@ public class Robot {
 		return xPos;
 	}
 
-	public void setX(double xPos) {
-		this.xPos = xPos;
+	public void setX(double _xPos) {
+		this.xPos = _xPos;
 	}
 
 	public double getY() {
 		return yPos;
 	}
 
-	public void setY(double yPos) {
-		this.yPos = yPos;
+	public void setY(double _yPos) {
+		this.yPos = _yPos;
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class Robot {
 		return facing;
 	}
 
-	public void setFacing(double facing) {
-		this.facing = facing;
+	public void setFacing(double _facing) {
+		this.facing = _facing;
 	}
 }
