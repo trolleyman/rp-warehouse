@@ -12,8 +12,8 @@ import warehouse.gui.TestStates;
  * modules, and listeners will be notified of the updated state.
  */
 public class Server {
-	private static Object serverInitLock = new Object();
-	private static Server server = null;
+	private volatile static Object serverInitLock = new Object();
+	private volatile static Server server = null;
 	
 	public static Server get() {
 		synchronized (serverInitLock) {
