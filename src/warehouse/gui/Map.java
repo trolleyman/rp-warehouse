@@ -12,10 +12,10 @@ public class Map {
 	private int width;
 	private int height;
 
-	public Map(int width, int height, Rectangle.Double[] walls) {
-		this.walls = walls;
-		this.width = width;
-		this.height = height;
+	public Map(int _width, int _height, Rectangle.Double[] _walls) {
+		this.walls = _walls;
+		this.width = _width;
+		this.height = _height;
 		
 		js = new Junction[height][width];
 		for (int y = 0; y < height; y++) {
@@ -62,15 +62,15 @@ public class Map {
 		return lines;
 	}
 	
-	private boolean rectanglesContainsPoint(Rectangle.Double[] rects, int x, int y) {
+	private boolean rectanglesContainsPoint(Rectangle.Double[] _rects, int _x, int _y) {
 		double w = 0.1;
 		double h = 0.1;
 		
 		double h2 = h / 2.0;
 		double w2 = w / 2.0;
 		
-		for (Rectangle.Double rect : rects) {
-			if (rect.intersects(x-w2, y-h2, w, h)) {
+		for (Rectangle.Double rect : _rects) {
+			if (rect.intersects(_x-w2, _y-h2, w, h)) {
 				return true;
 			}
 		}
@@ -93,9 +93,9 @@ public class Map {
 	/**
 	 * Returns the junction located at x, y on the map, or null if it does not exist.
 	 */
-	public Junction getJunction(int x, int y) {
-		if (x >= 0 && x < width && y >= 0 && y < height)
-			return js[y][x];
+	public Junction getJunction(int _x, int _y) {
+		if (_x >= 0 && _x < width && _y >= 0 && _y < height)
+			return js[_y][_x];
 		return null;
 	}
 	

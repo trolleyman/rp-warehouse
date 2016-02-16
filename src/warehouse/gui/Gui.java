@@ -9,15 +9,12 @@ public class Gui implements Runnable {
 		g.run();
 	}
 	
-	//private Map m;
 	private JFrame frame;
 	
-	public Gui(State state) {
-		//this.m = m;
-		
+	public Gui(State _state) {
 		frame = new JFrame("Warehouse Viewer");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(new MapComponent(state));
+		frame.add(new MapComponent(_state));
 		frame.setSize(450, 500);
 		frame.setVisible(true);
 	}
