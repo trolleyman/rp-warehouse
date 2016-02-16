@@ -11,17 +11,16 @@ import java.util.ArrayList;
 import javax.swing.JComponent;
 
 import warehouse.shared.Robot;
+import warehouse.shared.Server;
 
 @SuppressWarnings("serial")
 public class MapComponent extends JComponent {
 	private final int PADDING;
 	
-	private Robot[] robots;
-	private Map map;
-	public MapComponent(State _state) {
+	private State state;
+	public MapComponent() {
 		PADDING = 20;
-		robots = _state.getRobots();
-		map = _state.getMap();
+		state = Server.get().getCurrentState();
 	}
 
 	@Override
@@ -30,8 +29,9 @@ public class MapComponent extends JComponent {
 		int width = getWidth() - PADDING * 2;
 		int height = getHeight() - PADDING * 2;
 		
-		int mapWidth = map.getWidth() - 1;
-		int mapHeight = map.getHeight() - 1;
+		state = Server.get().getCurrentState();
+		int mapWidth = state.getMap().getWidth() - 1;
+		int mapHeight = state.getMap().getHeight() - 1;
 				
 		double xScale = width / mapWidth;
 		double yScale = height / mapHeight;
@@ -47,7 +47,7 @@ public class MapComponent extends JComponent {
 	
 	private void paintRobots(Graphics2D _g2, double _xScale, double _yScale) {
 		_g2.setColor(Color.BLUE);
-		for (Robot robot : robots) {
+		for (Robot robot : state.getRobots()) {
 			Graphics2D g = (Graphics2D) _g2.create();
 			
 			double x = robot.getX() * _xScale + PADDING;
@@ -64,7 +64,7 @@ public class MapComponent extends JComponent {
 	}
 
 	private void paintGrid(Graphics2D _g2, double _xScale, double _yScale) {
-		ArrayList<Line2D> lines = map.getGrid();
+		ArrayList<Line2D> lines = state.getMap().getGrid();
 		_g2.setColor(Color.BLACK);
 		for (Line2D line : lines) {
 			_g2.drawLine((int) (line.getX1() * _xScale + PADDING), (int) (line.getY1() * _yScale + PADDING),
@@ -73,9 +73,9 @@ public class MapComponent extends JComponent {
 	}
 	
 	private void paintJunctions(Graphics2D _g2, double _xScale, double _yScale) {
-		for (int y = 0; y < map.getHeight(); y++) {
-			for (int x = 0; x < map.getWidth(); x++) {
-				Junction j = map.getJunction(x, y);
+		for (int y = 0; y < state.getMap().getHeight(); y++) {
+			for (int x = 0; x < state.getMap().getWidth(); x++) {
+				Junction j = state.getMap().getJunction(x, y);
 				if (j == null)
 					continue;
 				
@@ -89,7 +89,7 @@ public class MapComponent extends JComponent {
 	}
 	
 	private void paintWalls(Graphics2D _g2, double _xScale, double _yScale) {
-		Rectangle2D.Double[] walls = map.getWalls();
+		Rectangle2D.Double[] walls = state.getMap().getWalls();
 		_g2.setColor(Color.RED);
 		
 		for (Double wall : walls) {
