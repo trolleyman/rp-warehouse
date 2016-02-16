@@ -15,29 +15,30 @@ import warehouse.shared.Server;
 
 @SuppressWarnings("serial")
 public class MapComponent extends JComponent {
-	private final int PADDING;
-	
 	private State state;
 	public MapComponent() {
-		PADDING = 20;
 		state = Server.get().getCurrentState();
 	}
 
 	@Override
 	public void paintComponent(Graphics _g) {
 		Graphics2D g2 = (Graphics2D) _g.create();
-		int width = getWidth() - PADDING * 2;
-		int height = getHeight() - PADDING * 2;
+		double sf = Math.min((double) getWidth() / state.getMap().getWidth(),
+						     (double) getHeight() / state.getMap().getHeight());
+		int padding = (int) (20.0 * (sf * 0.025));
+		int width = getWidth() - padding * 2;
+		int height = getHeight() - padding * 2;
 		
 		state = Server.get().getCurrentState();
 		int mapWidth = state.getMap().getWidth() - 1;
 		int mapHeight = state.getMap().getHeight() - 1;
-				
+		
 		double xScale = width / mapWidth;
 		double yScale = height / mapHeight;
 		xScale = Math.min(xScale, yScale);
 		yScale = xScale;
 		//g2.transform();
+		g2.translate(padding, padding);
 		
 		paintGrid(g2, xScale, yScale);
 		paintJunctions(g2, xScale, yScale);
@@ -50,14 +51,30 @@ public class MapComponent extends JComponent {
 		for (Robot robot : state.getRobots()) {
 			Graphics2D g = (Graphics2D) _g2.create();
 			
-			double x = robot.getX() * _xScale + PADDING;
-			double y = robot.getY() * _yScale + PADDING;
+			double x = robot.getX() * _xScale;
+			double y = robot.getY() * _yScale;
 			double w = 0.4 * _xScale;
 			double h = 0.6 * _yScale;
 			
 			g.translate(x, y);
 			g.rotate(Math.toRadians(robot.getFacing()));
 			g.drawRect(-(int)(w / 2.0), -(int)(h / 2.0), (int)w, (int)h);
+			
+			double robotEndY = h / 2.0;
+			double arrowLength = h * 0.4;
+			double arrowEndY = robotEndY + arrowLength;
+			double arrowHeadLength = h * 0.2;
+			double arrowHeadEndX = arrowHeadLength;
+			double arrowHeadEndY = arrowEndY - arrowHeadLength;
+			
+			// Arrow base
+			g.drawLine(0, (int) robotEndY, 0, (int) arrowEndY);
+			// Left arrow head
+			g.drawLine(0, (int) arrowEndY,
+				(int) (arrowHeadEndX), (int) (arrowHeadEndY));
+			// Right arrow head
+			g.drawLine(0, (int) arrowEndY,
+				(int) (-arrowHeadEndX), (int) (arrowHeadEndY));
 			
 			g.dispose();
 		}
@@ -67,8 +84,8 @@ public class MapComponent extends JComponent {
 		ArrayList<Line2D> lines = state.getMap().getGrid();
 		_g2.setColor(Color.BLACK);
 		for (Line2D line : lines) {
-			_g2.drawLine((int) (line.getX1() * _xScale + PADDING), (int) (line.getY1() * _yScale + PADDING),
-						 (int) (line.getX2() * _xScale + PADDING), (int) (line.getY2() * _yScale + PADDING));
+			_g2.drawLine((int) (line.getX1() * _xScale), (int) (line.getY1() * _yScale),
+						 (int) (line.getX2() * _xScale), (int) (line.getY2() * _yScale));
 		}
 	}
 	
@@ -81,8 +98,8 @@ public class MapComponent extends JComponent {
 				
 				double w = 7.0;
 				double h = 7.0;
-				_g2.fillOval((int) (j.getX() * _xScale + PADDING - w / 2.0) + 1,
-							 (int) (j.getY() * _yScale + PADDING - h / 2.0) + 1,
+				_g2.fillOval((int) (j.getX() * _xScale - w / 2.0) + 1,
+							 (int) (j.getY() * _yScale - h / 2.0) + 1,
 							 (int) (w), (int) (h));
 			}
 		}
@@ -98,17 +115,17 @@ public class MapComponent extends JComponent {
 			double maxX = wall.getMaxX();
 			double maxY = wall.getMaxY();
 			// Left
-			_g2.drawLine((int) (minX * _xScale + PADDING), (int) (minY * _yScale + PADDING),
-						 (int) (minX * _xScale + PADDING), (int) (maxY * _yScale + PADDING));
+			_g2.drawLine((int) (minX * _xScale), (int) (minY * _yScale),
+						 (int) (minX * _xScale), (int) (maxY * _yScale));
 			// Right
-			_g2.drawLine((int) (maxX * _xScale + PADDING), (int) (minY * _yScale + PADDING),
-						 (int) (maxX * _xScale + PADDING), (int) (maxY * _yScale + PADDING));
+			_g2.drawLine((int) (maxX * _xScale), (int) (minY * _yScale),
+						 (int) (maxX * _xScale), (int) (maxY * _yScale));
 			// Top
-			_g2.drawLine((int) (minX * _xScale + PADDING), (int) (minY * _yScale + PADDING),
-						 (int) (maxX * _xScale + PADDING), (int) (minY * _yScale + PADDING));
+			_g2.drawLine((int) (minX * _xScale), (int) (minY * _yScale),
+						 (int) (maxX * _xScale), (int) (minY * _yScale));
 			// Bottom
-			_g2.drawLine((int) (minX * _xScale + PADDING), (int) (maxY * _yScale + PADDING),
-						 (int) (maxX * _xScale + PADDING), (int) (maxY * _yScale + PADDING));
+			_g2.drawLine((int) (minX * _xScale), (int) (maxY * _yScale),
+						 (int) (maxX * _xScale), (int) (maxY * _yScale));
 		}
 	}
 }

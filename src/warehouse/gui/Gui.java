@@ -9,9 +9,10 @@ import warehouse.shared.Robot;
 import warehouse.shared.RobotListener;
 import warehouse.shared.Server;
 
-public class Gui implements RobotListener {
+public class Gui implements Runnable, RobotListener {
 	public static void main(String[] args) {
 		Gui g = new Gui();
+		g.run();
 	}
 	
 	private JFrame frame;
@@ -37,7 +38,6 @@ public class Gui implements RobotListener {
 		
 		frame.add(new MapComponent());
 		frame.setSize(450, 500);
-		frame.setVisible(true);
 	}
 	
 	public void update() {
@@ -46,5 +46,10 @@ public class Gui implements RobotListener {
 	@Override
 	public void robotChanged(Robot _r) {
 		update();
+	}
+
+	@Override
+	public void run() {
+		frame.setVisible(true);
 	}
 }
