@@ -11,7 +11,13 @@ public class State {
 	
 	public State(Map _map, ArrayList<Robot> _robots) {
 		this.map = _map;
-		this.robots = _robots;
+		this.robots = new ArrayList<>();
+		
+	    for(Robot r : _robots) {
+	        if (!robots.contains(r)) {
+	            robots.add(r);
+	        }
+	    }
 	}
 	
 	public State(Map _map, Robot[] _robots) {
@@ -28,6 +34,9 @@ public class State {
 	 */
 	public void updateRobot(Robot _r) {
 		for (Robot robot : robots) {
+			if (robot == _r) {
+				return;
+			}
 			if (robot.getName().equals(_r.getName())) {
 				robot = _r;
 			}
