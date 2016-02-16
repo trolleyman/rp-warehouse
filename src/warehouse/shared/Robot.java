@@ -1,4 +1,4 @@
-package shared;
+package warehouse.shared;
 
 public class Robot {
 	private String name;
