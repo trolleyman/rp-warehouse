@@ -1,5 +1,4 @@
-# Contribution Guide
-## Branching
+# Branching
 Try wherever to make a new branch for the feature/bug-fix you are developing. This allows the master branch to remain in a deployable state. Once you have finished developing the new code it can be merged back to the master branch.
 
 #### Usage
@@ -23,6 +22,17 @@ Delete a branch. Note this is a "safe" command. If there are unmerged changes yo
 ```
 git branch -d <branch-name>
 ```
+
+# Documenting
+Firstly try as much as possible to make your code self documenting. You should be able to tell what the code does through its methods and varaibles. `getFile()` `sendCommand()` `itemCount` are good examples, they tell you what the method will do or what the varaible represents. Also try to keep names rather brief, longer is not necessarily better.
+
+Next, JavaDoc classes and methods. If you are using an IDE like Eclipse then typing `**` then a new line automatiacly creates JavaDoc, inserting required field, return tags. At the very minimum breifly explain what the class/method does.
+
+I recomend JavaDocs over just comments because in most IDEs (Eclipse for sure) you can get the JavaDoc description when calling the method and when hovering over the method.
+
+Obviously you should comment wherever necessary, where what is happening could be unclear.
+
+# Extra commands
 I would also recommend running these commands at some point:
 ```
 alias.plog log --decorate --oneline
@@ -55,12 +65,3 @@ a55e2a3 Add Contribution Guidelines to README.md
 90bcbfa Added basic Robot and Direction classes
 8c9fcae Initial commit
 ```
-
-## Documenting
-Firstly try as much as possible to make your code self documenting. You should be able to tell what the code does through its methods and varaibles. `getFile()` `sendCommand()` `itemCount` are good examples, they tell you what the method will do or what the varaible represents. Also try to keep names rather brief, longer is not necessarily better.
-
-Next, JavaDoc classes and methods. If you are using an IDE like Eclipse then typing `**` then a new line automatiacly creates JavaDoc, inserting required field, return tags. At the very minimum breifly explain what the class/method does.
-
-I recomend JavaDocs over just comments because in most IDEs (Eclipse for sure) you can get the JavaDoc description when calling the method and when hovering over the method.
-
-Obviously you should comment wherever necessary, where what is happening could be unclear.
