@@ -5,20 +5,25 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
 import warehouse.shared.Direction;
+import warehouse.shared.Robot;
 
 public class Map {
 	private Junction[][] js;
+	private ArrayList<Line2D> grid;
+	private Rectangle.Double[] walls;
+	
 	private int width;
 	private int height;
 
-	public Map(int width, int height, Rectangle.Double[] doubles) {
+	public Map(int width, int height, Rectangle.Double[] walls) {
+		this.walls = walls;
 		this.width = width;
 		this.height = height;
 		
 		js = new Junction[height][width];
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				if (!rectanglesContainsPoint(doubles, x, y)) {
+				if (!rectanglesContainsPoint(walls, x, y)) {
 					js[y][x] = new Junction(x, y);
 				}
 			}
@@ -38,25 +43,11 @@ public class Map {
 				}
 			}
 		}
+		
+		grid = constructGrid();
 	}
 	
-	private boolean rectanglesContainsPoint(Rectangle.Double[] rects, int x, int y) {
-		for (Rectangle.Double rect : rects) {
-			if (rect.contains(x, y)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public int getWidth() {
-		return width;
-	}
-	public int getHeight() {
-		return height;
-	}
-	
-	public ArrayList<Line2D> getGrid() {
+	private ArrayList<Line2D> constructGrid() {
 		ArrayList<Line2D> lines = new ArrayList<>();
 		for (int y = 0; y < js.length; y++) {
 			for (int x = 0; x < js[y].length; x++) {
@@ -72,5 +63,65 @@ public class Map {
 			}
 		}
 		return lines;
+	}
+	
+	private boolean rectanglesContainsPoint(Rectangle.Double[] rects, int x, int y) {
+		double w = 0.1;
+		double h = 0.1;
+		
+		double h2 = h / 2.0;
+		double w2 = w / 2.0;
+		
+		for (Rectangle.Double rect : rects) {
+			if (rect.intersects(x-w2, y-h2, w, h)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Returns the width of the map
+	 */
+	public int getWidth() {
+		return width;
+	}
+	/**
+	 * Returns the height of the map
+	 */
+	public int getHeight() {
+		return height;
+	}
+	
+	/**
+	 * Returns the junction located at x, y on the map, or null if it does not exist.
+	 */
+	public Junction getJunction(int x, int y) {
+		if (x >= 0 && x < width && y >= 0 && y < height)
+			return js[y][x];
+		return null;
+	}
+	
+	/**
+	 * Returns a list of lines that represent the grid.
+	 * 
+	 * E.g. For TestMaps.TEST_MAP1 this would return lines that represent this:
+	 * +---+---+---+
+	 * |       |   |
+	 * +       +---+
+	 * |       |   |
+	 * +---+---+---+
+	 * |   |   |
+	 * +---+---+
+	 */
+	public ArrayList<Line2D> getGrid() {
+		return grid;
+	}
+	
+	/**
+	 * Gets the walls that are in this map
+	 */
+	public Rectangle.Double[] getWalls() {
+		return walls;
 	}
 }
