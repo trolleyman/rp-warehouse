@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import warehouse.gui.State;
 import warehouse.gui.TestStates;
+import warehouse.job.Job;
+import warehouse.job.JobList;
 
 /**
  * The main interface for the whole project. Get the server using Server::get().
@@ -30,9 +32,15 @@ public class Server {
 	private ArrayList<RobotListener> robotListeners;
 	private State currentState;
 	
+	private ArrayList<JobListener> jobListeners;
+	private JobList jobList;
+	
 	private Server() {
 		robotListeners = new ArrayList<>();
 		currentState = TestStates.TEST_STATE1;
+		
+		jobListeners = new ArrayList<>();
+		jobList = new JobList("");
 	}
 	
 	/**
@@ -50,6 +58,35 @@ public class Server {
 		for (RobotListener l : robotListeners) {
 			l.robotChanged(_r);
 		}
+	}
+	
+	/**
+	 * Adds a job listener to the server that will be notified when a job has been updated.
+	 */
+	public synchronized void addJobListener(JobListener _l) {
+		jobListeners.add(_l);
+	}
+	
+	/**
+	 * Updated a job {@code _j} with new information.
+	 */
+	public synchronized void updateJob(Job _j) {
+		for (Job job : jobList.getJobList()) {
+			if (job.getId() == _j.getId()) {
+				job = _j;
+				break;
+			}
+		}
+		for (JobListener j : jobListeners) {
+			j.jobUpdated(_j);
+		}
+	}
+	
+	/**
+	 * Gets the job list containing jobs that are completed, not completed, and in progress.
+	 */
+	public synchronized JobList getJobList() {
+		return jobList;
 	}
 	
 	/**
