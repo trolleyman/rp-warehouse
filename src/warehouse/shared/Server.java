@@ -10,6 +10,9 @@ import warehouse.gui.TestStates;
  * 
  * This holds the current state of the warehouse. The server's state can be updated by different
  * modules, and listeners will be notified of the updated state.
+ * 
+ * Later this will also hold the current jobs left to process, the jobs being processed, and the
+ * jobs that have been completed.
  */
 public class Server {
 	private volatile static Object serverInitLock = new Object();
