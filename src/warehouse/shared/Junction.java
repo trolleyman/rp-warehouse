@@ -1,4 +1,4 @@
-package warehouse.gui;
+package warehouse.shared;
 
 import java.util.HashMap;
 

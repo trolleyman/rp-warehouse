@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import javax.swing.JComponent;
 
+import warehouse.shared.Junction;
 import warehouse.shared.Robot;
 import warehouse.shared.Server;
 import warehouse.shared.State;

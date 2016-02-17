@@ -2,8 +2,6 @@ package warehouse.shared;
 
 import java.awt.geom.Rectangle2D;
 
-import warehouse.gui.Map;
-
 public class TestStates {
 	static {
 		TEST_STATE1 = new State(new Map(8, 4, new Rectangle2D.Double[] {
