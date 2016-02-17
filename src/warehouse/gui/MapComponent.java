@@ -3,8 +3,10 @@ package warehouse.gui;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Rectangle2D.Double;
 import java.util.ArrayList;
@@ -25,12 +27,13 @@ public class MapComponent extends JComponent {
 
 	@Override
 	public void paintComponent(Graphics _g) {
+		Toolkit.getDefaultToolkit().sync();
 		Graphics2D g2 = (Graphics2D) _g.create();
 		double sf = Math.min((double) getWidth() / state.getMap().getWidth(),
 						     (double) getHeight() / state.getMap().getHeight());
 		int padding = (int) (20.0 * (sf * 0.025));
-		int width = getWidth() - padding * 2;
-		int height = getHeight() - padding * 2;
+		int width = getWidth() - padding * 3;
+		int height = getHeight() - padding * 3;
 		
 		state = Server.get().getCurrentState();
 		int mapWidth = state.getMap().getWidth() - 1;
@@ -43,7 +46,7 @@ public class MapComponent extends JComponent {
 		AffineTransform at = new AffineTransform();
 		at.setToScale(1.0, -1.0);
 		
-		g2.translate(padding, padding);
+		g2.translate(padding * 2, padding);
 		g2.translate(0.0, yScale * 3.0);
 		g2.transform(at);
 		
@@ -64,6 +67,18 @@ public class MapComponent extends JComponent {
 			double h = 0.6 * _yScale;
 			
 			g.translate(x, y);
+			
+			Graphics2D fg = (Graphics2D) g.create();
+			fg.setColor(Color.BLACK);
+			AffineTransform trans = new AffineTransform();
+			trans.scale(1.0, -1.0);
+			trans.scale(_xScale * 0.015, _yScale * 0.015);
+			fg.transform(trans);
+			int nameW = g.getFontMetrics().stringWidth(robot.getName());
+			fg.translate(- nameW / 2.0, 14.0);
+			fg.drawString(robot.getName(), 0, 0);
+			fg.dispose();
+			
 			g.rotate(Math.toRadians(robot.getFacing()));
 			g.drawRect(-(int)(w / 2.0), -(int)(h / 2.0), (int)w, (int)h);
 			
@@ -94,6 +109,17 @@ public class MapComponent extends JComponent {
 			_g2.drawLine((int) (line.getX1() * _xScale), (int) (line.getY1() * _yScale),
 						 (int) (line.getX2() * _xScale), (int) (line.getY2() * _yScale));
 		}
+		
+		Graphics2D fg = (Graphics2D) _g2.create();
+		fg.scale(_xScale * 0.015, _yScale * 0.015);
+		fg.scale(1.0, -1.0);
+		for (int x = 0; x < state.getMap().getWidth(); x++) {
+			fg.drawString(Integer.toString(x), (int)(x * 66.666666666666667 - 3.0), (int)(50.0));
+		}
+		for (int y = 0; y < state.getMap().getHeight(); y++) {
+			fg.drawString(Integer.toString(y), (int)(-50.0), (int)(-y * 66.666666666666667 + 4.0));
+		}
+		fg.dispose();
 	}
 	
 	private void paintJunctions(Graphics2D _g2, double _xScale, double _yScale) {

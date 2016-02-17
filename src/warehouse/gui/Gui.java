@@ -50,6 +50,7 @@ public class Gui implements Runnable, RobotListener {
 			public void windowClosing(WindowEvent _e) {
 				Server s = Server.get();
 				s.close();
+				System.exit(0);
 			}
 		});
 		
