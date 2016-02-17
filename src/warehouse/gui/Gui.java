@@ -1,15 +1,12 @@
 package warehouse.gui;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.ArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.Timer;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -18,7 +15,6 @@ import warehouse.shared.JobListener;
 import warehouse.shared.Robot;
 import warehouse.shared.RobotListener;
 import warehouse.shared.Server;
-import warehouse.shared.State;
 
 public class Gui implements Runnable, RobotListener, JobListener {
 	private static void setNativeLAF() {
@@ -39,16 +35,16 @@ public class Gui implements Runnable, RobotListener, JobListener {
 		setNativeLAF();
 		Gui g = new Gui();
 		g.run();
-		Timer t = new Timer(1000, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent _e) {
-				Server s = Server.get();
-				int id = s.getJobList().getJobList().size() * 1000;
-				s.updateJob(new Job(id, new ArrayList<>()));
-				System.out.println("id: " + id);
-			}
-		});
-		t.start();
+//		Timer t = new Timer(1000, new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent _e) {
+//				Server s = Server.get();
+//				int id = s.getJobList().getJobList().size() * 1000;
+//				s.updateJob(new Job(id, new ArrayList<>()));
+//				System.out.println("id: " + id);
+//			}
+//		});
+//		t.start();
 	}
 	
 	private JFrame frame;
@@ -76,10 +72,12 @@ public class Gui implements Runnable, RobotListener, JobListener {
 		JComponent map = new MapComponent();
 		JComponent jobs = new JobComponent();
 		
-		frame.setLayout(new BorderLayout());
-		frame.add(map, BorderLayout.CENTER);
-		frame.add(jobs, BorderLayout.EAST);
-		frame.setSize(450, 500);
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.add(map, BorderLayout.CENTER);
+		panel.add(jobs, BorderLayout.LINE_END);
+		frame.add(panel);
+		frame.setSize(900, 600);
 	}
 	
 	@Override

@@ -1,22 +1,14 @@
 package warehouse.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Enumeration;
-
-import javax.swing.JComponent;
-import javax.swing.JFrame;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-
 import warehouse.job.ItemQuantity;
 import warehouse.job.Job;
 import warehouse.job.JobList;
@@ -80,15 +72,13 @@ public class JobComponent extends JPanel implements JobListener {
 		};
 		table = new JTable(model);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		JPanel inner = new JPanel();
-		inner.setLayout(new BorderLayout());
-		inner.add(table.getTableHeader(), BorderLayout.NORTH);
-		inner.add(table, BorderLayout.CENTER);
-		this.add(inner, BorderLayout.NORTH);
-		this.add(new JPanel(), BorderLayout.CENTER);
-		table.setEnabled(true);
+		table.getColumnModel().getColumn(0).setPreferredWidth(60);
+		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+		this.add(table.getTableHeader());
+		this.add(table);
+		this.add(Box.createVerticalGlue());
 		
-		setMinimumSize(new Dimension(300, 200));
+		setPreferredSize(new Dimension(300, 0));
 		Server.get().addJobListener(this);
 		updateJobs();
 	}
