@@ -7,10 +7,13 @@ import java.util.ArrayList;
  * 
  * This holds the current state of the warehouse. The server's state can be updated by different
  * modules, and listeners will be notified of the updated state.
+ * 
+ * Later this will also hold the current jobs left to process, the jobs being processed, and the
+ * jobs that have been completed.
  */
 public class Server {
-	private static Object serverInitLock = new Object();
-	private static Server server = null;
+	private volatile static Object serverInitLock = new Object();
+	private volatile static Server server = null;
 	
 	public static Server get() {
 		synchronized (serverInitLock) {
@@ -26,7 +29,7 @@ public class Server {
 	
 	private Server() {
 		robotListeners = new ArrayList<>();
-		currentState = TestStates.TEST_STATE1;
+		currentState = TestStates.TEST_STATE3;
 	}
 	
 	/**

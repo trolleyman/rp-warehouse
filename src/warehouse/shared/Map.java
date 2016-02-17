@@ -4,6 +4,10 @@ import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
+/**
+ * A map that represents a grid of junctions.
+ * Some junctions can be diabled by being blocked by walls, that are calculated in the constructor.
+ */
 public class Map {
 	private Junction[][] js;
 	private ArrayList<Line2D> grid;
@@ -29,13 +33,13 @@ public class Map {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				if (js[y][x] != null) {
-					if (y + 1 < height)
+					if (y + 1 < height && !rectanglesIntersectLine(walls, x, y, x, y + 1))
 						js[y][x].setJunction(Direction.YPos, js[y + 1][x]);
-					if (y - 1 > 0)
+					if (y - 1 > 0      && !rectanglesIntersectLine(walls, x, y, x, y - 1))
 						js[y][x].setJunction(Direction.YNeg, js[y - 1][x]);
-					if (x + 1 < width)
+					if (x + 1 < width  && !rectanglesIntersectLine(walls, x, y, x + 1, y))
 						js[y][x].setJunction(Direction.XPos, js[y][x + 1]);
-					if (x - 1 > 0)
+					if (x - 1 > 0      && !rectanglesIntersectLine(walls, x, y, x - 1, y + 1))
 						js[y][x].setJunction(Direction.XNeg, js[y][x - 1]);
 				}
 			}
@@ -60,6 +64,15 @@ public class Map {
 			}
 		}
 		return lines;
+	}
+	
+	private boolean rectanglesIntersectLine(Rectangle.Double[] _rects, int _x1, int _y1, int _x2, int _y2) {
+		for (Rectangle.Double r : _rects) {
+			if (r.intersectsLine(_x1, _y1, _x2, _y2)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private boolean rectanglesContainsPoint(Rectangle.Double[] _rects, int _x, int _y) {
@@ -101,15 +114,6 @@ public class Map {
 	
 	/**
 	 * Returns a list of lines that represent the grid.
-	 * 
-	 * E.g. For TestMaps.TEST_MAP1 this would return lines that represent this:
-	 * +---+---+---+
-	 * |       |   |
-	 * +       +---+
-	 * |       |   |
-	 * +---+---+---+
-	 * |   |   |
-	 * +---+---+
 	 */
 	public ArrayList<Line2D> getGrid() {
 		return grid;
