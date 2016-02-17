@@ -47,7 +47,7 @@ public class MapComponent extends JComponent {
 		at.setToScale(1.0, -1.0);
 		
 		g2.translate(padding * 2, padding);
-		g2.translate(0.0, yScale * 3.0);
+		g2.translate(0.0, yScale * mapHeight);
 		g2.transform(at);
 		
 		paintGrid(g2, xScale, yScale);
