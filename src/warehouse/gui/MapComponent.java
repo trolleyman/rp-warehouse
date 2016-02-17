@@ -3,6 +3,7 @@ package warehouse.gui;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Rectangle2D.Double;
@@ -39,8 +40,12 @@ public class MapComponent extends JComponent {
 		double yScale = height / mapHeight;
 		xScale = Math.min(xScale, yScale);
 		yScale = xScale;
-		//g2.transform();
+		AffineTransform at = new AffineTransform();
+		at.setToScale(1.0, -1.0);
+		
 		g2.translate(padding, padding);
+		g2.translate(0.0, yScale * 3.0);
+		g2.transform(at);
 		
 		paintGrid(g2, xScale, yScale);
 		paintJunctions(g2, xScale, yScale);
