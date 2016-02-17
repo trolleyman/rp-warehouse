@@ -25,6 +25,7 @@ public class Gui implements Runnable, RobotListener {
 				for (Robot r : robots) {
 					r.setFacing(r.getFacing() + 1.0);
 					Server.get().updateRobot(r);
+					break;
 				}
 			}
 		});
