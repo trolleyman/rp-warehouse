@@ -11,6 +11,7 @@ import javax.swing.Timer;
 import warehouse.shared.Robot;
 import warehouse.shared.RobotListener;
 import warehouse.shared.Server;
+import warehouse.shared.State;
 
 public class Gui implements Runnable, RobotListener {
 	public static void main(String[] args) {
