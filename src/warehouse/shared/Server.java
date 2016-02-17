@@ -2,9 +2,6 @@ package warehouse.shared;
 
 import java.util.ArrayList;
 
-import warehouse.gui.State;
-import warehouse.gui.TestStates;
-
 /**
  * The main interface for the whole project. Get the server using Server::get().
  * 
