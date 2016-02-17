@@ -1,4 +1,4 @@
-package warehouse.gui;
+package warehouse.shared;
 
 public enum Direction {
 	YPos,
