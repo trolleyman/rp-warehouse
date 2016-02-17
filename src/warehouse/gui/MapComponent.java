@@ -12,6 +12,7 @@ import javax.swing.JComponent;
 
 import warehouse.shared.Robot;
 import warehouse.shared.Server;
+import warehouse.shared.State;
 
 @SuppressWarnings("serial")
 public class MapComponent extends JComponent {
