@@ -29,15 +29,14 @@ public class JobComponent extends JPanel implements JobListener {
 	JobList jobList;
 	ArrayList<Job> jobs;
 	ArrayList<String> itemStrings;
+	AbstractTableModel model;
 	JTable table;
 	
 	public JobComponent() {
 		super();
 		jobList = Server.get().getJobList();
 		
-		jobUpdated(null);
-		
-		AbstractTableModel model = new AbstractTableModel() {
+		model = new AbstractTableModel() {
 			@Override
 			public Object getValueAt(int _row, int _col) {
 				synchronized (jobList) {
@@ -90,10 +89,11 @@ public class JobComponent extends JPanel implements JobListener {
 		table.setEnabled(true);
 		
 		setMinimumSize(new Dimension(300, 200));
+		Server.get().addJobListener(this);
+		updateJobs();
 	}
-
-	@Override
-	public void jobUpdated(Job _job) {
+	
+	private void updateJobs() {
 		synchronized (jobList) {
 			jobList = Server.get().getJobList();
 			jobs = new ArrayList<Job>(jobList.getJobList());
@@ -119,6 +119,12 @@ public class JobComponent extends JPanel implements JobListener {
 				}
 				itemStrings.add(build.toString());
 			}
+			model.fireTableDataChanged();
 		}
+	}
+	
+	@Override
+	public void jobUpdated(Job _job) {
+		updateJobs();
 	}
 }

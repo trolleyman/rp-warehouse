@@ -68,11 +68,16 @@ public class Server {
 	 * Updated a job {@code _j} with new information.
 	 */
 	public synchronized void updateJob(Job _j) {
+		boolean jobFound = false;
 		for (Job job : jobList.getJobList()) {
 			if (job.getId() == _j.getId()) {
 				job = _j;
+				jobFound = true;
 				break;
 			}
+		}
+		if (!jobFound) {
+			jobList.getJobList().add(_j);
 		}
 		for (JobListener j : jobListeners) {
 			j.jobUpdated(_j);

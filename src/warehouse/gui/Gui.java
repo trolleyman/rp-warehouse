@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -38,16 +39,13 @@ public class Gui implements Runnable, RobotListener, JobListener {
 		setNativeLAF();
 		Gui g = new Gui();
 		g.run();
-		Timer t = new Timer(20, new ActionListener() {
+		Timer t = new Timer(1000, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent _e) {
-				State s = Server.get().getCurrentState();
-				Robot[] robots = s.getRobots();
-				for (Robot r : robots) {
-					r.setFacing(r.getFacing() + 1.0);
-					Server.get().updateRobot(r);
-					break;
-				}
+				Server s = Server.get();
+				int id = s.getJobList().getJobList().size() * 1000;
+				s.updateJob(new Job(id, new ArrayList<>()));
+				System.out.println("id: " + id);
 			}
 		});
 		t.start();
