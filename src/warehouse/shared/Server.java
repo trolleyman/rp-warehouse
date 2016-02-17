@@ -37,7 +37,7 @@ public class Server {
 		currentState = TestStates.TEST_STATE1;
 		
 		jobListeners = new ArrayList<>();
-		jobList = new JobList("");
+		jobList = new JobList("jobs.txt");
 	}
 	
 	/**

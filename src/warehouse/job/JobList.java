@@ -50,11 +50,14 @@ public class JobList {
 			}
 		} catch (FileNotFoundException e) {
 			System.err.println("Job file not found: " + e);
+			System.exit(1);
 		} catch (IOException e) {
 			System.err.println("Problem reading file: " + e);
+			System.exit(1);
 		} finally {
 			try {
-				br.close();
+				if (br != null)
+					br.close();
 			} catch (IOException e) {
 				System.err.println("Problem closing job file: " + e);
 			}
