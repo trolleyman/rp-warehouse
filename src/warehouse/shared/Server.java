@@ -29,7 +29,7 @@ public class Server {
 	
 	private Server() {
 		robotListeners = new ArrayList<>();
-		currentState = TestStates.TEST_STATE1;
+		currentState = TestStates.TEST_STATE3;
 	}
 	
 	/**
