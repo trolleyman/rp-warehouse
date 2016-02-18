@@ -14,11 +14,17 @@ git branch <branch-name>
 git checkout <branch-name>
 git checkout -b <branch-name> *The above two commands in one*
 ```
-Merge the changes from the specified branch into the current one. (So to merge your finished changes into the master first checkout into master then merge your branch)
+When there are upstream changes in another branch that you wish to pull into yours you can use git merge.
 ```
+git checkout <branch-name>
+git merge master
+```
+Once you are finished with your branch you can merge the changes into the master. 
+```
+git checkout master
 git merge <branch-name>
 ```
-Delete a branch. Note this is a "safe" command. If there are unmerged changes you will not be allowed to delete the branch.
+If you are finished with the branch then you can delete it. Note this is a "safe" command. If there are unmerged changes you will not be allowed to delete the branch.
 ```
 git branch -d <branch-name>
 ```
