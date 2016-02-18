@@ -3,6 +3,8 @@ package warehouse.shared;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import warehouse.shared.robot.Robot;
+
 public class State {
 	private Map map;
 	private ArrayList<Robot> robots;
