@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 /**
  * A map that represents a grid of junctions.
- * Some junctions can be diabled by being blocked by walls, that are calculated in the constructor.
+ * Some junctions can be disabled by being blocked by walls, that are calculated in the constructor.
  */
 public class Map {
 	private Junction[][] js;
