@@ -1,6 +1,6 @@
-package warehouse.nxt.robot;
+package warehouse.shared.robot;
 
-import warehouse.nxt.robot.Identity;
+import warehouse.shared.robot.Identity;
 
 public class Robot {
 	private Identity identity;		// Initialization of the Robot information
