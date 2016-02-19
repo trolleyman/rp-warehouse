@@ -1,4 +1,4 @@
-package warehouse.shared;
+package warehouse.pc.shared;
 
 public enum Direction {
 	YPos,

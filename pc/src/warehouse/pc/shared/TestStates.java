@@ -1,8 +1,8 @@
-package warehouse.shared;
+package warehouse.pc.shared;
 
 import java.awt.geom.Rectangle2D;
 
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.robot.Robot;
 
 public class TestStates {
 	static {

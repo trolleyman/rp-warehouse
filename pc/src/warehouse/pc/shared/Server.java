@@ -1,8 +1,8 @@
-package warehouse.shared;
+package warehouse.pc.shared;
 
 import java.util.ArrayList;
 
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.robot.Robot;
 
 /**
  * The main interface for the whole project. Get the server using Server::get().

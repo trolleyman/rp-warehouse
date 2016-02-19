@@ -1,4 +1,4 @@
-package warehouse.shared.robot;
+package warehouse.pc.shared.robot;
 
 public class Identity {
 

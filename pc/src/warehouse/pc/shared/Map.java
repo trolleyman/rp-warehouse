@@ -1,4 +1,4 @@
-package warehouse.shared;
+package warehouse.pc.shared;
 
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
