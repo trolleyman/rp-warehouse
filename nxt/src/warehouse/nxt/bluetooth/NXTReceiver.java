@@ -1,4 +1,4 @@
-package warehouse.bluetooth.robot;
+package warehouse.nxt.bluetooth;
 
 public class NXTReceiver extends Thread {
 
