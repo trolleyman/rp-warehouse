@@ -1,5 +1,6 @@
-package warehouse.bluetooth.robot;
+package warehouse.nxt.bluetooth;
 
+import lejos.nxt.Button;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
 
@@ -11,7 +12,7 @@ public class NXTClient {
     System.out.println("Waiting for BT");
     BTConnection connection = Bluetooth.waitForConnection();
     System.out.println("Connected!");
-    
+    Button.waitForAnyPress();
   }
 
 }
