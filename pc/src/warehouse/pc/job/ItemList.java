@@ -1,4 +1,4 @@
-package warehouse.job;
+package warehouse.pc.job;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

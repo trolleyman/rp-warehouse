@@ -1,4 +1,4 @@
-package warehouse.job;
+package warehouse.pc.job;
 
 /**
  * The name of an item paired with the quantity of the item

@@ -1,4 +1,4 @@
-package warehouse.job;
+package warehouse.pc.job;
 
 /**
  * An item being at a location (junction) on a grid.

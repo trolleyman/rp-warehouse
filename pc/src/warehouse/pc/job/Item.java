@@ -1,4 +1,4 @@
-package warehouse.job;
+package warehouse.pc.job;
 
 /**
  * An item to be picked up in a job.

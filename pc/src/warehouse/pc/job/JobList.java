@@ -1,4 +1,4 @@
-package warehouse.job;
+package warehouse.pc.job;
 
 import java.util.ArrayList;
 import java.io.BufferedReader;
