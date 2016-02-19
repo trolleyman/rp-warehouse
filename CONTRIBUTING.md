@@ -23,6 +23,38 @@ Delete a branch. Note this is a "safe" command. If there are unmerged changes yo
 ```
 git branch -d <branch-name>
 ```
+I would also recommend running these commands at some point:
+```
+alias.plog log --decorate --oneline
+alias.tree log --decorate --oneline --graph --all
+```
+This enables you to run `git tree` which gives you a good overview of the project. If I run git tree at the moment I get this:
+```
+*   cddc88e (HEAD, origin/gui, gui) Merge remote-tracking branch 'origin/master' into gui
+|\
+| * 4b97982 (origin/master, origin/HEAD, master) Changed Direction to be an angle clockwise from Y+
+| * a55e2a3 Add Contribution Guidelines to README.md
+| * 1e08c9c Add a Contribution Guide
+* | ace6071 Added robot rendering
+* | 5ad6876 Added rendering of grid
+* |   5d0e0d8 Merge remote-tracking branch 'origin/master' into gui
+|\ \
+| |/
+| * 9db2a2d Renamed root package to 'warehouse'
+* | 80e879b Added basic GUI
+|/
+* 90bcbfa Added basic Robot and Direction classes
+* 8c9fcae Initial commit
+```
+It also allows you to run `git plog`, which gives you a list of commits on the current branch from most recent to least recent.
+```
+4b97982 (HEAD, origin/master, origin/HEAD, master) Changed Direction to be an angle clockwise from Y+
+a55e2a3 Add Contribution Guidelines to README.md
+1e08c9c Add a Contribution Guide
+9db2a2d Renamed root package to 'warehouse'
+90bcbfa Added basic Robot and Direction classes
+8c9fcae Initial commit
+```
 
 ## Documenting
 Firstly try as much as possible to make your code self documenting. You should be able to tell what the code does through its methods and varaibles. `getFile()` `sendCommand()` `itemCount` are good examples, they tell you what the method will do or what the varaible represents. Also try to keep names rather brief, longer is not necessarily better.
