@@ -1,8 +1,7 @@
-package warehouse.shared;
+package warehouse.pc.shared;
 
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D.Double;
 import java.util.ArrayList;
 
 /**

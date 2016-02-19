@@ -1,6 +1,8 @@
-package warehouse.shared;
+package warehouse.pc.shared;
 
 import java.util.ArrayList;
+
+import warehouse.shared.robot.Robot;
 
 /**
  * The main interface for the whole project. Get the server using Server::get().
@@ -11,14 +13,14 @@ import java.util.ArrayList;
  * Later this will also hold the current jobs left to process, the jobs being processed, and the
  * jobs that have been completed.
  */
-public class Server {
+public class MainInterface {
 	private volatile static Object serverInitLock = new Object();
-	private volatile static Server server = null;
+	private volatile static MainInterface server = null;
 	
-	public static Server get() {
+	public static MainInterface get() {
 		synchronized (serverInitLock) {
 			if (server == null) {
-				server = new Server();
+				server = new MainInterface();
 			}
 			return server;
 		}
@@ -27,7 +29,7 @@ public class Server {
 	private ArrayList<RobotListener> robotListeners;
 	private State currentState;
 	
-	private Server() {
+	private MainInterface() {
 		robotListeners = new ArrayList<>();
 		currentState = TestStates.TEST_STATE3;
 	}

@@ -1,3 +1,12 @@
+# Setting Up Your Environment
+There are three seperate projects inside of the repo, `pc` `nxt` and `shared`. 
+
+First create a new LejosNXT project inside `shared` with `rp-utils` as a required project. Add LejosNXT as a libary. 
+
+Then create a new LejosNXT project inside `nxt` with `shared` and `rp-utils` as required projects. Add LejosNXT as a libary.  
+
+Finally create a new LejosPC project inside `pc` with `shared` and `rp-utils` as required projects. Add LejosPC as a libary.
+
 # Branching
 Try wherever to make a new branch for the feature/bug-fix you are developing. This allows the master branch to remain in a deployable state. Once you have finished developing the new code it can be merged back to the master branch.
 

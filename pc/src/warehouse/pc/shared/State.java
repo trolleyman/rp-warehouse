@@ -1,7 +1,9 @@
-package warehouse.shared;
+package warehouse.pc.shared;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import warehouse.shared.robot.Robot;
 
 public class State {
 	private Map map;
