@@ -1,6 +1,6 @@
 package warehouse.pc.shared;
 
-import warehouse.pc.shared.robot.Robot;
+import warehouse.shared.robot.Robot;
 
 /**
  * Defines an interface who's methods are called when a robot is updated.

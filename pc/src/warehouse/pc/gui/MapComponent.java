@@ -1,4 +1,4 @@
-package warehouse.gui;
+package warehouse.pc.gui;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -13,16 +13,16 @@ import java.util.ArrayList;
 
 import javax.swing.JComponent;
 
-import warehouse.shared.Junction;
-import warehouse.shared.Robot;
-import warehouse.shared.Server;
-import warehouse.shared.State;
+import warehouse.pc.shared.Junction;
+import warehouse.pc.shared.MainInterface;
+import warehouse.pc.shared.State;
+import warehouse.shared.robot.Robot;
 
 @SuppressWarnings("serial")
 public class MapComponent extends JComponent {
 	private State state;
 	public MapComponent() {
-		state = Server.get().getCurrentState();
+		state = MainInterface.get().getCurrentState();
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class MapComponent extends JComponent {
 		int width = getWidth() - padding * 3;
 		int height = getHeight() - padding * 3;
 		
-		state = Server.get().getCurrentState();
+		state = MainInterface.get().getCurrentState();
 		int mapWidth = state.getMap().getWidth() - 1;
 		int mapHeight = state.getMap().getHeight() - 1;
 		
