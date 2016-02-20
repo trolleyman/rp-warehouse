@@ -31,7 +31,7 @@ public class MainInterface {
 	
 	private MainInterface() {
 		robotListeners = new ArrayList<>();
-		currentState = TestStates.TEST_STATE3;
+		currentState = new State(TestMaps.TEST_MAP3, new Robot[0]);
 	}
 	
 	/**
@@ -42,7 +42,8 @@ public class MainInterface {
 	}
 	
 	/**
-	 * Updated a robot {@code _r} with new information.
+	 * Updated a robot {@code _r} with new information. If the robot is not recognized, a new robot is
+	 * inserted into the array.
 	 */
 	public synchronized void updateRobot(Robot _r) {
 		currentState.updateRobot(_r);
