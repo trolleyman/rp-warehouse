@@ -34,7 +34,9 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 			if (i == -1)
 				return;
 			
-			NXTInfo info = infos[i];
+			//NXTInfo info = infos[i];
+			
+			// Call connect() in communication module to connect to a new robot.
 		}
 	}
 	
