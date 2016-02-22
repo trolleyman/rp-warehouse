@@ -6,7 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Rectangle2D.Double;
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ import warehouse.shared.robot.Robot;
 @SuppressWarnings("serial")
 public class MapComponent extends JComponent {
 	private State state;
+	
 	public MapComponent() {
 		state = MainInterface.get().getCurrentState();
 	}
@@ -32,8 +32,8 @@ public class MapComponent extends JComponent {
 		double sf = Math.min((double) getWidth() / state.getMap().getWidth(),
 						     (double) getHeight() / state.getMap().getHeight());
 		int padding = (int) (20.0 * (sf * 0.025));
-		int width = getWidth() - padding * 3;
-		int height = getHeight() - padding * 3;
+		int width = (int) (getWidth() - padding * 2.5);
+		int height = (int) (getHeight() - padding * 2.1);
 		
 		state = MainInterface.get().getCurrentState();
 		int mapWidth = state.getMap().getWidth() - 1;
@@ -43,10 +43,16 @@ public class MapComponent extends JComponent {
 		double yScale = height / mapHeight;
 		xScale = Math.min(xScale, yScale);
 		yScale = xScale;
+		
+		//actualW = (int) (xScale * mapWidth  + padding * 2.5) + 1;
+		//actualH = (int) (yScale * mapHeight + padding * 2.1) + 1;
+		//g2.drawRect(0, 0, actualW, actualH);
+		//this.setSize(actualW, actualH);
+		
 		AffineTransform at = new AffineTransform();
 		at.setToScale(1.0, -1.0);
 		
-		g2.translate(padding * 2, padding);
+		g2.translate(padding * 1.75, padding * 0.5);
 		g2.translate(0.0, yScale * mapHeight);
 		g2.transform(at);
 		
