@@ -7,15 +7,7 @@ public class RouteTest {
 
 	public static void main(String[] args) {
 		
-		Map testMap = new Map(6, 4, new Rectangle2D.Double[] {
-				new Rectangle2D.Double(1.4, 0.4, 0.2, 1.2),
-				new Rectangle2D.Double(1.6, 1.4, 1.0, 0.2),
-				new Rectangle2D.Double(0.4, 1.4, 0.2, 1.2),
-				new Rectangle2D.Double(1.4, 2.4, 1.2, 0.2),
-				new Rectangle2D.Double(3.4, 1.4, 0.2, 1.6),
-				new Rectangle2D.Double(4.4, 2.4, 0.2, 0.6),
-				new Rectangle2D.Double(4.4, 0.0, 0.2, 0.6),
-			});
+		Map testMap = TestMaps.TEST_MAP3;
 		
 		RouteFinder testSearch = new RouteFinder(testMap);
 		
