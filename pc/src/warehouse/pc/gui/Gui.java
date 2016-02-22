@@ -7,6 +7,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -95,9 +97,20 @@ public class Gui implements Runnable, RobotListener {
 	
 	private JPanel createToolbar() {
 		JPanel res = new JPanel();
-		res.setBorder(BorderFactory.createTitledBorder("Toolbar"));
+		JPanel toolbar = new JPanel();
+		JPanel inner = new JPanel();
+		toolbar.setBorder(BorderFactory.createTitledBorder("Toolbar"));
+		
+		inner.setLayout(new BoxLayout(inner, BoxLayout.PAGE_AXIS));
+		inner.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		JButton connectButton = new JButton("Connect");
-		res.add(connectButton);
+		BluetoothSelector select = new BluetoothSelector();
+		inner.add(select);
+		inner.add(Box.createVerticalStrut(5));
+		inner.add(connectButton);
+		toolbar.add(inner);
+		res.add(toolbar);
+		res.add(Box.createVerticalGlue());
 		return res;
 	}
 
