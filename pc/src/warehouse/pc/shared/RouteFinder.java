@@ -25,9 +25,9 @@ public class RouteFinder {
 	public ArrayList<Junction> findRoute(Junction start, Junction goal)
 	{
 		
-		if (!nodes.contains(start) || !nodes.contains(goal)) {	//Must be valid args
+	 	if (!nodes.contains(start) || !nodes.contains(goal)) {	//Must be valid args
 			return null;
-		}
+		} 
 		
 		searched = new ArrayList<Junction>();
 		frontier = new LinkedHashMap<Junction,Integer>();
@@ -41,6 +41,7 @@ public class RouteFinder {
 			int pathEstimate = 0;
 			int movesFromStart = 0;
 
+			
 			//Iterate through frontier to find lowest cost junction
 			for (Entry<Junction, Integer> entry : frontier.entrySet())
 			{	
@@ -80,10 +81,12 @@ public class RouteFinder {
 							break;
 				case 3 : neighbour = currentJunct.getJunction(Direction.XNeg);
 							break;
+				default : System.out.println("Oops!");
+							break;
 				}
 				
-				if ((neighbour.equals(null)) || (searched.contains(neighbour)))
-						continue;
+				if ((neighbour == null) || (searched.contains(neighbour)))
+					continue;
 				
 				if (!frontier.containsKey(neighbour)){
 					frontier.put(neighbour, movesFromStart + 1); //For safety
@@ -110,7 +113,9 @@ public class RouteFinder {
 	public ArrayList<Junction> makePath(Junction start, Junction current) {
 		
 		ArrayList<Junction> completePath = new ArrayList<Junction>();
-		completePath.add(current);
+		
+		if((start.getX() != current.getX()) && (start.getY() != current.getY())) //If start node != goal node
+		{completePath.add(current);}
 		
 		while ((start.getX() != current.getX()) || (start.getY() != current.getY())) {
 			
