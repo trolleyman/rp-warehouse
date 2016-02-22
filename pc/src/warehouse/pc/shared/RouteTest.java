@@ -1,6 +1,5 @@
 package warehouse.pc.shared;
 
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 public class RouteTest {

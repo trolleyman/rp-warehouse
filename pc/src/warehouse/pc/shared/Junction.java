@@ -25,7 +25,7 @@ public class Junction {
 		js[_d.ordinal()] = _j;
 	}
 	
-	public Junction[] getJunctions() {
+	public Junction[] getNeighbours() {
 		return js;
 	}
 }
