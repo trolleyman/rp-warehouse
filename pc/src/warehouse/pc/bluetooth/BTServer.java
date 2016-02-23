@@ -2,6 +2,8 @@ package warehouse.pc.bluetooth;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.util.HashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
@@ -19,8 +21,13 @@ public class BTServer {
   public static int btProtocol;
   private NXTComm comm;
 
+  // Maps of robot name against in/out queue
+  HashMap<String, LinkedBlockingQueue<String>> toRobotQueues;
+  HashMap<String, LinkedBlockingQueue<String>> fromRobotQueues;
+
   /**
-   * Setup the communication "server" for the current OS and driver.
+   * Setup the communication "server" for the current OS and driver. Initialise
+   * the maps of queues.
    */
   public BTServer() {
     // Create the comms system for this OS and driver
@@ -32,6 +39,9 @@ public class BTServer {
       e.printStackTrace();
       System.err.println("Could not open the btCommunication");
     }
+
+    toRobotQueues = new HashMap<>();
+    fromRobotQueues = new HashMap<>();
   }
 
   /**
@@ -51,9 +61,15 @@ public class BTServer {
         DataOutputStream toRobot = new DataOutputStream(comm.getOutputStream());
         DataInputStream fromRobot = new DataInputStream(comm.getInputStream());
 
+        System.out.println("Creating message queues");
+        LinkedBlockingQueue<String> toRobotQueue = new LinkedBlockingQueue<>();
+        LinkedBlockingQueue<String> fromRobotQueue = new LinkedBlockingQueue<>();
+        toRobotQueues.put(nxt.name, toRobotQueue);
+        fromRobotQueues.put(nxt.name, fromRobotQueue);
+
         System.out.println("Creating threads");
-        Thread sender = new Thread(new ServerSender(toRobot));
-        Thread receiver = new Thread(new ServerReceiver(fromRobot));
+        Thread sender = new Thread(new ServerSender(toRobot, toRobotQueue));
+        Thread receiver = new Thread(new ServerReceiver(fromRobot, fromRobotQueue));
 
         System.out.println("Starting threads");
         sender.start();
@@ -61,10 +77,23 @@ public class BTServer {
         return true;
       }
     } catch (NXTCommException e) {
-      e.printStackTrace();
+      System.err.println("Couldn't connect: " + e.getMessage());
     }
 
     // Connection did not open so return false;
     return false;
   }
+
+  /**
+   * Send a string to a NXT.
+   * 
+   * @param robotName The name of the recipient robot.
+   * @param message The message string to send.
+   */
+  public void sendToRobot(String robotName, String message) {
+    toRobotQueues.get(robotName).offer(message);
+  }
+
+  // Should have a listener for incoming messages?
+  // Maybe one for all robots and another for specific
 }
