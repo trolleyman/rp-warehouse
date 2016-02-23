@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import rp.util.Collections;
+
 public class RouteFinder {
 	
 	private ArrayList<Junction> nodes;                // Stores all junction data from current map
@@ -21,7 +23,8 @@ public class RouteFinder {
 		}
 	}
 	
-	public ArrayList<Junction> findRoute(Junction start, Junction goal) {
+	public ArrayList<Direction> findRoute(Junction start, Junction goal) {
+		
 		
 		if (!nodes.contains(start) || !nodes.contains(goal)) { // Must be valid args
 			return null;
@@ -38,9 +41,11 @@ public class RouteFinder {
 			int pathEstimate = 0;
 			int movesFromStart = 0;
 			
+			
 			// Iterate through frontier to find lowest cost junction
 			for (Entry<Junction, Integer> entry : frontier.entrySet())
 			{	
+
 				movesFromStart = entry.getValue();
 				pathEstimate = movesFromStart + getHeuristic(entry.getKey(), goal);
 				
@@ -58,12 +63,14 @@ public class RouteFinder {
 			}
 			
 			frontier.remove(currentJunct);
-			searched.add(currentJunct);
+			searched.add(currentJunct);		
 			
 			for (Junction neighbour : currentJunct.getNeighbours()) {
 				
+							
 				if ((neighbour == null) || (searched.contains(neighbour)))
 					continue;
+				
 				
 				if (!frontier.containsKey(neighbour)){
 					// For safety
@@ -81,19 +88,49 @@ public class RouteFinder {
 		return null;
 	}
 	
-	public ArrayList<Junction> makePath(Junction start, Junction current) {
+	public ArrayList<Direction> makePath(Junction start, Junction current) {
 		
-		ArrayList<Junction> completePath = new ArrayList<Junction>();
+		ArrayList<Junction> revPath = new ArrayList<Junction>();
 		
-		if((start.getX() != current.getX()) && (start.getY() != current.getY())) //If start node != goal node
-		{completePath.add(current);}
+		
+		if((start.getX() != current.getX()) || (start.getY() != current.getY())) //If start node != goal node
+		{revPath.add(current);}
 		
 		while ((start.getX() != current.getX()) || (start.getY() != current.getY())) {
-			completePath.add(cameFrom.get(current));
+			revPath.add(cameFrom.get(current));
 			current = cameFrom.get(current);
 		}
 		
-		return completePath;
+		Collections.reverse(revPath);
+		ArrayList<Direction> moveList = new ArrayList<Direction>();
+		
+		for (int i = 0; i < revPath.size() - 1; i++){
+			
+			Junction first = revPath.get(i);
+			Junction second = revPath.get(i + 1);
+			
+			if (second.getX() > first.getX())
+			{
+				moveList.add(Direction.X_POS);
+			}
+			
+			if (second.getX() < first.getX())
+			{
+				moveList.add(Direction.X_NEG);
+			}
+			
+			if (second.getY() > first.getY())
+			{
+				moveList.add(Direction.Y_POS);
+			}
+			
+			if (second.getY() < first.getY())
+			{
+				moveList.add(Direction.Y_NEG);
+			}
+		}
+		
+		return moveList;
 	}
 	
 	//Heuristic calculator in Manhattan distance

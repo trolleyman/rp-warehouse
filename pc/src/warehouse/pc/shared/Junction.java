@@ -28,4 +28,9 @@ public class Junction {
 	public Junction[] getNeighbours() {
 		return js;
 	}
+	
+	@Override
+	public String toString() {
+		return "[" + x + ", " + y + "]";
+	}
 }

@@ -8,13 +8,15 @@ public class RouteTest {
 		
 		Map testMap = TestMaps.TEST_MAP3;
 		
+		
+		
 		RouteFinder testSearch = new RouteFinder(testMap);
 		
-		ArrayList<Junction> testArray = testSearch.findRoute(testMap.getJunction(2, 1), testMap.getJunction(5, 3));
+		ArrayList<Direction> testArray = testSearch.findRoute(testMap.getJunction(0, 2), testMap.getJunction(4, 3));
 		
 		for (int i = 0; i < testArray.size(); i++)
 		{
-			System.out.println("[" + testArray.get(i).getX() + "," + testArray.get(i).getY() + "], ");
+			System.out.println("[" + testArray.get(i) + "], ");
 			
 		}
 		
