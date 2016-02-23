@@ -16,7 +16,7 @@ import lejos.pc.comm.NXTInfo;
  */
 public class BTServer {
 
-  private static int btProtocol;
+  public static int btProtocol;
   private NXTComm comm;
 
   /**
