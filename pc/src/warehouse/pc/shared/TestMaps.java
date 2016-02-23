@@ -23,6 +23,12 @@ public class TestMaps {
 			new Rectangle2D.Double(4.4, 2.4, 0.2, 0.6),
 			new Rectangle2D.Double(4.4, 0.0, 0.2, 0.6),
 		});
+		TEST_MAP4 = new Map(12, 8, new Rectangle2D.Double[] {
+			new Rectangle2D.Double(0.5, 0.5, 1.0, 5.0),
+			new Rectangle2D.Double(3.5, 0.5, 1.0, 5.0),
+			new Rectangle2D.Double(6.5, 0.5, 1.0, 5.0),
+			new Rectangle2D.Double(9.5, 0.5, 1.0, 5.0),
+		});
 	}
 	
 	/**
@@ -69,4 +75,25 @@ public class TestMaps {
 	 * </pre>
 	 */
 	public final static Map TEST_MAP3;
+	
+	/**
+	 * <pre>
+	 * +---+---+---+---+---+---+---+---+---+---+---+
+	 * |   |   |   |   |   |   |   |   |   |   |   |
+	 * +---+---+---+---+---+---+---+---+---+---+---+
+	 * |       |   |       |   |       |   |       |
+	 * +       +---+       +---+       +---+       +
+	 * |       |   |       |   |       |   |       |
+	 * +       +---+       +---+       +---+       +
+	 * |       |   |       |   |       |   |       |
+	 * +       +---+       +---+       +---+       +
+	 * |       |   |       |   |       |   |       |
+	 * +       +---+       +---+       +---+       +
+	 * |       |   |       |   |       |   |       |
+	 * +       +---+       +---+       +---+       +
+	 * |       |   |       |   |       |   |       |
+	 * +---+---+---+---+---+---+---+---+---+---+---+
+	 * </pre>
+	 */
+	public final static Map TEST_MAP4;
 }
