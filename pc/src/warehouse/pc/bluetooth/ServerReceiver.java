@@ -1,14 +1,16 @@
 package warehouse.pc.bluetooth;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
 public class ServerReceiver implements Runnable {
 
   private boolean running;
-  private ObjectInputStream fromRobot;
+  private DataInputStream fromRobot;
 
-  public ServerReceiver(ObjectInputStream _fromRobot) {
+  public ServerReceiver(DataInputStream _fromRobot) {
     this.fromRobot = _fromRobot;
   }
 
@@ -20,12 +22,13 @@ public class ServerReceiver implements Runnable {
       
       running = true;
       while (running) {
+        System.out.println("Waiting to read");
         String input = fromRobot.readUTF();
         System.out.println(input);
       }
       
     } catch (IOException e) {
-      e.printStackTrace();
+      System.err.println("An NXT disconnected: " + e.getMessage());
     }
   }
 
