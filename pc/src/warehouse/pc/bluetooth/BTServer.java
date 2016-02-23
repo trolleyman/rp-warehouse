@@ -67,9 +67,4 @@ public class BTServer {
     // Connection did not open so return false;
     return false;
   }
-
-  public static void main(String[] args) {
-    BTServer us = new BTServer();
-    us.open(new NXTInfo(btProtocol, "Dobot", "0016530FD7F4"));
-  }
 }
