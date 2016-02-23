@@ -3,7 +3,9 @@ package warehouse.nxt.bluetooth;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class NXTSender extends Thread {
+import lejos.util.Delay;
+
+public class NXTSender implements Runnable {
 
   private DataOutputStream toServer;
   private boolean running;
@@ -14,9 +16,17 @@ public class NXTSender extends Thread {
   
   @Override
   public void run() {
+    System.out.println("Sender running");
+    running = true;
+    
     try {
       
-      toServer.writeChars("Hello world!");
+      while (running) {
+        System.out.println("Send hi");
+        toServer.writeUTF("Hello world!");
+        toServer.flush();
+        Delay.msDelay(1000);
+      }
       
     } catch (IOException e) {
       e.printStackTrace();

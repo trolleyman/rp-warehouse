@@ -1,9 +1,9 @@
 package warehouse.pc.bluetooth;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
 
 import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
@@ -28,16 +28,12 @@ public class BTServer {
       // Add NXT names and IDs here
       NXTInfo[] nxts = { new NXTInfo(btProtocol, "Dobot", "0016530FD7F4") };
 
-      running = true;
-      while (running) {
-
         // Open the connection to the NXT and open data streams
         System.out.println("Tring to open a connection");
         if (comm.open(nxts[0])) {
-          System.out.println("Inside the if");
-          ObjectOutputStream toRobot = new ObjectOutputStream(comm.getOutputStream());
-          System.out.println("Doing from robot");
-          ObjectInputStream fromRobot = new ObjectInputStream(comm.getInputStream());
+          System.out.println("Making stream and reader");
+          DataOutputStream toRobot = new DataOutputStream(comm.getOutputStream());
+          DataInputStream fromRobot = new DataInputStream(comm.getInputStream());
 
           System.out.println("Creating threads");
           Thread sender = new Thread(new ServerSender());
@@ -47,12 +43,10 @@ public class BTServer {
           sender.start();
           receiver.start();
         }
-      }
 
     } catch (NXTCommException e) {
       e.printStackTrace();
-    } catch (IOException e) {
-      System.err.println("A NXT has disconnected!");
+      System.err.println("An NXT has disconnected");
     }
     
     System.out.println("Ended");
