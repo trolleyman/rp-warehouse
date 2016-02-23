@@ -1,9 +1,7 @@
 package warehouse.pc.bluetooth;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 
 public class ServerReceiver implements Runnable {
 
