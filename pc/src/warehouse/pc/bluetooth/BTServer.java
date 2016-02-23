@@ -1,54 +1,75 @@
 package warehouse.pc.bluetooth;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.InputStreamReader;
 
 import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
 
+/**
+ * The BT communication "server". Can create new thread pairs for NXTs.
+ * 
+ * @author Reece
+ *
+ */
 public class BTServer {
 
-  private static boolean running;
+  private static int btProtocol;
+  private NXTComm comm;
 
+  /**
+   * Setup the communication "server" for the current OS and driver.
+   */
   public BTServer() {
+    // Create the comms system for this OS and driver
+    btProtocol = NXTCommFactory.BLUETOOTH;
 
+    try {
+      comm = NXTCommFactory.createNXTComm(btProtocol);
+    } catch (NXTCommException e) {
+      e.printStackTrace();
+      System.err.println("Could not open the btCommunication");
+    }
+  }
+
+  /**
+   * Try to open a connection and threads to a NXT. First the in and output
+   * streams are made, then passed to the sender and receiver which are started
+   * in new threads.
+   * 
+   * @param NXTinfo The protocol type, name and id of the NXT.
+   * @return True if the connection was opened and false if not.
+   */
+  public boolean open(NXTInfo NXTinfo) {
+    try {
+
+      System.out.println("Tring to open a connection");
+      if (comm.open(NXTinfo)) {
+        System.out.println("Making stream and reader");
+        DataOutputStream toRobot = new DataOutputStream(comm.getOutputStream());
+        DataInputStream fromRobot = new DataInputStream(comm.getInputStream());
+
+        System.out.println("Creating threads");
+        Thread sender = new Thread(new ServerSender());
+        Thread receiver = new Thread(new ServerReceiver(fromRobot));
+
+        System.out.println("Starting threads");
+        sender.start();
+        receiver.start();
+        return true;
+      }
+    } catch (NXTCommException e) {
+      e.printStackTrace();
+    }
+
+    // Connection did not open so return false;
+    return false;
   }
 
   public static void main(String[] args) {
-    try {
-
-      // Create the comms system for this OS and driver
-      int btProtocol = NXTCommFactory.BLUETOOTH;
-      NXTComm comm = NXTCommFactory.createNXTComm(btProtocol);
-
-      // Add NXT names and IDs here
-      NXTInfo[] nxts = { new NXTInfo(btProtocol, "Dobot", "0016530FD7F4") };
-
-        // Open the connection to the NXT and open data streams
-        System.out.println("Tring to open a connection");
-        if (comm.open(nxts[0])) {
-          System.out.println("Making stream and reader");
-          DataOutputStream toRobot = new DataOutputStream(comm.getOutputStream());
-          DataInputStream fromRobot = new DataInputStream(comm.getInputStream());
-
-          System.out.println("Creating threads");
-          Thread sender = new Thread(new ServerSender());
-          Thread receiver = new Thread(new ServerReceiver(fromRobot));
-
-          System.out.println("Starting threads");
-          sender.start();
-          receiver.start();
-        }
-
-    } catch (NXTCommException e) {
-      e.printStackTrace();
-      System.err.println("An NXT has disconnected");
-    }
-    
-    System.out.println("Ended");
+    BTServer us = new BTServer();
+    us.open(new NXTInfo(btProtocol, "Dobot", "0016530FD7F4"));
   }
 }
