@@ -11,8 +11,13 @@ public class NXTClient {
     System.out.println("NXTClient");
     System.out.println("Waiting for BT");
     BTConnection connection = Bluetooth.waitForConnection();
-    System.out.println("Connected!");
+    System.out.println("Got a connection!");
+    
+    System.out.println("Creating streams");
+    
     Button.waitForAnyPress();
+    connection.close();
+    System.exit(0);
   }
 
 }
