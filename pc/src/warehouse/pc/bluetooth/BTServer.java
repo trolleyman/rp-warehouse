@@ -39,20 +39,20 @@ public class BTServer {
    * streams are made, then passed to the sender and receiver which are started
    * in new threads.
    * 
-   * @param NXTinfo The protocol type, name and id of the NXT.
+   * @param nxt The protocol type, name and id of the NXT.
    * @return True if the connection was opened and false if not.
    */
-  public boolean open(NXTInfo NXTinfo) {
+  public boolean open(NXTInfo nxt) {
     try {
 
       System.out.println("Tring to open a connection");
-      if (comm.open(NXTinfo)) {
+      if (comm.open(nxt)) {
         System.out.println("Making stream and reader");
         DataOutputStream toRobot = new DataOutputStream(comm.getOutputStream());
         DataInputStream fromRobot = new DataInputStream(comm.getInputStream());
 
         System.out.println("Creating threads");
-        Thread sender = new Thread(new ServerSender());
+        Thread sender = new Thread(new ServerSender(toRobot));
         Thread receiver = new Thread(new ServerReceiver(fromRobot));
 
         System.out.println("Starting threads");
