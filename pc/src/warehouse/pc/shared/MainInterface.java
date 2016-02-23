@@ -31,7 +31,7 @@ public class MainInterface {
 	
 	private MainInterface() {
 		robotListeners = new ArrayList<>();
-		currentState = new State(TestMaps.TEST_MAP3, new Robot[0]);
+		currentState = new State(TestMaps.TEST_MAP4, new Robot[0]);
 	}
 	
 	/**

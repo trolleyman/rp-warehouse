@@ -75,7 +75,6 @@ public class Gui implements Runnable, RobotListener {
 			}
 		});
 		
-		
 		JPanel panel = new JPanel();
 		//panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
 		//panel.add(createToolbar());
