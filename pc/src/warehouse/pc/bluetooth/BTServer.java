@@ -34,12 +34,16 @@ public class BTServer {
         // Open the connection to the NXT and open data streams
         System.out.println("Tring to open a connection");
         if (comm.open(nxts[0])) {
+          System.out.println("Inside the if");
           ObjectOutputStream toRobot = new ObjectOutputStream(comm.getOutputStream());
+          System.out.println("Doing from robot");
           ObjectInputStream fromRobot = new ObjectInputStream(comm.getInputStream());
 
+          System.out.println("Creating threads");
           Thread sender = new Thread(new ServerSender());
           Thread receiver = new Thread(new ServerReceiver(fromRobot));
 
+          System.out.println("Starting threads");
           sender.start();
           receiver.start();
         }
