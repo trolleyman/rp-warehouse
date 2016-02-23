@@ -14,7 +14,8 @@ public class ItemList implements FileList {
 	private ArrayList<Item> itemList;
 	private LocationList locList;
 	
-	public ItemList(String _fileLocation, LocationList locList) {
+	public ItemList(String _fileLocation, LocationList _locList) {
+		this.locList = _locList;
 		parseFile(_fileLocation);
 	}
 	

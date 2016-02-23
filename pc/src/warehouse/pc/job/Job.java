@@ -34,4 +34,14 @@ public class Job {
 	public float getTotalReward() {
 		return this.totalReward;
 	}
+	
+	public String toString() {
+		String result = String.valueOf(id);
+		for(int i = 0; i < items.size(); i++) {
+			result += ", " + items.get(i).getName() + ", " + items.get(i).getQuantity();
+		}
+		result += ", " + totalWeight + ", " + totalReward;
+		
+		return result;
+	}
 }

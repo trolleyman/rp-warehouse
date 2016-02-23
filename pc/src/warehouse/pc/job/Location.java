@@ -26,4 +26,8 @@ public class Location {
 	public char getItemName() {
 		return this.itemName;
 	}
+	
+	public String toString() {
+		return x + ", " + y + ", " + itemName;
+	}
 }

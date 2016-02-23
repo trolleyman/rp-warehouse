@@ -38,4 +38,8 @@ public class Item {
 	public int getY() {
 		return this.y;
 	}
+	
+	public String toString() {
+		return name + ", " + reward + ", " + weight + ", " + x + ", " + ", " + y;
+	}
 }

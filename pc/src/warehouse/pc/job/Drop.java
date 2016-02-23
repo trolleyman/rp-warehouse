@@ -15,14 +15,10 @@ public class Drop {
 	public static int DROPX;
 	public static int DROPY;
 	
-	public Drop(String _fileLocation) {
-		parseFile(_fileLocation);
-	}
-	
 	/**
 	 * Takes a csv file and extracts the X and Y co-ordinates of the drop zone.
 	 */
-	private void parseFile(String _fileLocation) {
+	public static void setDropPoint(String _fileLocation) {
 		BufferedReader br = null;
 		FileReader fr;
 		String line;
