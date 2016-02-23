@@ -9,15 +9,16 @@ import java.util.ArrayList;
 /**
  * A list of items to be available for pickup in jobs.
  */
-public class ItemList {
+public class ItemList implements FileList {
 
 	private ArrayList<Item> itemList;
+	private LocationList locList;
 	
-	public ItemList(String _fileLocation) {
+	public ItemList(String _fileLocation, LocationList locList) {
 		parseFile(_fileLocation);
 	}
 	
-	public ArrayList<Item> getItemList() {
+	public ArrayList<Item> getList() {
 		return this.itemList;
 	}
 	
@@ -44,11 +45,35 @@ public class ItemList {
 				float reward = Float.valueOf(splitLine[1]);
 				float weight = Float.valueOf(splitLine[2]);
 				
-				Item item = new Item(name, reward, weight);
+				//Find x, y coordinates of item from name
+				boolean found = false;
+				int count = 0;
+				while (!found && count < locList.getList().size()) {
+					if(name == locList.getList().get(count).getItemName()) {
+						found = true;
+					} else {
+						count++;
+					}
+				}
+				
+				//If found, set co-ords, else throw an exception.
+				//The exception shouldn't be thrown if the files are correct.
+				int x;
+				int y;
+				if (found) {
+					x = locList.getList().get(count).getX();
+					y = locList.getList().get(count).getY();
+				} else {
+					throw new ItemNotInListException(String.valueOf(name));
+				}
+				
+				Item item = new Item(name, reward, weight, x, y);
 				itemList.add(item);
 				
 				line = br.readLine();
 			}
+		} catch (ItemNotInListException e) {
+			System.err.println("Item " + e + " not found in location file");
 		} catch (FileNotFoundException e) {
 			System.err.println("Item file not found: " + e);
 		} catch (IOException e) {

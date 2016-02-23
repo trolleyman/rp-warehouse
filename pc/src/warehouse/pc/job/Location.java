@@ -7,12 +7,12 @@ public class Location {
 	
 	private final int x;
 	private final int y;
-	private final Item item;
+	private final char itemName;
 	
-	public Location(int _x, int _y, Item _item) {
+	public Location(int _x, int _y, char _itemName) {
 		this.x = _x;
 		this.y = _y;
-		this.item = _item;
+		this.itemName = _itemName;
 	}
 	
 	public int getX() {
@@ -23,7 +23,7 @@ public class Location {
 		return this.y;
 	}
 	
-	public Item getItem() {
-		return this.item;
+	public char getItemName() {
+		return this.itemName;
 	}
 }

@@ -9,17 +9,17 @@ import java.io.IOException;
 /**
  * A list of jobs to be selected by the robot.
  */
-public class JobList {
+public class JobList implements FileList {
 
 	private ArrayList<Job> jobList;
 	private ArrayList<Item> itemList;
 	
 	public JobList(String _fileLocation, ItemList items) {
-		this.itemList = items.getItemList();
+		this.itemList = items.getList();
 		parseFile(_fileLocation);
 	}
 	
-	public ArrayList<Job> getJobList() {
+	public ArrayList<Job> getList() {
 		return this.jobList;
 	}
 	
