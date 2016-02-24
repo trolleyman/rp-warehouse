@@ -1,9 +1,12 @@
 package warehouse.pc.gui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
@@ -18,10 +21,20 @@ import warehouse.pc.shared.State;
 import warehouse.shared.robot.Robot;
 
 @SuppressWarnings("serial")
-public class MapComponent extends JComponent {
+public class MapComponent extends JComponent implements MouseListener {
 	private State state;
+	private double xScale = 1.0;
+	private double yScale = 1.0;
 	
-	public MapComponent() {
+	private double xTrans;
+	private double yTrans;
+	
+	private Gui gui;
+	
+	public MapComponent(Gui _gui) {
+		super();
+		this.gui = _gui;
+		addMouseListener(this);
 		state = MainInterface.get().getCurrentState();
 	}
 
@@ -39,8 +52,8 @@ public class MapComponent extends JComponent {
 		int mapWidth = state.getMap().getWidth() - 1;
 		int mapHeight = state.getMap().getHeight() - 1;
 		
-		double xScale = width / mapWidth;
-		double yScale = height / mapHeight;
+		xScale = width / mapWidth;
+		yScale = height / mapHeight;
 		xScale = Math.min(xScale, yScale);
 		yScale = xScale;
 		
@@ -52,25 +65,34 @@ public class MapComponent extends JComponent {
 		AffineTransform at = new AffineTransform();
 		at.setToScale(1.0, -1.0);
 		
+		xTrans = padding * 1.75;
+		yTrans = padding * 0.5 + yScale * mapHeight;
 		g2.translate(padding * 1.75, padding * 0.5);
 		g2.translate(0.0, yScale * mapHeight);
 		g2.transform(at);
 		
-		paintGrid(g2, xScale, yScale);
-		paintJunctions(g2, xScale, yScale);
-		paintWalls(g2, xScale, yScale);
-		paintRobots(g2, xScale, yScale);
+		paintGrid(g2);
+		paintJunctions(g2);
+		paintWalls(g2);
+		paintRobots(g2);
 	}
 	
-	private void paintRobots(Graphics2D _g2, double _xScale, double _yScale) {
+	private final double ROBOT_W = 0.4;
+	private final double ROBOT_H = 0.6;
+	private Robot selected;
+	
+	private void paintRobots(Graphics2D _g2) {
 		_g2.setColor(Color.BLUE);
 		for (Robot robot : state.getRobots()) {
 			Graphics2D g = (Graphics2D) _g2.create();
+			if (robot == selected) {
+				g.setStroke(new BasicStroke(2));
+			}
 			
-			double x = robot.getX() * _xScale;
-			double y = robot.getY() * _yScale;
-			double w = 0.4 * _xScale;
-			double h = 0.6 * _yScale;
+			double x = robot.getX() * xScale;
+			double y = robot.getY() * yScale;
+			double w = ROBOT_W * xScale;
+			double h = ROBOT_H * yScale;
 			
 			g.translate(x, y);
 			
@@ -78,7 +100,7 @@ public class MapComponent extends JComponent {
 			fg.setColor(Color.BLACK);
 			AffineTransform trans = new AffineTransform();
 			trans.scale(1.0, -1.0);
-			trans.scale(_xScale * 0.015, _yScale * 0.015);
+			trans.scale(xScale * 0.015, yScale * 0.015);
 			fg.transform(trans);
 			int nameW = g.getFontMetrics().stringWidth(robot.getName());
 			fg.translate(- nameW / 2.0, 14.0);
@@ -108,16 +130,16 @@ public class MapComponent extends JComponent {
 		}
 	}
 
-	private void paintGrid(Graphics2D _g2, double _xScale, double _yScale) {
+	private void paintGrid(Graphics2D _g2) {
 		ArrayList<Line2D> lines = state.getMap().getGrid();
 		_g2.setColor(Color.BLACK);
 		for (Line2D line : lines) {
-			_g2.drawLine((int) (line.getX1() * _xScale), (int) (line.getY1() * _yScale),
-						 (int) (line.getX2() * _xScale), (int) (line.getY2() * _yScale));
+			_g2.drawLine((int) (line.getX1() * xScale), (int) (line.getY1() * yScale),
+						 (int) (line.getX2() * xScale), (int) (line.getY2() * yScale));
 		}
 		
 		Graphics2D fg = (Graphics2D) _g2.create();
-		fg.scale(_xScale * 0.015, _yScale * 0.015);
+		fg.scale(xScale * 0.015, yScale * 0.015);
 		fg.scale(1.0, -1.0);
 		for (int x = 0; x < state.getMap().getWidth(); x++) {
 			fg.drawString(Integer.toString(x), (int)(x * 66.666666666666667 - 3.0), (int)(50.0));
@@ -128,7 +150,7 @@ public class MapComponent extends JComponent {
 		fg.dispose();
 	}
 	
-	private void paintJunctions(Graphics2D _g2, double _xScale, double _yScale) {
+	private void paintJunctions(Graphics2D _g2) {
 		for (int y = 0; y < state.getMap().getHeight(); y++) {
 			for (int x = 0; x < state.getMap().getWidth(); x++) {
 				Junction j = state.getMap().getJunction(x, y);
@@ -137,14 +159,14 @@ public class MapComponent extends JComponent {
 				
 				double w = 7.0;
 				double h = 7.0;
-				_g2.fillOval((int) (j.getX() * _xScale - w / 2.0) + 1,
-							 (int) (j.getY() * _yScale - h / 2.0) + 1,
+				_g2.fillOval((int) (j.getX() * xScale - w / 2.0) + 1,
+							 (int) (j.getY() * yScale - h / 2.0) + 1,
 							 (int) (w), (int) (h));
 			}
 		}
 	}
 	
-	private void paintWalls(Graphics2D _g2, double _xScale, double _yScale) {
+	private void paintWalls(Graphics2D _g2) {
 		Rectangle2D.Double[] walls = state.getMap().getWalls();
 		_g2.setColor(Color.RED);
 		
@@ -154,17 +176,67 @@ public class MapComponent extends JComponent {
 			double maxX = wall.getMaxX();
 			double maxY = wall.getMaxY();
 			// Left
-			_g2.drawLine((int) (minX * _xScale), (int) (minY * _yScale),
-						 (int) (minX * _xScale), (int) (maxY * _yScale));
+			_g2.drawLine((int) (minX * xScale), (int) (minY * yScale),
+						 (int) (minX * xScale), (int) (maxY * yScale));
 			// Right
-			_g2.drawLine((int) (maxX * _xScale), (int) (minY * _yScale),
-						 (int) (maxX * _xScale), (int) (maxY * _yScale));
+			_g2.drawLine((int) (maxX * xScale), (int) (minY * yScale),
+						 (int) (maxX * xScale), (int) (maxY * yScale));
 			// Top
-			_g2.drawLine((int) (minX * _xScale), (int) (minY * _yScale),
-						 (int) (maxX * _xScale), (int) (minY * _yScale));
+			_g2.drawLine((int) (minX * xScale), (int) (minY * yScale),
+						 (int) (maxX * xScale), (int) (minY * yScale));
 			// Bottom
-			_g2.drawLine((int) (minX * _xScale), (int) (maxY * _yScale),
-						 (int) (maxX * _xScale), (int) (maxY * _yScale));
+			_g2.drawLine((int) (minX * xScale), (int) (maxY * yScale),
+						 (int) (maxX * xScale), (int) (maxY * yScale));
 		}
 	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// Get if a robot was clicked on.
+		selected = null;
+		for (Robot robot : MainInterface.get().getCurrentState().getRobots()) {
+			double x = e.getX();
+			double y = e.getY();
+			
+			double cx = robot.getX() * xScale + xTrans;
+			double cy = -robot.getY() * yScale + yTrans;
+			
+			double s = Math.sin(Math.toRadians(robot.getFacing()));
+			double c = Math.cos(Math.toRadians(robot.getFacing()));
+			
+			// translate point back to origin:
+			x -= cx;
+			y -= cy;
+			
+			// rotate point
+			double xnew = x * c - y * s;
+			double ynew = x * s + y * c;
+			
+			// translate point back:
+			x = xnew + cx;
+			y = ynew + cy;
+			
+			double w = ROBOT_W * xScale;
+			double h = ROBOT_H * yScale;
+			
+			double w2 = w / 2.0;
+			double h2 = h / 2.0;
+			
+			if (x >= cx - w2 && x <= cx + w2
+			 && y >= cy - h2 && y <= cy + h2) {
+				// Intersection!
+				selected = robot;
+				break;
+			}
+		}
+		
+		// Select holds the robot that was clicked on.
+		gui.selectRobot(selected);
+		this.repaint();
+	}
+	
+	@Override public void mouseEntered(MouseEvent e) {}
+	@Override public void mouseExited(MouseEvent e) {}
+	@Override public void mousePressed(MouseEvent e) {}
+	@Override public void mouseReleased(MouseEvent e) {}
 }

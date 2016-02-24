@@ -9,9 +9,12 @@ import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
+import warehouse.pc.shared.MainInterface;
 
 @SuppressWarnings("serial")
 public class BluetoothSelector extends JComboBox<String> implements Runnable {
+	private final String NO_ROBOTS_DETECTED = "No robots detected.";
+	
 	private NXTInfo[] oldInfos;
 	private NXTInfo[] infos;
 
@@ -22,6 +25,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 		infos = new NXTInfo[0];
 		
 		//setMaximumSize(new Dimension(100, 10));
+		this.addItem(NO_ROBOTS_DETECTED);
 		
 		Thread t = new Thread(this);
 		t.setDaemon(true);
@@ -31,12 +35,12 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	public void connect() {
 		synchronized (this) {
 			int i = this.getSelectedIndex();
-			if (i == -1)
+			if (i == -1 || infos.length == 0 || i >= infos.length)
 				return;
 			
-			//NXTInfo info = infos[i];
-			
+			NXTInfo info = infos[i];
 			// Call connect() in communication module to connect to a new robot.
+			MainInterface.get().getServer().open(info);
 		}
 	}
 	
@@ -83,7 +87,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 			}
 			
 			if (infos.length == 0) {
-				this.addItem("No robots detected.");
+				this.addItem(NO_ROBOTS_DETECTED);
 			}
 			
 			repaint();
