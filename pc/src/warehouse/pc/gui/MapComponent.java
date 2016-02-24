@@ -159,8 +159,8 @@ public class MapComponent extends JComponent implements MouseListener {
 				
 				double w = 7.0;
 				double h = 7.0;
-				_g2.fillOval((int) (j.getX() * xScale - w / 2.0) + 1,
-							 (int) (j.getY() * yScale - h / 2.0) + 1,
+				_g2.fillOval((int) (j.getX() * xScale - w / 2.0) + 0,
+							 (int) (j.getY() * yScale - h / 2.0) + 0,
 							 (int) (w), (int) (h));
 			}
 		}

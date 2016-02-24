@@ -55,6 +55,7 @@ public class RobotEditor extends JPanel {
 				if (selectedRobot != null) {
 					selectedRobot.setX((double)xSpinner.getValue());
 					selectedRobot.setY((double)ySpinner.getValue());
+					MainInterface.get().updateRobot(selectedRobot);
 				}
 			}
 		});
@@ -62,7 +63,8 @@ public class RobotEditor extends JPanel {
 		JLabel xLabel = new JLabel("x:");
 		JLabel yLabel = new JLabel("y:");
 		
-		JLabel headingLabel = new JLabel("heading:");
+		JLabel headingLabel = new JLabel("Heading:");
+		JLabel degrees = new JLabel("°");
 		headingSpinner = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 360.0, 10.0));
 		
 		headingButton = new JButton("Set Heading");
@@ -71,6 +73,7 @@ public class RobotEditor extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if (selectedRobot != null) {
 					selectedRobot.setFacing((double)headingSpinner.getValue());
+					MainInterface.get().updateRobot(selectedRobot);
 				}
 			}
 		});
@@ -82,6 +85,7 @@ public class RobotEditor extends JPanel {
 		this.add(ySpinner);
 		this.add(posButton);
 		this.add(headingLabel);
+		this.add(degrees);
 		this.add(headingSpinner);
 		this.add(headingButton);
 		
@@ -96,7 +100,9 @@ public class RobotEditor extends JPanel {
 		layout.putConstraint(SpringLayout.NORTH, posButton, 6, SpringLayout.SOUTH, ySpinner);
 		layout.putConstraint(SpringLayout.NORTH, headingSpinner, 6, SpringLayout.SOUTH, posButton);
 		layout.putConstraint(SpringLayout.NORTH, headingLabel, 3, SpringLayout.NORTH, headingSpinner);
+		layout.putConstraint(SpringLayout.NORTH, degrees, 3, SpringLayout.NORTH, headingSpinner);
 		layout.putConstraint(SpringLayout.WEST, headingSpinner, 6, SpringLayout.EAST, headingLabel);
+		layout.putConstraint(SpringLayout.WEST, degrees, 3, SpringLayout.EAST, headingSpinner);
 		layout.putConstraint(SpringLayout.NORTH, headingButton, 6, SpringLayout.SOUTH, headingSpinner);
 		
 		setPreferredSize(new Dimension(150, 150));

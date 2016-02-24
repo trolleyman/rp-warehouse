@@ -14,13 +14,11 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
-import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import warehouse.pc.shared.MainInterface;
 import warehouse.pc.shared.RobotListener;
-import warehouse.pc.shared.State;
 import warehouse.shared.robot.Robot;
 
 public class Gui implements Runnable, RobotListener {
@@ -39,19 +37,6 @@ public class Gui implements Runnable, RobotListener {
 		
 		Gui g = new Gui();
 		g.run();
-		Timer t = new Timer(20, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent _e) {
-				State s = MainInterface.get().getCurrentState();
-				Robot[] robots = s.getRobots();
-				for (Robot r : robots) {
-					r.setFacing(r.getFacing() + 1.0);
-					MainInterface.get().updateRobot(r);
-					break;
-				}
-			}
-		});
-		t.start();
 	}
 	
 	private JFrame frame;
