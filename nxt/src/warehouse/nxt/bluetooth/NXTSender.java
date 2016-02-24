@@ -14,33 +14,33 @@ import lejos.util.Delay;
  */
 public class NXTSender implements Runnable {
 
-  private DataOutputStream toServer;
-  private boolean running;
+	private DataOutputStream toServer;
+	private boolean running;
 
-  /**
-   * Create the NXTSender.
-   * @param _toServer The DataOutputStream to the server.
-   */
-  public NXTSender(DataOutputStream _toServer) {
-    this.toServer = _toServer;
-  }
+	/**
+	 * Create the NXTSender.
+	 * @param _toServer The DataOutputStream to the server.
+	 */
+	public NXTSender(DataOutputStream _toServer) {
+		this.toServer = _toServer;
+	}
 
-  @Override
-  public void run() {
-    System.out.println("Sender running");
-    running = true;
+	@Override
+	public void run() {
+		System.out.println("Sender running");
+		running = true;
 
-    try {
+		try {
 
-      while (running) {
-        System.out.println("Send hi");
-        toServer.writeUTF("Hello world!");
-        toServer.flush();
-        Delay.msDelay(1000);
-      }
-      
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
+			while (running) {
+				System.out.println("Send hi");
+				toServer.writeUTF("Hello world!");
+				toServer.flush();
+				Delay.msDelay(1000);
+			}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

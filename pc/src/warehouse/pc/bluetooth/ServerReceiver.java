@@ -13,41 +13,41 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class ServerReceiver implements Runnable {
 
-  private boolean running;
-  private DataInputStream fromRobot;
-  private LinkedBlockingQueue<String> fromRobotQueue;
+	private boolean running;
+	private DataInputStream fromRobot;
+	private LinkedBlockingQueue<String> fromRobotQueue;
 
-  /**
-   * Create the receiver.
-   * 
-   * @param fromRobot The DataInputStream from the NXT.
-   * @param fromRobotQueue The queue to put received messages into.
-   */
-  public ServerReceiver(DataInputStream fromRobot, LinkedBlockingQueue<String> fromRobotQueue) {
-    this.fromRobot = fromRobot;
-    this.fromRobotQueue = fromRobotQueue;
-  }
+	/**
+	 * Create the receiver.
+	 * 
+	 * @param fromRobot The DataInputStream from the NXT.
+	 * @param fromRobotQueue The queue to put received messages into.
+	 */
+	public ServerReceiver(DataInputStream fromRobot, LinkedBlockingQueue<String> fromRobotQueue) {
+		this.fromRobot = fromRobot;
+		this.fromRobotQueue = fromRobotQueue;
+	}
 
-  @Override
-  public void run() {
-    try {
+	@Override
+	public void run() {
+		try {
 
-      System.out.println("Receiver running");
+			System.out.println("Receiver running");
 
-      running = true;
-      while (running) {
-        System.out.println("Waiting to read");
-        String input = fromRobot.readUTF();
-        System.out.println(input);
-        fromRobotQueue.put(input);
-      }
+			running = true;
+			while (running) {
+				System.out.println("Waiting to read");
+				String input = fromRobot.readUTF();
+				System.out.println(input);
+				fromRobotQueue.put(input);
+			}
 
-    } catch (IOException e) {
-      System.err.println("An NXT disconnected: " + e.getMessage());
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-      System.err.println("Receiver was interupted for some reason");
-    }
-  }
+		} catch (IOException e) {
+			System.err.println("An NXT disconnected: " + e.getMessage());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			System.err.println("Receiver was interupted for some reason");
+		}
+	}
 
 }
