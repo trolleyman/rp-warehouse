@@ -1,14 +1,11 @@
+package warehouse.nxt;
 
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
-import javax.microedition.lcdui.TextField;
 
 import lejos.nxt.Button;
-import lejos.nxt.LCD;
 import lejos.nxt.Sound;
 import lejos.util.Delay;
-import lejos.util.Timer;
-import lejos.util.TimerListener;
 
 /**
  * A class for the robot interface
@@ -22,7 +19,6 @@ public class RobotDisplay {
 	// about current state
 	private boolean inDropOff = false; // Whether the robot is in drop off point
 	private boolean inPickUp = false; // Whether the robot is in pick up point
-	private Timer timeout;
 
 	// about the job
 	private int counter = 0;
@@ -120,19 +116,19 @@ public class RobotDisplay {
 			// Robot will check if items are loaded properly, and replies accordingly.
 			if (counter == quantity) {
 				g.clear();
-				g.drawString("Thank", 49, 15, g.HCENTER);
-				g.drawString("You!", 49, 31, g.HCENTER);
+				g.drawString("Thank", 49, 15, Graphics.HCENTER);
+				g.drawString("You!", 49, 31, Graphics.HCENTER);
 				Sound.beepSequenceUp();
 			} else if (counter < quantity) {
 				g.clear();
-				g.drawString("Need", 49, 15, g.HCENTER);
-				g.drawString("More", 49, 31, g.HCENTER);
+				g.drawString("Need", 49, 15, Graphics.HCENTER);
+				g.drawString("More", 49, 31, Graphics.HCENTER);
 				Sound.beepSequence();
 			} else {
 				g.clear();
-				g.drawString("Over", 49, 6, g.HCENTER);
-				g.drawString("The", 49, 23, g.HCENTER);
-				g.drawString("Limit!", 49, 39, g.HCENTER);
+				g.drawString("Over", 49, 6, Graphics.HCENTER);
+				g.drawString("The", 49, 23, Graphics.HCENTER);
+				g.drawString("Limit!", 49, 39, Graphics.HCENTER);
 				Sound.beepSequence();
 			}
 			g.setFont(Font.getDefaultFont());
@@ -161,8 +157,8 @@ public class RobotDisplay {
 				this.inDropOff = false;
 				g.clear();
 				g.setFont(Font.getLargeFont());
-				g.drawString("You're", 49, 15, g.HCENTER);
-				g.drawString("Welcome!", 49, 31, g.HCENTER);		
+				g.drawString("You're", 49, 15, Graphics.HCENTER);
+				g.drawString("Welcome!", 49, 31, Graphics.HCENTER);		
 				g.setFont(Font.getDefaultFont());
 				Sound.beepSequenceUp();
 				Delay.msDelay(2000);
@@ -177,7 +173,7 @@ public class RobotDisplay {
 	////////////////////////////////////////////////////////////////////////
 	private void drawMainMenu() {
 		// Draws the robot name on top of the screen
-		g.drawString(robotName, 49, 2, g.HCENTER);
+		g.drawString(robotName, 49, 2, Graphics.HCENTER);
 		
 		// Draws the base
 		g.drawRect(0, 0, 99, 10);
@@ -186,16 +182,16 @@ public class RobotDisplay {
 		
 		// Draws the action box 
 		g.setFont(Font.getSmallFont());
-		g.drawString("ACTION", 26, 13, g.HCENTER);
+		g.drawString("ACTION", 26, 13, Graphics.HCENTER);
 		g.drawRect(10, 20, 30, 30);
-		g.drawString("(" + xCo + ", " + yCo + ")", 26, 54, g.HCENTER);
+		g.drawString("(" + xCo + ", " + yCo + ")", 26, 54, Graphics.HCENTER);
 		
 		// Draws the job status box
-		g.drawString("JOB STATUS", 76, 13, g.HCENTER);
-		g.drawString(" Current: ", 76, 27, g.HCENTER);
-		g.drawString(jobName, 76, 35, g.HCENTER);
-		g.drawString(" Completed: ", 76, 48, g.HCENTER);
-		g.drawString("" + completedJobs, 76, 55, g.HCENTER);
+		g.drawString("JOB STATUS", 76, 13, Graphics.HCENTER);
+		g.drawString(" Current: ", 76, 27, Graphics.HCENTER);
+		g.drawString(jobName, 76, 35, Graphics.HCENTER);
+		g.drawString(" Completed: ", 76, 48, Graphics.HCENTER);
+		g.drawString("" + completedJobs, 76, 55, Graphics.HCENTER);
 		g.setFont(Font.getDefaultFont());
 	}
 	
