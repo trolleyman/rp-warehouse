@@ -11,7 +11,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SpringLayout;
-import javax.swing.SwingUtilities;
 
 import warehouse.pc.shared.MainInterface;
 import warehouse.shared.robot.Robot;
