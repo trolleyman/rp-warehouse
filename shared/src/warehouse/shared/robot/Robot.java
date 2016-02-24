@@ -63,5 +63,12 @@ public class Robot {
 	/**
 	 * Sets the current direction of the robot.
 	 */
-	public void setFacing(double _facing) { this.facing = _facing; }
+	public void setFacing(double _facing) {
+		this.facing = _facing;
+		
+		facing = facing % 360.0;
+		if (facing < 0.0)
+			facing = facing + 360.0;
+		
+	}
 }
