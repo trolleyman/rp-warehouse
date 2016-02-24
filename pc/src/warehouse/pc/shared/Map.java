@@ -1,8 +1,7 @@
-package warehouse.shared;
+package warehouse.pc.shared;
 
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D.Double;
 import java.util.ArrayList;
 
 /**
@@ -35,13 +34,13 @@ public class Map {
 			for (int x = 0; x < width; x++) {
 				if (js[y][x] != null) {
 					if (y + 1 < height && !rectanglesIntersectLine(walls, x, y, x, y + 1))
-						js[y][x].setJunction(Direction.YPos, js[y + 1][x]);
+						js[y][x].setJunction(Direction.Y_POS, js[y + 1][x]);
 					if (y - 1 > 0      && !rectanglesIntersectLine(walls, x, y, x, y - 1))
-						js[y][x].setJunction(Direction.YNeg, js[y - 1][x]);
+						js[y][x].setJunction(Direction.Y_NEG, js[y - 1][x]);
 					if (x + 1 < width  && !rectanglesIntersectLine(walls, x, y, x + 1, y))
-						js[y][x].setJunction(Direction.XPos, js[y][x + 1]);
+						js[y][x].setJunction(Direction.X_POS, js[y][x + 1]);
 					if (x - 1 > 0      && !rectanglesIntersectLine(walls, x, y, x - 1, y + 1))
-						js[y][x].setJunction(Direction.XNeg, js[y][x - 1]);
+						js[y][x].setJunction(Direction.X_NEG, js[y][x - 1]);
 				}
 			}
 		}
@@ -56,8 +55,8 @@ public class Map {
 				Junction j = js[y][x];
 				if (j == null)
 					continue;
-				Junction ypos = js[y][x].getJunction(Direction.YPos);
-				Junction xpos = js[y][x].getJunction(Direction.XPos);
+				Junction ypos = js[y][x].getJunction(Direction.Y_POS);
+				Junction xpos = js[y][x].getJunction(Direction.X_POS);
 				if (ypos != null)
 					lines.add(new Line2D.Double(j.getX(), j.getY(), ypos.getX(), ypos.getY()));
 				if (xpos != null)

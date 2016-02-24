@@ -1,4 +1,4 @@
-package warehouse.shared;
+package warehouse.pc.shared;
 
 import java.util.ArrayList;
 import java.util.Arrays;

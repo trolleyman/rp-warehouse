@@ -1,7 +1,8 @@
-package warehouse.shared;
+package warehouse.pc.shared;
 
 import java.util.ArrayList;
 
+import warehouse.pc.bluetooth.BTServer;
 import warehouse.shared.robot.Robot;
 
 /**
@@ -13,25 +14,34 @@ import warehouse.shared.robot.Robot;
  * Later this will also hold the current jobs left to process, the jobs being processed, and the
  * jobs that have been completed.
  */
-public class Server {
-	private volatile static Object serverInitLock = new Object();
-	private volatile static Server server = null;
+public class MainInterface {
+	private volatile static Object interfaceInitLock = new Object();
+	private volatile static MainInterface mainInterface = null;
 	
-	public static Server get() {
-		synchronized (serverInitLock) {
-			if (server == null) {
-				server = new Server();
+	public static MainInterface get() {
+		synchronized (interfaceInitLock) {
+			if (mainInterface == null) {
+				mainInterface = new MainInterface();
 			}
-			return server;
+			return mainInterface;
 		}
 	}
 	
 	private ArrayList<RobotListener> robotListeners;
 	private State currentState;
+	private BTServer server;
 	
-	private Server() {
+	private MainInterface() {
+		server = new BTServer();
 		robotListeners = new ArrayList<>();
-		currentState = TestStates.TEST_STATE3;
+		currentState = TestStates.TEST_STATE3;//new State(TestMaps.TEST_MAP4, new Robot[0]);
+	}
+	
+	/**
+	 * Gets the current server that has been initialized.
+	 */
+	public BTServer getServer() {
+		return server;
 	}
 	
 	/**
@@ -42,7 +52,8 @@ public class Server {
 	}
 	
 	/**
-	 * Updated a robot {@code _r} with new information.
+	 * Updated a robot {@code _r} with new information. If the robot is not recognized, a new robot is
+	 * inserted into the array.
 	 */
 	public synchronized void updateRobot(Robot _r) {
 		currentState.updateRobot(_r);
@@ -63,9 +74,9 @@ public class Server {
 	 * e.g. telling all robots to shut down.
 	 */
 	public void close() {
-		synchronized (serverInitLock) {
+		synchronized (interfaceInitLock) {
 			synchronized (this) {
-				server = null;
+				mainInterface = null;
 			}
 		}
 	}
