@@ -9,6 +9,10 @@ public class State {
 	private Map map;
 	private ArrayList<Robot> robots;
 	
+	public State(Map _map) {
+		this.map = _map;
+		this.robots = new ArrayList<>();
+	}
 	public State(Map _map, ArrayList<Robot> _robots) {
 		this.map = _map;
 		this.robots = new ArrayList<>();
