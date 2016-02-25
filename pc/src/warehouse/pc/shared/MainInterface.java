@@ -47,10 +47,10 @@ public class MainInterface {
 		
 		locList = new LocationList("locations.csv");
 		itemList = new ItemList("items.csv", locList);
-		for (Item i : itemList.getList()) {
-			System.out.println(i.getName() + ": reward:" + i.getReward()
-			+ ", weight:" + i.getWeight() + ", [" + i.getX() + "," + i.getY() + "]");
-		}
+//		for (Item i : itemList.getList()) {
+//			System.out.println(i.getName() + ": reward:" + i.getReward()
+//			+ ", weight:" + i.getWeight() + ", [" + i.getX() + "," + i.getY() + "]");
+//		}
 		jobList = new JobList("jobs.csv", itemList);
 		Drop.setDropPoint("drops.csv");
 	}

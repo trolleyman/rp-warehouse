@@ -15,6 +15,8 @@ import java.util.ArrayList;
 
 import javax.swing.JComponent;
 
+import warehouse.pc.job.Location;
+import warehouse.pc.job.LocationList;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.MainInterface;
 import warehouse.pc.shared.RobotListener;
@@ -24,6 +26,8 @@ import warehouse.shared.robot.Robot;
 @SuppressWarnings("serial")
 public class MapComponent extends JComponent implements MouseListener, RobotListener {
 	private State state;
+	private LocationList locList;
+	
 	private double xScale = 1.0;
 	private double yScale = 1.0;
 	
@@ -37,6 +41,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 		this.gui = _gui;
 		addMouseListener(this);
 		state = MainInterface.get().getCurrentState();
+		locList = MainInterface.get().getLocationList();
 		MainInterface.get().addRobotListener(this);
 	}
 
@@ -51,6 +56,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 		int height = (int) (getHeight() - padding * 2.1);
 		
 		state = MainInterface.get().getCurrentState();
+		locList = MainInterface.get().getLocationList();
 		int mapWidth = state.getMap().getWidth() - 1;
 		int mapHeight = state.getMap().getHeight() - 1;
 		
@@ -155,6 +161,23 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 	private void paintJunctions(Graphics2D _g2) {
 		for (int y = 0; y < state.getMap().getHeight(); y++) {
 			for (int x = 0; x < state.getMap().getWidth(); x++) {
+				for (Location loc : locList.getList()) {
+					if (loc.getX() == x && loc.getY() == y) {
+						Graphics2D fg = (Graphics2D) _g2.create();
+						fg.setColor(Color.RED);
+						AffineTransform trans = new AffineTransform();
+						trans.scale(1.0, -1.0);
+						trans.scale(xScale * 0.015, yScale * 0.015);
+						
+						int nameW = (int) (fg.getFontMetrics().stringWidth(loc.getItemName()) * xScale * 0.015);
+						fg.translate(-nameW / 2.0, 14.0);
+						fg.translate(x * xScale, y * yScale);
+						fg.transform(trans);
+						fg.drawString(loc.getItemName(), 0, 0);
+						fg.dispose();
+					}
+				}
+				
 				Junction j = state.getMap().getJunction(x, y);
 				if (j == null)
 					continue;
