@@ -20,7 +20,8 @@ public class RobotEditor extends JPanel {
 	private Robot selectedRobot = null;
 	
 	private JLabel selectedRobotLabel;
-
+	private JLabel robotIDLabel;
+	
 	private JSpinner xSpinner;
 	private JSpinner ySpinner;
 
@@ -35,7 +36,9 @@ public class RobotEditor extends JPanel {
 		
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		selectedRobotLabel = new JLabel("", JLabel.LEADING);
+		robotIDLabel = new JLabel("", JLabel.LEADING);
 		selectedRobotLabel.setAlignmentX(RIGHT_ALIGNMENT);
+		robotIDLabel.setAlignmentX(RIGHT_ALIGNMENT);
 		
 		SpringLayout layout = new SpringLayout();
 		
@@ -54,6 +57,7 @@ public class RobotEditor extends JPanel {
 				if (selectedRobot != null) {
 					selectedRobot.setX((double)xSpinner.getValue());
 					selectedRobot.setY((double)ySpinner.getValue());
+					MainInterface.get().updateRobot(selectedRobot);
 				}
 			}
 		});
@@ -70,11 +74,13 @@ public class RobotEditor extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if (selectedRobot != null) {
 					selectedRobot.setFacing((double)headingSpinner.getValue());
+					MainInterface.get().updateRobot(selectedRobot);
 				}
 			}
 		});
 		
 		this.add(selectedRobotLabel);
+		this.add(robotIDLabel);
 		this.add(xLabel);
 		this.add(yLabel);
 		this.add(xSpinner);
@@ -85,7 +91,8 @@ public class RobotEditor extends JPanel {
 		this.add(headingButton);
 		
 		//layout.putConstraint(SpringLayout.NORTH, selectedRobotLabel, 6, SpringLayout.NORTH, this);
-		layout.putConstraint(SpringLayout.NORTH, xSpinner, 6, SpringLayout.SOUTH, selectedRobotLabel);
+		layout.putConstraint(SpringLayout.NORTH, robotIDLabel, 6, SpringLayout.SOUTH, selectedRobotLabel);
+		layout.putConstraint(SpringLayout.NORTH, xSpinner, 6, SpringLayout.SOUTH, robotIDLabel);
 		layout.putConstraint(SpringLayout.NORTH, ySpinner, 6, SpringLayout.SOUTH, xSpinner);
 		layout.putConstraint(SpringLayout.NORTH, xLabel, 3, SpringLayout.NORTH, xSpinner);
 		layout.putConstraint(SpringLayout.NORTH, yLabel, 3, SpringLayout.NORTH, ySpinner);
@@ -101,7 +108,7 @@ public class RobotEditor extends JPanel {
 		//layout.putConstraint(SpringLayout.HEIGHT, this, 6, SpringLayout.SOUTH, headingButton);
 		
 	    //this.setPreferredSize(this.getPreferredSize());
-		//setPreferredSize(new Dimension(150, 180));
+		setPreferredSize(new Dimension(200, 180));
 	    
 		update();
 	}
@@ -110,7 +117,8 @@ public class RobotEditor extends JPanel {
 	public void doLayout() {
 		super.doLayout();
 		
-		setPreferredSize(new Dimension(150, (int) (headingButton.getY() + 6 + headingButton.getPreferredSize().getHeight())));
+		setPreferredSize(new Dimension(200, (int)
+			(headingButton.getY() + 6 + headingButton.getPreferredSize().getHeight())));
 	}
 	
 	
@@ -125,9 +133,11 @@ public class RobotEditor extends JPanel {
 	private void update() {
 		if (selectedRobot == null) {
 			selectedRobotLabel.setText("Selected Robot: None");
+			robotIDLabel.setText("ID: ?");
 		} else {
 			selectedRobotLabel.setText(
-					"Selected Robot: " + selectedRobot.getName() + " (" + selectedRobot.getID() + ")");
+					"Selected Robot: " + selectedRobot.getName());
+			robotIDLabel.setText("ID: " + selectedRobot.getID());
 		}
 		
 		boolean enabled = selectedRobot != null;

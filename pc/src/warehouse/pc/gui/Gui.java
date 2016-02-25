@@ -79,6 +79,7 @@ public class Gui implements Runnable, RobotListener {
 		panel.add(map, BorderLayout.CENTER);
 		panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		frame.add(panel);
+		frame.pack();
 		frame.setSize(1000, 600);
 	}
 	
@@ -91,7 +92,8 @@ public class Gui implements Runnable, RobotListener {
 		inner.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		JButton connect = new JButton("Connect");
 		BluetoothSelector select = new BluetoothSelector();
-		
+		select.setAlignmentX(BluetoothSelector.RIGHT_ALIGNMENT);
+		connect.setAlignmentX(JButton.RIGHT_ALIGNMENT);
 		connect.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
