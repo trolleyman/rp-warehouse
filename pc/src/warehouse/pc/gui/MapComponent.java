@@ -2,6 +2,7 @@ package warehouse.pc.gui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
@@ -164,6 +165,11 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 				for (Location loc : locList.getList()) {
 					if (loc.getX() == x && loc.getY() == y) {
 						Graphics2D fg = (Graphics2D) _g2.create();
+						if (loc.getItemName().equals(gui.selectedItemName)) {
+							Font f = fg.getFont();
+							f = f.deriveFont(Font.BOLD, (float) (f.getSize() * 1.5));
+							fg.setFont(f);
+						}
 						fg.setColor(Color.RED);
 						AffineTransform trans = new AffineTransform();
 						trans.scale(1.0, -1.0);

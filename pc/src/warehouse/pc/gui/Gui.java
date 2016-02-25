@@ -18,6 +18,8 @@ import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
@@ -45,10 +47,12 @@ public class Gui implements Runnable, RobotListener {
 		g.run();
 	}
 	
+	public String selectedItemName;
 	private JFrame frame;
 	private RobotEditor editor;
 	
 	public Gui() {
+		selectedItemName = "";
 		MainInterface i = MainInterface.get();
 		i.addRobotListener(this);
 		frame = new JFrame("Warehouse Viewer");
@@ -159,6 +163,18 @@ public class Gui implements Runnable, RobotListener {
 			}
 		};
 		JTable table = new JTable(dataModel);
+		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				int i = table.getSelectedRow();
+				if (i == -1) {
+					selectedItemName = "";
+					return;
+				}
+				selectedItemName = table.getValueAt(i, 0).toString();
+				frame.repaint();
+			}
+		});
 		JScrollPane scrollpane = new JScrollPane(table,
 			JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		
