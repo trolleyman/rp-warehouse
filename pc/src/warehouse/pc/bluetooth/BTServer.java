@@ -102,6 +102,7 @@ public class BTServer {
 	 */
 	public void sendToRobot(String robotName, String message) {
 		toRobotQueues.get(robotName).offer(message);
+		System.out.println("Send " + message + " to " + robotName);
 	}
 
 	/**

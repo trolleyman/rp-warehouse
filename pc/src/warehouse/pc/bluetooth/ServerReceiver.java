@@ -56,10 +56,20 @@ public class ServerReceiver implements Runnable {
 		}
 	}
 
+	/**
+	 * Add a listener to this robot.
+	 * 
+	 * @param listener The MessageListener to call when a new message is received.
+	 */
 	public void addMessageListener(MessageListener listener) {
 		listeners.add(listener);
 	}
 
+	/**
+	 * Notify all listeners of a new message.
+	 * 
+	 * @param message The new message.
+	 */
 	private void notifyListeners(String message) {
 		for (MessageListener l : listeners) {
 			l.newMessage(robotName, message);
