@@ -11,7 +11,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SpringLayout;
-import javax.swing.SwingUtilities;
 
 import warehouse.pc.shared.MainInterface;
 import warehouse.shared.robot.Robot;
@@ -85,6 +84,7 @@ public class RobotEditor extends JPanel {
 		this.add(headingSpinner);
 		this.add(headingButton);
 		
+		//layout.putConstraint(SpringLayout.NORTH, selectedRobotLabel, 6, SpringLayout.NORTH, this);
 		layout.putConstraint(SpringLayout.NORTH, xSpinner, 6, SpringLayout.SOUTH, selectedRobotLabel);
 		layout.putConstraint(SpringLayout.NORTH, ySpinner, 6, SpringLayout.SOUTH, xSpinner);
 		layout.putConstraint(SpringLayout.NORTH, xLabel, 3, SpringLayout.NORTH, xSpinner);
@@ -98,11 +98,21 @@ public class RobotEditor extends JPanel {
 		layout.putConstraint(SpringLayout.NORTH, headingLabel, 3, SpringLayout.NORTH, headingSpinner);
 		layout.putConstraint(SpringLayout.WEST, headingSpinner, 6, SpringLayout.EAST, headingLabel);
 		layout.putConstraint(SpringLayout.NORTH, headingButton, 6, SpringLayout.SOUTH, headingSpinner);
+		//layout.putConstraint(SpringLayout.HEIGHT, this, 6, SpringLayout.SOUTH, headingButton);
 		
-		setPreferredSize(new Dimension(150, 150));
-		
+	    //this.setPreferredSize(this.getPreferredSize());
+		//setPreferredSize(new Dimension(150, 180));
+	    
 		update();
 	}
+	
+	@Override
+	public void doLayout() {
+		super.doLayout();
+		
+		setPreferredSize(new Dimension(150, (int) (headingButton.getY() + 6 + headingButton.getPreferredSize().getHeight())));
+	}
+	
 	
 	/**
 	 * Selects a new robot to be edited. Can be null.
