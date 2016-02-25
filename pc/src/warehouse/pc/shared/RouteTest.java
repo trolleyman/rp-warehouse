@@ -2,24 +2,33 @@ package warehouse.pc.shared;
 
 import java.util.ArrayList;
 
+/**
+ * Test class for route planning
+ * @author Jason
+ *
+ */
+
 public class RouteTest {
 
 	public static void main(String[] args) {
+
+		// change the test map
 		
 		Map testMap = TestMaps.TEST_MAP3;
-		
-		
-		
 		RouteFinder testSearch = new RouteFinder(testMap);
+
+		// change the start node, goal node and initial direction
 		
-		ArrayList<Direction> testArray = testSearch.findRoute(testMap.getJunction(0, 2), testMap.getJunction(4, 3));
+		ArrayList<Bearing> testArray = testSearch.findRoute(testMap.getJunction(5, 0), testMap.getJunction(4, 2),
+				Direction.X_NEG);
+
+		// prints a list of bearings
 		
-		for (int i = 0; i < testArray.size(); i++)
-		{
+		for (int i = 0; i < testArray.size(); i++) {
 			System.out.println("[" + testArray.get(i) + "], ");
-			
+
 		}
-		
+
 	}
 
 }

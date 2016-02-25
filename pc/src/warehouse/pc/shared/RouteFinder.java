@@ -9,26 +9,33 @@ import rp.util.Collections;
 
 /**
  * Class to find a route between two nodes and return directions
+ * 
  * @author Jason + George
  *
  */
 
 public class RouteFinder {
-	
-	private ArrayList<Junction> nodes;                // Stores all junction data from current map
-	private ArrayList<Junction> searched;             // Closed set, nodes already searched
-	private LinkedHashMap<Junction,Integer> frontier; // Frontier, integer value is moves from start node
-	private HashMap<Junction,Junction> cameFrom;      // Pointers to junctions once path is found
-	
+
+	private ArrayList<Junction> nodes; // Stores all junction data from current
+										// map
+	private ArrayList<Junction> searched; // Closed set, nodes already searched
+	private LinkedHashMap<Junction, Integer> frontier; // Frontier, integer
+														// value is moves from
+														// start node
+	private HashMap<Junction, Junction> cameFrom; // Pointers to junctions once
+													// path is found
+
 	/**
 	 * Create a new RouteFinder object for a given map
-	 * @param _map the map
+	 * 
+	 * @param _map
+	 *            the map
 	 */
-	
-	public RouteFinder(Map _map) {	
-		
+
+	public RouteFinder(Map _map) {
+
 		// add the junctions from the map to an ArrayList of nodes to be checked
-		
+
 		nodes = new ArrayList<Junction>();
 		for (int i = 0; i < _map.getWidth(); i++) {
 			for (int j = 0; j < _map.getHeight(); j++) {
@@ -36,153 +43,249 @@ public class RouteFinder {
 			}
 		}
 	}
-	
+
 	/**
 	 * Finds a route between two junctions on the map
-	 * @param start the start junction
-	 * @param goal the end junction
+	 * 
+	 * @param start
+	 *            the start junction
+	 * @param goal
+	 *            the end junction
+	 * @param direction
+	 *            the initial direction of the robot
 	 * @return the ArrayList of directions
 	 */
-	
-	public ArrayList<Direction> findRoute(Junction start, Junction goal) {
-		
+
+	public ArrayList<Bearing> findRoute(Junction start, Junction goal, Direction direction) {
+
 		// if the goal or start is not on the map return null
-		
+
 		if (!nodes.contains(start) || !nodes.contains(goal)) {
 			return null;
-		} 
-		
+		}
+
 		searched = new ArrayList<Junction>();
-		frontier = new LinkedHashMap<Junction,Integer>();
-		cameFrom = new HashMap<Junction,Junction>();
+		frontier = new LinkedHashMap<Junction, Integer>();
+		cameFrom = new HashMap<Junction, Junction>();
 		frontier.put(start, 0); // Initializes search
 		Junction currentJunct = null;
-		
+
 		while (!frontier.isEmpty()) {
 			int minCost = -1;
 			int pathEstimate = 0;
 			int movesFromStart = 0;
-			
-			
+
 			// Iterate through frontier to find lowest cost junction
-			for (Entry<Junction, Integer> entry : frontier.entrySet())
-			{	
+			for (Entry<Junction, Integer> entry : frontier.entrySet()) {
 
 				movesFromStart = entry.getValue();
 				pathEstimate = movesFromStart + getHeuristic(entry.getKey(), goal);
-				
+
 				if (minCost < 0) {
 					minCost = pathEstimate;
 					currentJunct = entry.getKey();
-				} else if (pathEstimate < minCost){
+				} else if (pathEstimate < minCost) {
 					minCost = pathEstimate;
 					currentJunct = entry.getKey();
 				}
 			}
-			
+
 			// if the current junction is the goal return the path
-			
+
 			if ((currentJunct.getX() == goal.getX()) && (currentJunct.getY() == goal.getY())) {
-				return makePath(start, goal);
+				ArrayList<Direction> directionList = makePath(start, goal);
+				return getActualDirections(directionList, direction);
 			}
-			
+
 			// remove the junction from the frontier and add it to the explored
-			
+
 			frontier.remove(currentJunct);
-			searched.add(currentJunct);		
-			
+			searched.add(currentJunct);
+
 			// add adjacent junctions to the frontier
-			
+
 			for (Junction neighbour : currentJunct.getNeighbours()) {
-				
-							
+
 				if ((neighbour == null) || (searched.contains(neighbour)))
 					continue;
-				
-				
-				if (!frontier.containsKey(neighbour)){
+
+				if (!frontier.containsKey(neighbour)) {
 					// For safety
 					frontier.put(neighbour, movesFromStart + 1);
 				} else if ((movesFromStart + 1) >= frontier.get(neighbour))
 					continue;
-				
+
 				frontier.remove(neighbour);
 				frontier.put(neighbour, movesFromStart + 1);
-				
+
 				cameFrom.put(neighbour, currentJunct);
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Helper method to make a path between two junctions
-	 * @param start the start junction
-	 * @param current the current junction
+	 * 
+	 * @param start
+	 *            the start junction
+	 * @param current
+	 *            the current junction
 	 * @return the ArrayList of directions
 	 */
-	
-	public ArrayList<Direction> makePath(Junction start, Junction current) {
-		
+
+	private ArrayList<Direction> makePath(Junction start, Junction current) {
+
 		ArrayList<Junction> revPath = new ArrayList<Junction>();
-		
+
 		// if the start junction is not the goal junction
-		
-		if((start.getX() != current.getX()) || (start.getY() != current.getY())) 
-		{revPath.add(current);}
-		
+
+		if ((start.getX() != current.getX()) || (start.getY() != current.getY())) {
+			revPath.add(current);
+		}
+
 		while ((start.getX() != current.getX()) || (start.getY() != current.getY())) {
 			revPath.add(cameFrom.get(current));
 			current = cameFrom.get(current);
 		}
-		
+
 		// reverse the list (it currently goes goal -> start)
-		
+
 		Collections.reverse(revPath);
-		
-		// convert the list of nodes into a list of directions (relative to north)
-		
+
+		// convert the list of nodes into a list of directions (relative to
+		// north)
+
 		ArrayList<Direction> moveList = new ArrayList<Direction>();
-		
-		for (int i = 0; i < revPath.size() - 1; i++){
-			
+
+		for (int i = 0; i < revPath.size() - 1; i++) {
+
 			Junction first = revPath.get(i);
 			Junction second = revPath.get(i + 1);
-			
-			if (second.getX() > first.getX())
-			{
+
+			if (second.getX() > first.getX()) {
 				moveList.add(Direction.X_POS);
 			}
-			
-			if (second.getX() < first.getX())
-			{
+
+			if (second.getX() < first.getX()) {
 				moveList.add(Direction.X_NEG);
 			}
-			
-			if (second.getY() > first.getY())
-			{
+
+			if (second.getY() > first.getY()) {
 				moveList.add(Direction.Y_POS);
 			}
-			
-			if (second.getY() < first.getY())
-			{
+
+			if (second.getY() < first.getY()) {
 				moveList.add(Direction.Y_NEG);
 			}
 		}
-		
+
 		return moveList;
 	}
-	
+
 	/**
 	 * Helper method to calculate manhattan distance heuristics for the map
-	 * @param current the current junction
-	 * @param goal the goal junction
+	 * 
+	 * @param current
+	 *            the current junction
+	 * @param goal
+	 *            the goal junction
 	 * @return the manhattan distance heuristic
 	 */
 
-	public int getHeuristic(Junction current, Junction goal)
-	{
+	private int getHeuristic(Junction current, Junction goal) {
 		return (Math.abs(current.getX() - goal.getX()) + Math.abs(current.getY() - goal.getY()));
+	}
+
+	private ArrayList<Bearing> getActualDirections(ArrayList<Direction> oldList, Direction direction) {
+
+		ArrayList<Bearing> newList = new ArrayList<Bearing>();
+
+		for (int i = 0; i < oldList.size(); i++) {
+
+			Direction currentDirection = oldList.get(i);
+			Bearing bearing = null;
+
+			switch (direction) {
+			case Y_POS:
+				switch (currentDirection) {
+				case Y_POS:
+					bearing = Bearing.FORWARD;
+					break;
+				case Y_NEG:
+					bearing = Bearing.BACKWARD;
+					break;
+				case X_POS:
+					bearing = Bearing.RIGHT;
+					break;
+				case X_NEG:
+					bearing = Bearing.LEFT;
+					break;
+
+				}
+				break;
+
+			case Y_NEG:
+				switch (currentDirection) {
+				case Y_NEG:
+					bearing = Bearing.FORWARD;
+					break;
+				case Y_POS:
+					bearing = Bearing.BACKWARD;
+					break;
+				case X_NEG:
+					bearing = Bearing.RIGHT;
+					break;
+				case X_POS:
+					bearing = Bearing.LEFT;
+					break;
+				}
+				break;
+
+			case X_POS:
+				switch (currentDirection) {
+				case X_POS:
+					bearing = Bearing.FORWARD;
+					break;
+				case X_NEG:
+					bearing = Bearing.BACKWARD;
+					break;
+				case Y_NEG:
+					bearing = Bearing.RIGHT;
+					break;
+				case Y_POS:
+					bearing = Bearing.LEFT;
+					break;
+
+				}
+				break;
+
+			case X_NEG:
+				switch (currentDirection) {
+				case X_NEG:
+					bearing = Bearing.FORWARD;
+					break;
+				case X_POS:
+					bearing = Bearing.BACKWARD;
+					break;
+				case Y_POS:
+					bearing = Bearing.RIGHT;
+					break;
+				case Y_NEG:
+					bearing = Bearing.LEFT;
+					break;
+
+				}
+			
+				break;
+			}
+
+			direction = currentDirection;
+			newList.add(bearing);
+
+		}
+
+		return newList;
 	}
 }
