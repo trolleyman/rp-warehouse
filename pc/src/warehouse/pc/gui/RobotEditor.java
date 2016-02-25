@@ -122,9 +122,9 @@ public class RobotEditor extends JPanel {
 		super.doLayout();
 		
 		setPreferredSize(new Dimension(200, (int)
-			(headingButton.getY() + 6 + headingButton.getPreferredSize().getHeight())));
+			(headingButton.getY() + headingButton.getPreferredSize().getHeight())));
+		setMinimumSize(getPreferredSize());
 	}
-	
 	
 	/**
 	 * Selects a new robot to be edited. Can be null.
@@ -160,7 +160,6 @@ public class RobotEditor extends JPanel {
 			ySpinner.setValue(selectedRobot.getY());
 			headingSpinner.setValue(selectedRobot.getFacing());
 		}
-		
 		repaint();
 	}
 }
