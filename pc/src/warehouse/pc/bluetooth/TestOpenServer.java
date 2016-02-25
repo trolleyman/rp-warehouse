@@ -15,7 +15,7 @@ public class TestOpenServer implements MessageListener, Runnable {
 			System.out.println("Saying hello");
 			server.sendToRobot("Dobot", "Hello");
 		}
-		server.addListener("Dobot", this);
+		server.addListener(this);
 	}
 
 	@Override

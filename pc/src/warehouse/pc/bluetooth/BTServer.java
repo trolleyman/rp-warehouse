@@ -2,8 +2,8 @@ package warehouse.pc.bluetooth;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import lejos.pc.comm.NXTComm;
@@ -104,7 +104,24 @@ public class BTServer {
 		toRobotQueues.get(robotName).offer(message);
 	}
 
+	/**
+	 * Add a listener to a specific robot.
+	 * 
+	 * @param robotName The string name of the robot to listen to.
+	 * @param listener The listener class which will be called.
+	 */
 	public void addListener(String robotName, MessageListener listener) {
 		receivers.get(robotName).addMessageListener(listener);
+	}
+
+	/**
+	 * Add a listener to all robots connected.
+	 * 
+	 * @param listener The listener class which will be called.
+	 */
+	public void addListener(MessageListener listener) {
+		for (Entry<String, ServerReceiver> entry : receivers.entrySet()) {
+			entry.getValue().addMessageListener(listener);
+		}
 	}
 }
