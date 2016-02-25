@@ -12,8 +12,8 @@ public class Drop {
 
 	//Having public attributes like this is bad practise,
 	//But I can't think of a good way around it yet.
-	public static int DROPX;
-	public static int DROPY;
+	public static int xPos;
+	public static int yPos;
 	
 	/**
 	 * Takes a csv file and extracts the X and Y co-ordinates of the drop zone.
@@ -31,8 +31,8 @@ public class Drop {
 			
 			splitLine = line.split(",");
 			
-			Drop.DROPX = Integer.valueOf(splitLine[0]);
-			Drop.DROPY = Integer.valueOf(splitLine[1]);
+			Drop.xPos = Integer.valueOf(splitLine[0]);
+			Drop.yPos = Integer.valueOf(splitLine[1]);
 		} catch (FileNotFoundException e) {
 			System.err.println("Drop file not found: " + e);
 		} catch (IOException e) {
