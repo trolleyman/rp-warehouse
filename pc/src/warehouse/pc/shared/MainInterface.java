@@ -2,6 +2,7 @@ package warehouse.pc.shared;
 
 import java.util.ArrayList;
 
+import warehouse.pc.bluetooth.BTServer;
 import warehouse.shared.robot.Robot;
 
 /**
@@ -14,24 +15,33 @@ import warehouse.shared.robot.Robot;
  * jobs that have been completed.
  */
 public class MainInterface {
-	private volatile static Object serverInitLock = new Object();
-	private volatile static MainInterface server = null;
+	private volatile static Object interfaceInitLock = new Object();
+	private volatile static MainInterface mainInterface = null;
 	
 	public static MainInterface get() {
-		synchronized (serverInitLock) {
-			if (server == null) {
-				server = new MainInterface();
+		synchronized (interfaceInitLock) {
+			if (mainInterface == null) {
+				mainInterface = new MainInterface();
 			}
-			return server;
+			return mainInterface;
 		}
 	}
 	
 	private ArrayList<RobotListener> robotListeners;
 	private State currentState;
+	private BTServer server;
 	
 	private MainInterface() {
+		server = new BTServer();
 		robotListeners = new ArrayList<>();
-		currentState = TestStates.TEST_STATE3;
+		currentState = new State(TestMaps.TEST_MAP4, new Robot[0]);
+	}
+	
+	/**
+	 * Gets the current server that has been initialized.
+	 */
+	public BTServer getServer() {
+		return server;
 	}
 	
 	/**
@@ -42,7 +52,8 @@ public class MainInterface {
 	}
 	
 	/**
-	 * Updated a robot {@code _r} with new information.
+	 * Updated a robot {@code _r} with new information. If the robot is not recognized, a new robot is
+	 * inserted into the array.
 	 */
 	public synchronized void updateRobot(Robot _r) {
 		currentState.updateRobot(_r);
@@ -63,9 +74,9 @@ public class MainInterface {
 	 * e.g. telling all robots to shut down.
 	 */
 	public void close() {
-		synchronized (serverInitLock) {
+		synchronized (interfaceInitLock) {
 			synchronized (this) {
-				server = null;
+				mainInterface = null;
 			}
 		}
 	}

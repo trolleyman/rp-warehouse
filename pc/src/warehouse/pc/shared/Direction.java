@@ -1,8 +1,8 @@
 package warehouse.pc.shared;
 
 public enum Direction {
-	YPos,
-	YNeg,
-	XPos,
-	XNeg,
+	Y_POS,
+	Y_NEG,
+	X_POS,
+	X_NEG,
 }
