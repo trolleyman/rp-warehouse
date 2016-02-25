@@ -19,6 +19,7 @@ public class JobList implements FileList {
 		parseFile(_fileLocation);
 	}
 	
+	@Override
 	public ArrayList<Job> getList() {
 		return this.jobList;
 	}
@@ -45,7 +46,7 @@ public class JobList implements FileList {
 				iqs = new ArrayList<ItemQuantity>();
 				
 				for(int i = 1; i < splitLine.length; i += 2) {
-					char itemName = splitLine[i].charAt(0);
+					String itemName = splitLine[i];
 					int quantity = Integer.valueOf(splitLine[i + 1]);
 					ItemQuantity iq = new ItemQuantity(itemName, quantity);
 					iqs.add(iq);
@@ -76,12 +77,12 @@ public class JobList implements FileList {
 		float totalWeight = 0;
 		
 		for (int i = 0; i < _iqs.size(); i++) {
-			 char name = _iqs.get(i).getName();
+			 String name = _iqs.get(i).getName();
 			 boolean itemFound = false;
 			 int count = 0;
 			 
 			 while (!itemFound) {
-				 if (itemList.get(count).getName() == name) {
+				 if (itemList.get(count).getName().equals(name)) {
 					 int quantity = _iqs.get(i).getQuantity();
 					 float weight = itemList.get(count).getWeight() * quantity;
 					 totalWeight += weight;
@@ -102,12 +103,12 @@ public class JobList implements FileList {
 		float totalReward = 0;
 		
 		for (int i = 0; i < _iqs.size(); i++) {
-			 char name = _iqs.get(i).getName();
+			 String name = _iqs.get(i).getName();
 			 boolean itemFound = false;
 			 int count = 0;
 			 
 			 while (!itemFound) {
-				 if (itemList.get(count).getName() == name) {
+				 if (itemList.get(count).getName().equals(name)) {
 					 int quantity = _iqs.get(i).getQuantity();
 					 float reward = itemList.get(count).getReward() * quantity;
 					 totalReward += reward;

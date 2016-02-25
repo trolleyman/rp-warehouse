@@ -17,6 +17,7 @@ public class LocationList implements FileList {
 		parseFile(_fileLocation);
 	}
 	
+	@Override
 	public ArrayList<Location> getList() {
 		return this.locationList;
 	}
@@ -42,7 +43,7 @@ public class LocationList implements FileList {
 				
 				int x = Integer.valueOf(splitLine[0]);
 				int y = Integer.valueOf(splitLine[1]);
-				char itemName = splitLine[2].charAt(0);
+				String itemName = splitLine[2];
 				
 				locationList.add(new Location(x, y, itemName));
 				

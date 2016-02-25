@@ -19,6 +19,7 @@ public class ItemList implements FileList {
 		parseFile(_fileLocation);
 	}
 	
+	@Override
 	public ArrayList<Item> getList() {
 		return this.itemList;
 	}
@@ -42,7 +43,7 @@ public class ItemList implements FileList {
 			while (line != null) {
 				splitLine = line.split(",");
 				
-				char name = splitLine[0].charAt(0);
+				String name = splitLine[0];
 				float reward = Float.valueOf(splitLine[1]);
 				float weight = Float.valueOf(splitLine[2]);
 				
@@ -50,7 +51,7 @@ public class ItemList implements FileList {
 				boolean found = false;
 				int count = 0;
 				while (!found && count < locList.getList().size()) {
-					if(name == locList.getList().get(count).getItemName()) {
+					if(name.equals(locList.getList().get(count).getItemName())) {
 						found = true;
 					} else {
 						count++;
@@ -65,7 +66,7 @@ public class ItemList implements FileList {
 					x = locList.getList().get(count).getX();
 					y = locList.getList().get(count).getY();
 				} else {
-					throw new ItemNotInListException(String.valueOf(name));
+					throw new ItemNotInListException(name);
 				}
 				
 				Item item = new Item(name, reward, weight, x, y);

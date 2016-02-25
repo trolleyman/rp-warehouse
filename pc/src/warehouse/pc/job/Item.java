@@ -5,13 +5,13 @@ package warehouse.pc.job;
  */
 public class Item {
 	
-	private final char name;
+	private final String name;
 	private final float reward;
 	private final float weight;
 	private final int x;
 	private final int y;
 	
-	public Item(char _name, float _reward, float _weight, int _x, int _y) {
+	public Item(String _name, float _reward, float _weight, int _x, int _y) {
 		this.name = _name;
 		this.reward = _reward;
 		this.weight = _weight;
@@ -19,7 +19,7 @@ public class Item {
 		this.y = _y;
 	}
 	
-	public char getName() {
+	public String getName() {
 		return this.name;
 	}
 	
@@ -39,6 +39,7 @@ public class Item {
 		return this.y;
 	}
 	
+	@Override
 	public String toString() {
 		return name + ", " + reward + ", " + weight + ", " + x + ", " + ", " + y;
 	}

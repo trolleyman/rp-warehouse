@@ -7,9 +7,9 @@ public class Location {
 	
 	private final int x;
 	private final int y;
-	private final char itemName;
+	private final String itemName;
 	
-	public Location(int _x, int _y, char _itemName) {
+	public Location(int _x, int _y, String _itemName) {
 		this.x = _x;
 		this.y = _y;
 		this.itemName = _itemName;
@@ -23,10 +23,11 @@ public class Location {
 		return this.y;
 	}
 	
-	public char getItemName() {
+	public String getItemName() {
 		return this.itemName;
 	}
 	
+	@Override
 	public String toString() {
 		return x + ", " + y + ", " + itemName;
 	}

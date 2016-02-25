@@ -6,10 +6,10 @@ package warehouse.pc.job;
 public class JobListTest {
 	
 	public static void main(String[] args) {
-		String locationsLocation = "C:/Temp/locations.csv";
-		String itemsLocation = "C:/Temp/items.csv";
-		String jobsLocation = "C:/Temp/jobs.csv";
-		String dropsLocation = "C:/Temp/drops.csv";
+		String locationsLocation = "locations.csv";
+		String itemsLocation = "items.csv";
+		String jobsLocation = "jobs.csv";
+		String dropsLocation = "drops.csv";
 		
 		LocationList locList = new LocationList(locationsLocation);
 		ItemList itemList = new ItemList(itemsLocation, locList);
