@@ -19,8 +19,8 @@ public class RouteTest {
 
 		// change the start node, goal node and initial direction
 		
-		ArrayList<Bearing> testArray = testSearch.findRoute(testMap.getJunction(5, 0), testMap.getJunction(4, 2),
-				Direction.X_NEG);
+		ArrayList<Bearing> testArray = testSearch.findRoute(testMap.getJunction(2, 0), testMap.getJunction(0, 3),
+				Direction.Y_NEG);
 
 		// prints a list of bearings
 		
