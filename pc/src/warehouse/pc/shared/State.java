@@ -43,8 +43,10 @@ public class State {
 			}
 			if (robot.getName().equals(_r.getName())) {
 				robot = _r;
+				return;
 			}
 		}
+		robots.add(_r);
 	}
 	
 	public Map getMap() {
