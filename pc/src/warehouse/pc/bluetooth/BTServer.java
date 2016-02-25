@@ -9,6 +9,8 @@ import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
+import warehouse.pc.shared.MainInterface;
+import warehouse.shared.robot.Robot;
 
 /**
  * The BT communication "server". Can create new thread pairs for NXTs.
@@ -74,6 +76,8 @@ public class BTServer {
 				System.out.println("Starting threads");
 				sender.start();
 				receiver.start();
+				
+				MainInterface.get().updateRobot(new Robot(nxt.name, nxt.deviceAddress, 0, 0, 0.0));
 				return true;
 			}
 		} catch (NXTCommException e) {

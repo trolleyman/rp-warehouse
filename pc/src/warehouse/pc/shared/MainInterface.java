@@ -3,6 +3,11 @@ package warehouse.pc.shared;
 import java.util.ArrayList;
 
 import warehouse.pc.bluetooth.BTServer;
+import warehouse.pc.job.Drop;
+import warehouse.pc.job.Item;
+import warehouse.pc.job.ItemList;
+import warehouse.pc.job.JobList;
+import warehouse.pc.job.LocationList;
 import warehouse.shared.robot.Robot;
 
 /**
@@ -31,10 +36,44 @@ public class MainInterface {
 	private State currentState;
 	private BTServer server;
 	
+	private LocationList locList;
+	private ItemList itemList;
+	private JobList jobList;
+	
 	private MainInterface() {
 		server = new BTServer();
 		robotListeners = new ArrayList<>();
 		currentState = new State(TestMaps.TEST_MAP4);
+		
+		locList = new LocationList("locations.csv");
+		itemList = new ItemList("items.csv", locList);
+//		for (Item i : itemList.getList()) {
+//			System.out.println(i.getName() + ": reward:" + i.getReward()
+//			+ ", weight:" + i.getWeight() + ", [" + i.getX() + "," + i.getY() + "]");
+//		}
+		jobList = new JobList("jobs.csv", itemList);
+		Drop.setDropPoint("drops.csv");
+	}
+	
+	/**
+	 * Returns the job list. This contains the list of every job currently being tracked.
+	 */
+	public JobList getJobList() {
+		return jobList;
+	}
+	
+	/**
+	 * Returns the item list that records what the reward and weight is for each item.
+	 */
+	public ItemList getItemList() {
+		return itemList;
+	}
+	
+	/**
+	 * Returns the location list that records where the items are located in the map.
+	 */
+	public LocationList getLocationList() {
+		return locList;
 	}
 	
 	/**
