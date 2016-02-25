@@ -7,6 +7,12 @@ import java.util.Map.Entry;
 
 import rp.util.Collections;
 
+/**
+ * Class to find a route between two nodes and return directions
+ * @author Jason + George
+ *
+ */
+
 public class RouteFinder {
 	
 	private ArrayList<Junction> nodes;                // Stores all junction data from current map
@@ -14,7 +20,15 @@ public class RouteFinder {
 	private LinkedHashMap<Junction,Integer> frontier; // Frontier, integer value is moves from start node
 	private HashMap<Junction,Junction> cameFrom;      // Pointers to junctions once path is found
 	
-	public RouteFinder(Map _map) {		
+	/**
+	 * Create a new RouteFinder object for a given map
+	 * @param _map the map
+	 */
+	
+	public RouteFinder(Map _map) {	
+		
+		// add the junctions from the map to an ArrayList of nodes to be checked
+		
 		nodes = new ArrayList<Junction>();
 		for (int i = 0; i < _map.getWidth(); i++) {
 			for (int j = 0; j < _map.getHeight(); j++) {
@@ -23,10 +37,18 @@ public class RouteFinder {
 		}
 	}
 	
+	/**
+	 * Finds a route between two junctions on the map
+	 * @param start the start junction
+	 * @param goal the end junction
+	 * @return the ArrayList of directions
+	 */
+	
 	public ArrayList<Direction> findRoute(Junction start, Junction goal) {
 		
+		// if the goal or start is not on the map return null
 		
-		if (!nodes.contains(start) || !nodes.contains(goal)) { // Must be valid args
+		if (!nodes.contains(start) || !nodes.contains(goal)) {
 			return null;
 		} 
 		
@@ -58,12 +80,18 @@ public class RouteFinder {
 				}
 			}
 			
+			// if the current junction is the goal return the path
+			
 			if ((currentJunct.getX() == goal.getX()) && (currentJunct.getY() == goal.getY())) {
 				return makePath(start, goal);
 			}
 			
+			// remove the junction from the frontier and add it to the explored
+			
 			frontier.remove(currentJunct);
 			searched.add(currentJunct);		
+			
+			// add adjacent junctions to the frontier
 			
 			for (Junction neighbour : currentJunct.getNeighbours()) {
 				
@@ -88,12 +116,20 @@ public class RouteFinder {
 		return null;
 	}
 	
+	/**
+	 * Helper method to make a path between two junctions
+	 * @param start the start junction
+	 * @param current the current junction
+	 * @return the ArrayList of directions
+	 */
+	
 	public ArrayList<Direction> makePath(Junction start, Junction current) {
 		
 		ArrayList<Junction> revPath = new ArrayList<Junction>();
 		
+		// if the start junction is not the goal junction
 		
-		if((start.getX() != current.getX()) || (start.getY() != current.getY())) //If start node != goal node
+		if((start.getX() != current.getX()) || (start.getY() != current.getY())) 
 		{revPath.add(current);}
 		
 		while ((start.getX() != current.getX()) || (start.getY() != current.getY())) {
@@ -101,7 +137,12 @@ public class RouteFinder {
 			current = cameFrom.get(current);
 		}
 		
+		// reverse the list (it currently goes goal -> start)
+		
 		Collections.reverse(revPath);
+		
+		// convert the list of nodes into a list of directions (relative to north)
+		
 		ArrayList<Direction> moveList = new ArrayList<Direction>();
 		
 		for (int i = 0; i < revPath.size() - 1; i++){
@@ -133,7 +174,13 @@ public class RouteFinder {
 		return moveList;
 	}
 	
-	//Heuristic calculator in Manhattan distance
+	/**
+	 * Helper method to calculate manhattan distance heuristics for the map
+	 * @param current the current junction
+	 * @param goal the goal junction
+	 * @return the manhattan distance heuristic
+	 */
+
 	public int getHeuristic(Junction current, Junction goal)
 	{
 		return (Math.abs(current.getX() - goal.getX()) + Math.abs(current.getY() - goal.getY()));
