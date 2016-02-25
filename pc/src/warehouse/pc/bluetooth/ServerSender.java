@@ -35,6 +35,7 @@ public class ServerSender implements Runnable {
 			
 			while (running) {
 				String message = toRobotQueue.take();
+				System.out.println("Sending: " + message);
 				toRobot.writeUTF(message);
 				toRobot.flush();
 			}

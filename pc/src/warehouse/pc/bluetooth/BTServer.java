@@ -2,6 +2,7 @@ package warehouse.pc.bluetooth;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -25,6 +26,10 @@ public class BTServer {
 	HashMap<String, LinkedBlockingQueue<String>> toRobotQueues;
 	HashMap<String, LinkedBlockingQueue<String>> fromRobotQueues;
 
+	// Maps of sender and receiver threads
+	HashMap<String, ServerReceiver> receivers;
+	HashMap<String, ServerSender> senders;
+
 	/**
 	 * Setup the communication "server" for the current OS and driver. Initialise
 	 * the maps of queues.
@@ -42,6 +47,9 @@ public class BTServer {
 
 		toRobotQueues = new HashMap<>();
 		fromRobotQueues = new HashMap<>();
+
+		receivers = new HashMap<>();
+		senders = new HashMap<>();
 	}
 
 	/**
@@ -67,13 +75,15 @@ public class BTServer {
 				toRobotQueues.put(nxt.name, toRobotQueue);
 				fromRobotQueues.put(nxt.name, fromRobotQueue);
 
-				System.out.println("Creating threads");
-				Thread sender = new Thread(new ServerSender(toRobot, toRobotQueue));
-				Thread receiver = new Thread(new ServerReceiver(fromRobot, fromRobotQueue));
+				System.out.println("Creating sender and receiver");
+				ServerSender sender = new ServerSender(toRobot, toRobotQueue);
+				ServerReceiver receiver = new ServerReceiver(fromRobot, fromRobotQueue, nxt.name);
+				senders.put(nxt.name, sender);
+				receivers.put(nxt.name, receiver);
 
 				System.out.println("Starting threads");
-				sender.start();
-				receiver.start();
+				new Thread(sender).start();
+				new Thread(receiver).start();
 				return true;
 			}
 		} catch (NXTCommException e) {
@@ -94,6 +104,7 @@ public class BTServer {
 		toRobotQueues.get(robotName).offer(message);
 	}
 
-	// Should have a listener for incoming messages?
-	// Maybe one for all robots and another for specific
+	public void addListener(String robotName, MessageListener listener) {
+		receivers.get(robotName).addMessageListener(listener);
+	}
 }

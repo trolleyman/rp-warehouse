@@ -2,6 +2,7 @@ package warehouse.pc.bluetooth;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -16,6 +17,8 @@ public class ServerReceiver implements Runnable {
 	private boolean running;
 	private DataInputStream fromRobot;
 	private LinkedBlockingQueue<String> fromRobotQueue;
+	private ArrayList<MessageListener> listeners;
+	private String robotName;
 
 	/**
 	 * Create the receiver.
@@ -23,9 +26,11 @@ public class ServerReceiver implements Runnable {
 	 * @param fromRobot The DataInputStream from the NXT.
 	 * @param fromRobotQueue The queue to put received messages into.
 	 */
-	public ServerReceiver(DataInputStream fromRobot, LinkedBlockingQueue<String> fromRobotQueue) {
+	public ServerReceiver(DataInputStream fromRobot, LinkedBlockingQueue<String> fromRobotQueue, String robotName) {
 		this.fromRobot = fromRobot;
 		this.fromRobotQueue = fromRobotQueue;
+		this.robotName = robotName;
+		listeners = new ArrayList<>();
 	}
 
 	@Override
@@ -40,6 +45,7 @@ public class ServerReceiver implements Runnable {
 				String input = fromRobot.readUTF();
 				System.out.println(input);
 				fromRobotQueue.put(input);
+				notifyListeners(input);
 			}
 
 		} catch (IOException e) {
@@ -50,4 +56,13 @@ public class ServerReceiver implements Runnable {
 		}
 	}
 
+	public void addMessageListener(MessageListener listener) {
+		listeners.add(listener);
+	}
+
+	private void notifyListeners(String message) {
+		for (MessageListener l : listeners) {
+			l.newMessage(robotName, message);
+		}
+	}
 }
