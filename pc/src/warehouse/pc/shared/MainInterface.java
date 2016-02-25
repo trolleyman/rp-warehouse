@@ -34,7 +34,7 @@ public class MainInterface {
 	private MainInterface() {
 		server = new BTServer();
 		robotListeners = new ArrayList<>();
-		currentState = TestStates.TEST_STATE3;//new State(TestMaps.TEST_MAP4, new Robot[0]);
+		currentState = new State(TestMaps.TEST_MAP4, new Robot[0]);
 	}
 	
 	/**
