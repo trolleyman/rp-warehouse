@@ -82,8 +82,12 @@ public class BTServer {
 				receivers.put(nxt.name, receiver);
 
 				System.out.println("Starting threads");
-				new Thread(sender).start();
-				new Thread(receiver).start();
+				Thread senderThread = new Thread(sender);
+				Thread receiverThread = new Thread(receiver);
+				senderThread.start();
+				senderThread.setName(nxt.name + " - Sender");
+				receiverThread.start();
+				receiverThread.setName(nxt.name + " - Receiver");
 				return true;
 			}
 		} catch (NXTCommException e) {
