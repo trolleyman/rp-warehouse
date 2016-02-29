@@ -116,7 +116,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 			fg.drawString(robot.getName(), 0, 0);
 			fg.dispose();
 			
-			g.rotate(Math.toRadians(robot.getFacing()));
+			g.rotate(-Math.toRadians(robot.getFacing()));
 			g.drawRect(-(int)(w / 2.0), -(int)(h / 2.0), (int)w, (int)h);
 			
 			double robotEndY = h / 2.0;
@@ -232,8 +232,8 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 			double cx = robot.getX() * xScale + xTrans;
 			double cy = -robot.getY() * yScale + yTrans;
 			
-			double s = Math.sin(Math.toRadians(robot.getFacing()));
-			double c = Math.cos(Math.toRadians(robot.getFacing()));
+			double s = Math.sin(-Math.toRadians(robot.getFacing()));
+			double c = Math.cos(-Math.toRadians(robot.getFacing()));
 			
 			// translate point back to origin:
 			x -= cx;
