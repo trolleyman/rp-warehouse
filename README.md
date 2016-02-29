@@ -7,10 +7,32 @@ Then create a new LejosNXT project inside `nxt` with `shared` and `rp-utils` as 
 
 Finally create a new LejosPC project inside `pc` with `shared` and `rp-utils` as required projects. Add LejosPC as a libary.
 
+# Merge Conflicts
+Sometimes you may try to push your code and git shouts at you saying to pull first. So you pull and then git complains about merge conflicts. This happens because someone else has pushed commits to the current branch after your last pull. Your files will have filled with merge conflicts wherever git cannot automatically merge. It will look something like this:
+```
+<<<<<<< HEAD
+public void doThis2(String someText) {
+=======
+public void doThis(int aNumber, String someText) {
+>>>>>>> some-massive-commit-hash
+```
+The text in the first block is what you have in your local repository and the second is what is being pulled from the remote repository. All you have to do is choose which (or what combination) commit you want to keep. Say I want to keep the method name `doThis2` but the arguments of `doThis`. I would change one of the parts of code:
+```
+<<<<<<< HEAD
+public void doThis2(int aNumber, String someText) { *This is what I'm keeping*
+=======
+public void doThis(int aNumber, String someText) {
+>>>>>>> some-massive-commit-hash
+```
+Then delete the rest:
+```
+public void doThis2(int aNumber, String someText) {
+```
+Finally do this to all of the files with merge problems, `git add` the files and commit them as normal. Conflicts resolved!
 # Branching
 Try wherever to make a new branch for the feature/bug-fix you are developing. This allows the master branch to remain in a deployable state. Once you have finished developing the new code it can be merged back to the master branch.
 
-#### Usage
+## Usage
 Show the current branches
 ```
 git branch *Only local branches*
@@ -34,8 +56,10 @@ git checkout master
 git merge <branch-name>
 ```
 If you are finished with the branch then you can delete it. Note this is a "safe" command. If there are unmerged changes you will not be allowed to delete the branch.
+The first command will delete the branch in your local repo whilst the second deletes it from the origin (online repo).
 ```
 git branch -d <branch-name>
+git push origin --delete <branch-name> 
 ```
 
 # Documenting

@@ -9,19 +9,24 @@ import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
+import warehouse.pc.shared.MainInterface;
 
 @SuppressWarnings("serial")
 public class BluetoothSelector extends JComboBox<String> implements Runnable {
+	private final String SEARCHING = "Searching...";
+	private final String NO_ROBOTS_DETECTED = "No robots detected.";
+	
 	private NXTInfo[] oldInfos;
 	private NXTInfo[] infos;
 
 	public BluetoothSelector() {
 		super();
 		
-		oldInfos = new NXTInfo[] {null};
+		oldInfos = new NXTInfo[0];
 		infos = new NXTInfo[0];
 		
 		//setMaximumSize(new Dimension(100, 10));
+		this.addItem(SEARCHING);
 		
 		Thread t = new Thread(this);
 		t.setDaemon(true);
@@ -31,12 +36,12 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	public void connect() {
 		synchronized (this) {
 			int i = this.getSelectedIndex();
-			if (i == -1)
+			if (i == -1 || infos.length == 0 || i >= infos.length)
 				return;
 			
-			//NXTInfo info = infos[i];
-			
-			// Call connect() in communication module to connect to a new robot.
+			NXTInfo info = infos[i];
+			// Call open() in communication module to connect to a new robot.
+			MainInterface.get().getServer().open(info);
 		}
 	}
 	
@@ -83,7 +88,9 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 			}
 			
 			if (infos.length == 0) {
-				this.addItem("No robots detected.");
+				this.addItem(NO_ROBOTS_DETECTED);
+			} else {
+				
 			}
 			
 			repaint();
@@ -100,7 +107,9 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 			try {
 				comm = NXTCommFactory.createNXTComm(protocol);
 				
+				System.out.println("Searching for robots...");
 				infos = comm.search(null);
+				System.out.println("Finished searching for robots!");
 				
 				updateOptions();
 			} catch (NXTCommException e1) {
