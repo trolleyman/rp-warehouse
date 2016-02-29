@@ -35,19 +35,25 @@ public class NXTClient implements Runnable {
   	fromServer = connection.openDataInputStream();
   	toServer = connection.openDataOutputStream();
   	
-  	receiver = new NXTReceiver(fromServer);
+  	receiver = new NXTReceiver(fromServer, this);
   	sender = new NXTSender(toServer);
   	
   	Thread rThread = new Thread(receiver);
   	rThread.start();
   	System.out.println("Started");
   	
+  	// Wait for the receiver thread to end
   	try {
 			rThread.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+  	System.exit(0);
 	}
+  
+  public void sendToServer(String message) {
+  	sender.sendToServer(message);
+  }
   
   public static void main(String[] args) {
   	new Thread(new NXTClient()).start();
