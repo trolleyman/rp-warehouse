@@ -3,6 +3,7 @@ package warehouse.pc.shared;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map.Entry;
 
 import rp.util.Collections;
@@ -56,7 +57,7 @@ public class RouteFinder {
 	 * @return the ArrayList of directions
 	 */
 
-	public ArrayList<Bearing> findRoute(Junction start, Junction goal, Direction direction) {
+	public LinkedList<Bearing> findRoute(Junction start, Junction goal, Direction direction) {
 
 		// if the goal or start is not on the map return null
 
@@ -198,9 +199,9 @@ public class RouteFinder {
 		return (Math.abs(current.getX() - goal.getX()) + Math.abs(current.getY() - goal.getY()));
 	}
 
-	private ArrayList<Bearing> getActualDirections(ArrayList<Direction> oldList, Direction direction) {
+	private LinkedList<Bearing> getActualDirections(ArrayList<Direction> oldList, Direction direction) {
 
-		ArrayList<Bearing> newList = new ArrayList<Bearing>();
+		LinkedList<Bearing> newList = new LinkedList<Bearing>();
 
 		for (int i = 0; i < oldList.size(); i++) {
 
