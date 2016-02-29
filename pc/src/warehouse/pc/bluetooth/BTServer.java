@@ -3,6 +3,7 @@ package warehouse.pc.bluetooth;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -23,12 +24,16 @@ public class BTServer {
 	private NXTComm comm;
 
 	// Maps of robot name against in/out queue
-	HashMap<String, LinkedBlockingQueue<String>> toRobotQueues;
-	HashMap<String, LinkedBlockingQueue<String>> fromRobotQueues;
+	private HashMap<String, LinkedBlockingQueue<String>> toRobotQueues;
+	private HashMap<String, LinkedBlockingQueue<String>> fromRobotQueues;
 
 	// Maps of sender and receiver threads
-	HashMap<String, ServerReceiver> receivers;
-	HashMap<String, ServerSender> senders;
+	private HashMap<String, ServerReceiver> receivers;
+	private HashMap<String, ServerSender> senders;
+
+	// The RouteExecuter and a HashMap of robot names to list of commands
+	private RouteExecuter executer;
+	private HashMap<String, LinkedList<String>> commandMap;
 
 	/**
 	 * Setup the communication "server" for the current OS and driver. Initialise
@@ -50,6 +55,9 @@ public class BTServer {
 
 		receivers = new HashMap<>();
 		senders = new HashMap<>();
+
+		commandMap = new HashMap<>();
+		executer = new RouteExecuter(this, commandMap);
 	}
 
 	/**
@@ -88,6 +96,8 @@ public class BTServer {
 				senderThread.setName(nxt.name + " - Sender");
 				receiverThread.start();
 				receiverThread.setName(nxt.name + " - Receiver");
+				
+				executer.changeNumRobots(1);
 				return true;
 			}
 		} catch (NXTCommException e) {
@@ -99,7 +109,21 @@ public class BTServer {
 	}
 
 	/**
+	 * Set the list of commands which will be send to a specific NXT. If there is
+	 * already a list for the NXT with this name then it will be overwritten.
+	 * 
+	 * @param robotName The name of the robot the commands are for.
+	 * @param commands The LinkedList of String commands.
+	 */
+	public void sendCommands(String robotName, LinkedList<String> commands) {
+		commandMap.put(robotName, commands);
+	}
+
+	/**
 	 * Send a string to a NXT.
+	 * 
+	 * This is used internally by the server and should not be used to send
+	 * messages by classes other than server classes!
 	 * 
 	 * @param robotName The name of the recipient robot.
 	 * @param message The message string to send.
