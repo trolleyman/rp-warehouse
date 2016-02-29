@@ -43,7 +43,7 @@ public class MainInterface {
 	private MainInterface() {
 		server = new BTServer();
 		robotListeners = new ArrayList<>();
-		currentState = new State(TestMaps.TEST_MAP4);
+		currentState = TestStates.TEST_STATE4;
 		
 		locList = new LocationList("locations.csv");
 		itemList = new ItemList("items.csv", locList);
