@@ -3,7 +3,6 @@ package warehouse.nxt.bluetooth;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
-import lejos.nxt.Button;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
 
@@ -14,31 +13,43 @@ import lejos.nxt.comm.Bluetooth;
  * @author Reece
  *
  */
-public class NXTClient {
+public class NXTClient implements Runnable {
+	
+	private BTConnection connection;
+	private DataInputStream fromServer;
+	private DataOutputStream toServer;
+	private NXTReceiver receiver;
+	private NXTSender sender;
+	
+	public NXTClient() {
+		
+	}
 
+  @Override
+	public void run() {
+  	System.out.println("NXTClient");
+  	System.out.println("Waiting for BT");
+  	connection = Bluetooth.waitForConnection();
+  	System.out.println("Got connection!");
+  	
+  	fromServer = connection.openDataInputStream();
+  	toServer = connection.openDataOutputStream();
+  	
+  	receiver = new NXTReceiver(fromServer);
+  	sender = new NXTSender(toServer);
+  	
+  	Thread rThread = new Thread(receiver);
+  	rThread.start();
+  	System.out.println("Started");
+  	
+  	try {
+			rThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+  
   public static void main(String[] args) {
-
-    System.out.println("NXTClient");
-    System.out.println("Waiting for BT");
-    BTConnection connection = Bluetooth.waitForConnection();
-    System.out.println("Got connection!");
-
-    System.out.println("Creating streams");
-    DataInputStream fromServer = connection.openDataInputStream();
-    DataOutputStream toServer = connection.openDataOutputStream();
-
-    System.out.println("Creating threads");
-    Thread receiver = new Thread(new NXTReceiver(fromServer));
-    Thread sender = new Thread(new NXTSender(toServer));
-
-    System.out.println("Starting threads");
-    receiver.start();
-    sender.start();
-
-    System.out.println("Threads started");
-    Button.waitForAnyPress();
-    connection.close();
-    System.exit(0);
+  	new Thread(new NXTClient()).start();
   }
-
 }
