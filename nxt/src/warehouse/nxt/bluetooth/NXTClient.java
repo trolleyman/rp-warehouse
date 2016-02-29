@@ -41,6 +41,7 @@ public class NXTClient implements Runnable {
   	Thread rThread = new Thread(receiver);
   	rThread.start();
   	System.out.println("Started");
+  	sender.sendToServer("ready");
   	
   	// Wait for the receiver thread to end
   	try {

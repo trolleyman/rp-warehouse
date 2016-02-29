@@ -16,10 +16,10 @@ public class TestOpenServer implements MessageListener, Runnable {
 	@Override
 	public void run() {
 		server = new BTServer();
-		if (server.open(new NXTInfo(BTServer.btProtocol, "Dobot", "0016530FD7F4"))) {
+		if (server.open(new NXTInfo(BTServer.btProtocol, "Vader", "0016531B5A19"))) {
+			server.addListener(this);
+			server.sendCommands("Vader", new LinkedList<String>(Arrays.asList("left", "right", "forward")));
 		}
-		server.addListener(this);
-		server.sendCommands("Dobot", new LinkedList<String>(Arrays.asList("left", "right", "forward")));
 	}
 
 	@Override

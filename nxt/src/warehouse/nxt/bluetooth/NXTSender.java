@@ -12,25 +12,30 @@ import java.io.IOException;
  */
 public class NXTSender {
 
-  private DataOutputStream toServer;
+	private DataOutputStream toServer;
 
-  /**
-   * Create the NXTSender.
-   * 
-   * @param _toServer The DataOutputStream to the server.
-   */
-  public NXTSender(DataOutputStream toServer) {
-    this.toServer = toServer;
-  }
-  
-  public void sendToServer(String message) {
-  	try {
-  		
-  		toServer.writeUTF(message);
-  		toServer.flush();
-  		
-  	} catch (IOException e) {
-  		e.printStackTrace();
-  	}
-  }
+	/**
+	 * Create the NXTSender.
+	 * 
+	 * @param _toServer The DataOutputStream to the server.
+	 */
+	public NXTSender(DataOutputStream toServer) {
+		this.toServer = toServer;
+	}
+
+	/**
+	 * Send a String to the server
+	 * 
+	 * @param message The String to send
+	 */
+	public void sendToServer(String message) {
+		try {
+
+			toServer.writeUTF(message);
+			toServer.flush();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

@@ -98,6 +98,7 @@ public class BTServer {
 				receiverThread.setName(nxt.name + " - Receiver");
 				
 				executer.changeNumRobots(1);
+				addListener(executer);
 				return true;
 			}
 		} catch (NXTCommException e) {
@@ -129,8 +130,8 @@ public class BTServer {
 	 * @param message The message string to send.
 	 */
 	public void sendToRobot(String robotName, String message) {
-		toRobotQueues.get(robotName).offer(message);
 		System.out.println("Send " + message + " to " + robotName);
+		toRobotQueues.get(robotName).offer(message);
 	}
 
 	/**

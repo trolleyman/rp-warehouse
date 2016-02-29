@@ -2,7 +2,6 @@ package warehouse.nxt.bluetooth;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.Queue;
 
 /**
  * The receiver thread for the NXT. Receives messages from the server the NXT is
@@ -49,6 +48,11 @@ public class NXTReceiver implements Runnable {
   	switch(command) {
   		case "forward":
   			System.out.println("Go forward");
+  			client.sendToServer("ready");
+  			break;
+  			
+  		case "backward":
+  			System.out.println("Go backward");
   			client.sendToServer("ready");
   			break;
   			

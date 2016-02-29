@@ -25,17 +25,20 @@ public class RouteExecuter implements Runnable, MessageListener {
 
 	@Override
 	public void newMessage(String robotName, String message) {
+		System.out.println(robotName + " said " + message);
 		if (message.equals("ready")) {
 			finishedRobots++;
 		}
 
 		if (finishedRobots == numRobots) {
+			System.out.println("All robots ready");
 			sendNextMove();
 		}
 	}
 
 	private void sendNextMove() {
 		for (Entry<String, LinkedList<String>> e : commands.entrySet()) {
+			System.out.println("Next is " + e.getValue().peek());
 			server.sendToRobot(e.getKey(), e.getValue().pop());
 		}
 		
