@@ -2,6 +2,7 @@ package warehouse.pc.shared;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import warehouse.shared.robot.Robot;
 
@@ -13,10 +14,11 @@ import warehouse.shared.robot.Robot;
 
 public class RoutePlanner {
 
-	private HashMap<Robot, Jobs> pairedJobs;
-	private HashMap<Robot, Commands> pairedCommands;
+	private HashMap<Robot, JobQueue> pairedJobs;
+	private HashMap<Robot, CommandQueue> pairedCommands;
 	private RouteFinder finder;
 	private ArrayList<Bearing> directionList;
+	private Map map;
 
 	public RoutePlanner(Robot _robot, Map _map) {
 		finder = new RouteFinder(_map);
@@ -63,13 +65,13 @@ public class RoutePlanner {
 	
 	private void computeCommands(HashMap <Robot, Jobs> _pairedjobs){
 		
-		for(int i = 0; i < _pairedjobs.size(); i++){
 			
-		/*
-		 * not sure how the robots are defined, hopefully 1,2,3 so this loop is easy
-		 * if not maybe a list of robots?	
-		 */
-		ArrayList<Job> jobList = _pairedJobs.get(i); //not sure how the robots are defined, hopefully 1,2,3 so this loop is easy - if not maybe an arraylist of robots?
+		
+		for (Entry<Robot, JobQueue> entry : _pairedjobs.entrySet())
+		{
+		    Robot robot = entry.getKey();
+		
+		    JobQueue queue = entry.getValue(); //not sure how the robots are defined, hopefully 1,2,3 so this loop is easy - if not maybe an arraylist of robots?
 		
 			for(int j = 0; j < jobList.size(); j++){
 				
@@ -79,7 +81,7 @@ public class RoutePlanner {
 					
 					Item item = job.get(k); //get the kth item from the job
 				
-					Junction start = robot.position; // robot's position will change between jobs, don't forget that
+					Junction start = map.getJunction(, _y); // robot's position will change between jobs, don't forget that
 					Junction goal= item.position;     // this is probably legit
 					Direction facing = robot.facing  // is this an attribute? it needs to be
 				
