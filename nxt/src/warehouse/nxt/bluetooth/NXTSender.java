@@ -3,8 +3,6 @@ package warehouse.nxt.bluetooth;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import lejos.util.Delay;
-
 /**
  * The sender thread for the NXT. Sends threads to the server that the NXT is
  * connected to.
@@ -12,39 +10,27 @@ import lejos.util.Delay;
  * @author Reece
  *
  */
-public class NXTSender implements Runnable {
+public class NXTSender {
 
   private DataOutputStream toServer;
-  private boolean running;
 
   /**
    * Create the NXTSender.
    * 
    * @param _toServer The DataOutputStream to the server.
    */
-  public NXTSender(DataOutputStream _toServer) {
-    this.toServer = _toServer;
+  public NXTSender(DataOutputStream toServer) {
+    this.toServer = toServer;
   }
-
-  @Override
-  public void run() {
-    try {
-
-      System.out.println("Sender running");
-
-      toServer.writeUTF("Hello world!");
-      toServer.flush();
-
-      running = false;
-      while (running) {
-        System.out.println("Send hi");
-        toServer.writeUTF("Hello world!");
-        toServer.flush();
-        Delay.msDelay(1000);
-      }
-
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+  
+  public void sendToServer(String message) {
+  	try {
+  		
+  		toServer.writeUTF(message);
+  		toServer.flush();
+  		
+  	} catch (IOException e) {
+  		e.printStackTrace();
+  	}
   }
 }
