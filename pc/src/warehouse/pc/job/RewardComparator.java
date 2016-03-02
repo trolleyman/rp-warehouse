@@ -2,6 +2,9 @@ package warehouse.pc.job;
 
 import java.util.Comparator;
 
+/**
+ * Compares jobs to each other based on their total reward.
+ */
 public class RewardComparator implements Comparator<Job> {
 	@Override
 	public int compare(Job o1, Job o2) {

@@ -26,6 +26,7 @@ public class LocationList implements FileList {
 	 * Takes a csv file and reads it into an ArrayList of locations.
 	 */
 	private void parseFile(String _fileLocation) {
+		//Initialise variables.
 		BufferedReader br = null;
 		FileReader fr;
 		String line;
@@ -33,18 +34,21 @@ public class LocationList implements FileList {
 		locationList = new ArrayList<Location>();
 		
 		try {
+			//Start file readers.
 			fr = new FileReader(_fileLocation);
 			br = new BufferedReader(fr);
 			line = br.readLine();
 			
 			//Create a location object from each line and add to array.
 			while (line != null) {
+				//Split line into array.
 				splitLine = line.split(",");
 				
 				int x = Integer.valueOf(splitLine[0]);
 				int y = Integer.valueOf(splitLine[1]);
 				String itemName = splitLine[2];
 				
+				//Create location and add to list.
 				locationList.add(new Location(x, y, itemName));
 				
 				line = br.readLine();
