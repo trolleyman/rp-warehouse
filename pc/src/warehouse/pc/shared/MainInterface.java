@@ -43,7 +43,7 @@ public class MainInterface {
 	private MainInterface() {
 		server = new BTServer();
 		robotListeners = new ArrayList<>();
-		currentState = new State(TestMaps.TEST_MAP4, new Robot[0]);
+		currentState = TestStates.TEST_STATE4;
 		
 		locList = new LocationList("locations.csv");
 		itemList = new ItemList("items.csv", locList);
@@ -77,7 +77,7 @@ public class MainInterface {
 	}
 	
 	/**
-	 * Gets the current server that has been initialized.
+	 * Gets the current bluetooth server that has been initialized.
 	 */
 	public BTServer getServer() {
 		return server;
