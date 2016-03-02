@@ -14,9 +14,12 @@ public class JobListTest {
 		LocationList locList = new LocationList(locationsLocation);
 		ItemList itemList = new ItemList(itemsLocation, locList);
 		JobList jobList = new JobList(jobsLocation, itemList);
-		Drop.setDropPoint(dropsLocation);
+		DropList dropList = new DropList(dropsLocation);
 		
-		System.out.println("Drop: " + Drop.xPos + ", " + Drop.yPos);
+		for (int i = 0; i < dropList.getList().size(); i++) {
+			System.out.println("Drop: " + dropList.getList().get(i).getX() + ", " + dropList.getList().get(i).getY());
+		}
+			
 		System.out.println();
 		
 		for (int i = 0; i < jobList.getList().size(); i++) {

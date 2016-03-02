@@ -3,7 +3,7 @@ package warehouse.pc.shared;
 import java.util.ArrayList;
 
 import warehouse.pc.bluetooth.BTServer;
-import warehouse.pc.job.Drop;
+import warehouse.pc.job.DropList;
 import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemList;
 import warehouse.pc.job.JobList;
@@ -39,6 +39,8 @@ public class MainInterface {
 	private LocationList locList;
 	private ItemList itemList;
 	private JobList jobList;
+	@SuppressWarnings("unused")
+	private DropList dropList;
 	
 	private MainInterface() {
 		server = new BTServer();
@@ -52,7 +54,7 @@ public class MainInterface {
 			+ ", weight:" + i.getWeight() + ", [" + i.getX() + "," + i.getY() + "]");
 		}
 		jobList = new JobList("jobs.csv", itemList);
-		Drop.setDropPoint("drops.csv");
+		dropList = new DropList("drops.csv");
 	}
 	
 	/**

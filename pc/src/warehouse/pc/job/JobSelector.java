@@ -15,7 +15,8 @@ public class JobSelector {
 		LocationList locList = new LocationList(locationsLocation);
 		ItemList itemList = new ItemList(itemsLocation, locList);
 		JobList jobList = new JobList(jobsLocation, itemList);
-		Drop.setDropPoint(dropsLocation);
+		@SuppressWarnings("unused")
+		DropList dropList = new DropList(dropsLocation);
 		
 		jobs = jobList.getList();
 		jobs.sort(new RewardComparator()); //This sorts the jobs into reward order
