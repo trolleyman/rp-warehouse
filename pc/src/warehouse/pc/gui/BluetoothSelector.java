@@ -20,10 +20,12 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	private NXTInfo[] infos;
 	private String errorMessage;
 	private boolean error;
+	private boolean running;
 
 	public BluetoothSelector() {
 		super();
 		
+		running = true;
 		errorMessage = "";
 		error = false;
 		oldInfos = new NXTInfo[0];
@@ -105,7 +107,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 
 	@Override
 	public void run() {
-		while (true) {
+		while (running) {
 			int protocol = NXTCommFactory.BLUETOOTH;
 			error = false;
 			NXTComm comm;
@@ -123,6 +125,9 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 				errorMessage = e.getMessage();
 				error = true;
 				updateOptions();
+				if (errorMessage.equals("Bluetooth stack not detected")) {
+					running = false;
+				}
 			}
 			
 			try {
