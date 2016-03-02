@@ -26,7 +26,7 @@ public class JobHandler {
 	 */
 	public void request(Robot robot, int x, int y, float freeWeight){
 		//robot.assign doesn't exist yet
-		robot.assign(selector.getJob(x, y, freeWeight));
+		//robot.assign(selector.getJob(x, y, freeWeight));
 	}
 	
 	public void removeJob(int id){
