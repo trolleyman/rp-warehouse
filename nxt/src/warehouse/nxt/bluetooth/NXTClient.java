@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
+import warehouse.nxt.motion.Controller;
 
 /**
  * The main class for the NXT. Creates data streams and receiving sending
@@ -20,6 +21,7 @@ public class NXTClient implements Runnable {
 	private DataOutputStream toServer;
 	private NXTReceiver receiver;
 	private NXTSender sender;
+	private Controller controller;
 	
 	public NXTClient() {
 		
@@ -27,6 +29,9 @@ public class NXTClient implements Runnable {
 
   @Override
 	public void run() {
+  	// Get the movement controller
+  	controller = new Controller();
+  	
   	System.out.println("NXTClient");
   	System.out.println("Waiting for BT");
   	connection = Bluetooth.waitForConnection();
@@ -41,7 +46,6 @@ public class NXTClient implements Runnable {
   	Thread rThread = new Thread(receiver);
   	rThread.start();
   	System.out.println("Started");
-  	sender.sendToServer("ready");
   	
   	// Wait for the receiver thread to end
   	try {
@@ -54,6 +58,10 @@ public class NXTClient implements Runnable {
   
   public void sendToServer(String message) {
   	sender.sendToServer(message);
+  }
+  
+  public void doMove() {
+  	controller.doMove();
   }
   
   public static void main(String[] args) {

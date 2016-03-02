@@ -48,21 +48,29 @@ public class NXTReceiver implements Runnable {
   	switch(command) {
   		case "forward":
   			System.out.println("Go forward");
+  			client.doMove();
   			client.sendToServer("ready");
   			break;
   			
   		case "backward":
   			System.out.println("Go backward");
+  			client.doMove();
   			client.sendToServer("ready");
   			break;
   			
   		case "left":
   			System.out.println("Go left");
+  			client.doMove();
   			client.sendToServer("ready");
   			break;
   			
   		case "right":
   			System.out.println("Go right");
+  			client.doMove();
+  			client.sendToServer("ready");
+  			break;
+  		case "check":
+  			System.out.println("Check ready");
   			client.sendToServer("ready");
   			break;
   	}
