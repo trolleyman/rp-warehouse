@@ -191,7 +191,7 @@ public class Gui implements Runnable, RobotListener {
 		res.add(createConnect());
 		res.add(createRobotEditor());
 		res.add(createItemInfo());
-		res.add(Box.createVerticalGlue());
+		//res.add(Box.createVerticalGlue());
 		SpringUtilities.makeCompactGrid(res, res.getComponentCount(), 1, 6, 6, 6, 6);
 		return res;
 	}
