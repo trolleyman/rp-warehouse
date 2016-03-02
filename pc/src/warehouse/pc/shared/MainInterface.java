@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import warehouse.pc.bluetooth.BTServer;
 import warehouse.pc.job.DropList;
-import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemList;
 import warehouse.pc.job.JobList;
 import warehouse.pc.job.LocationList;
@@ -39,7 +38,6 @@ public class MainInterface {
 	private LocationList locList;
 	private ItemList itemList;
 	private JobList jobList;
-	@SuppressWarnings("unused")
 	private DropList dropList;
 	
 	private MainInterface() {
@@ -57,6 +55,13 @@ public class MainInterface {
 //		}
 		jobList = new JobList("jobs.csv", itemList);
 		dropList = new DropList("drops.csv");
+	}
+	
+	/**
+	 * Returns the drop list. This contains the list of every drop location.
+	 */
+	public DropList getDropList() {
+		return dropList;
 	}
 	
 	/**

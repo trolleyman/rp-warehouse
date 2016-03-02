@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 import javax.swing.JComponent;
 
+import warehouse.pc.job.Drop;
 import warehouse.pc.job.Location;
 import warehouse.pc.job.LocationList;
 import warehouse.pc.shared.Junction;
@@ -162,6 +163,10 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 	private void paintJunctions(Graphics2D _g2) {
 		for (int y = 0; y < state.getMap().getHeight(); y++) {
 			for (int x = 0; x < state.getMap().getWidth(); x++) {
+				Junction j = state.getMap().getJunction(x, y);
+				if (j == null)
+					continue;
+				
 				for (Location loc : locList.getList()) {
 					if (loc.getX() == x && loc.getY() == y) {
 						Graphics2D fg = (Graphics2D) _g2.create();
@@ -184,12 +189,19 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 					}
 				}
 				
-				Junction j = state.getMap().getJunction(x, y);
-				if (j == null)
-					continue;
+				double w = 5.0;
+				double h = 5.0;
 				
-				double w = 7.0;
-				double h = 7.0;
+				_g2.setColor(Color.BLACK);
+				for (Drop drop : MainInterface.get().getDropList().getList()) {
+					if (drop.getX() == x && drop.getY() == y) {
+						w *= 1.5;
+						h *= 1.5;
+						_g2.setColor(Color.RED);
+						break;
+					}
+				}
+				
 				_g2.fillOval((int) (j.getX() * xScale - w / 2.0) + 0,
 							 (int) (j.getY() * yScale - h / 2.0) + 0,
 							 (int) (w), (int) (h));
