@@ -73,23 +73,23 @@ public class BTServer {
 
 			System.out.println("Tring to open a connection");
 			if (comm.open(nxt)) {
-				System.out.println("Making stream and reader");
+				// Make in and out streams
 				DataOutputStream toRobot = new DataOutputStream(comm.getOutputStream());
 				DataInputStream fromRobot = new DataInputStream(comm.getInputStream());
 
-				System.out.println("Creating message queues");
+				// Create message queues
 				LinkedBlockingQueue<String> toRobotQueue = new LinkedBlockingQueue<>();
 				LinkedBlockingQueue<String> fromRobotQueue = new LinkedBlockingQueue<>();
 				toRobotQueues.put(nxt.name, toRobotQueue);
 				fromRobotQueues.put(nxt.name, fromRobotQueue);
 
-				System.out.println("Creating sender and receiver");
+				// Create sender and receiver
 				ServerSender sender = new ServerSender(toRobot, toRobotQueue);
 				ServerReceiver receiver = new ServerReceiver(fromRobot, fromRobotQueue, nxt.name);
 				senders.put(nxt.name, sender);
 				receivers.put(nxt.name, receiver);
 
-				System.out.println("Starting threads");
+				// Start threads
 				Thread senderThread = new Thread(sender);
 				Thread receiverThread = new Thread(receiver);
 				senderThread.start();
@@ -97,8 +97,9 @@ public class BTServer {
 				receiverThread.start();
 				receiverThread.setName(nxt.name + " - Receiver");
 				
-				executer.changeNumRobots(1);
+				// Update the listener for the executer
 				addListener(executer);
+				System.out.println("Connection made to " + nxt.name);
 				return true;
 			}
 		} catch (NXTCommException e) {
