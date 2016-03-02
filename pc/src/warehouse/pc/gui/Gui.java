@@ -14,13 +14,11 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
-import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import warehouse.pc.shared.MainInterface;
 import warehouse.pc.shared.RobotListener;
-import warehouse.pc.shared.State;
 import warehouse.shared.robot.Robot;
 
 public class Gui implements Runnable, RobotListener {
@@ -39,19 +37,6 @@ public class Gui implements Runnable, RobotListener {
 		
 		Gui g = new Gui();
 		g.run();
-		Timer t = new Timer(20, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent _e) {
-				State s = MainInterface.get().getCurrentState();
-				Robot[] robots = s.getRobots();
-				for (Robot r : robots) {
-					r.setFacing(r.getFacing() + 1.0);
-					MainInterface.get().updateRobot(r);
-					break;
-				}
-			}
-		});
-		t.start();
 	}
 	
 	private JFrame frame;
@@ -94,6 +79,7 @@ public class Gui implements Runnable, RobotListener {
 		panel.add(map, BorderLayout.CENTER);
 		panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		frame.add(panel);
+		frame.pack();
 		frame.setSize(1000, 600);
 	}
 	
@@ -106,7 +92,8 @@ public class Gui implements Runnable, RobotListener {
 		inner.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		JButton connect = new JButton("Connect");
 		BluetoothSelector select = new BluetoothSelector();
-		
+		select.setAlignmentX(BluetoothSelector.RIGHT_ALIGNMENT);
+		connect.setAlignmentX(JButton.RIGHT_ALIGNMENT);
 		connect.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

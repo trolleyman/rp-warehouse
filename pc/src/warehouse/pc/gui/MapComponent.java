@@ -17,11 +17,12 @@ import javax.swing.JComponent;
 
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.MainInterface;
+import warehouse.pc.shared.RobotListener;
 import warehouse.pc.shared.State;
 import warehouse.shared.robot.Robot;
 
 @SuppressWarnings("serial")
-public class MapComponent extends JComponent implements MouseListener {
+public class MapComponent extends JComponent implements MouseListener, RobotListener {
 	private State state;
 	private double xScale = 1.0;
 	private double yScale = 1.0;
@@ -36,6 +37,7 @@ public class MapComponent extends JComponent implements MouseListener {
 		this.gui = _gui;
 		addMouseListener(this);
 		state = MainInterface.get().getCurrentState();
+		MainInterface.get().addRobotListener(this);
 	}
 
 	@Override
@@ -159,8 +161,8 @@ public class MapComponent extends JComponent implements MouseListener {
 				
 				double w = 7.0;
 				double h = 7.0;
-				_g2.fillOval((int) (j.getX() * xScale - w / 2.0) + 1,
-							 (int) (j.getY() * yScale - h / 2.0) + 1,
+				_g2.fillOval((int) (j.getX() * xScale - w / 2.0) + 0,
+							 (int) (j.getY() * yScale - h / 2.0) + 0,
 							 (int) (w), (int) (h));
 			}
 		}
@@ -239,4 +241,9 @@ public class MapComponent extends JComponent implements MouseListener {
 	@Override public void mouseExited(MouseEvent e) {}
 	@Override public void mousePressed(MouseEvent e) {}
 	@Override public void mouseReleased(MouseEvent e) {}
+
+	@Override
+	public void robotChanged(Robot _r) {
+		this.repaint();
+	}
 }
