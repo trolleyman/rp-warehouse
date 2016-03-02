@@ -25,9 +25,9 @@ public class RouteExecuter implements Runnable, MessageListener {
 
 	@Override
 	public void newMessage(String robotName, String message) {
-		System.out.println(robotName + " said " + message);
 		if (message.equals("ready")) {
 			finishedRobots++;
+			System.out.println("Num: " + numRobots + " Ready: " + finishedRobots);
 		}
 
 		if (finishedRobots == numRobots) {
@@ -38,8 +38,16 @@ public class RouteExecuter implements Runnable, MessageListener {
 
 	private void sendNextMove() {
 		for (Entry<String, LinkedList<String>> e : commands.entrySet()) {
-			System.out.println("Next is " + e.getValue().peek());
-			server.sendToRobot(e.getKey(), e.getValue().pop());
+			String next = e.getValue().peek();
+			System.out.println(e.getKey() + ": " + next);
+			if (next != null) {
+				server.sendToRobot(e.getKey(), next);
+				e.getValue().removeFirst();
+			} else {
+				System.out.println("Reached end of the list for " + e.getKey());
+				changeNumRobots(-1);
+				commands.remove(e.getKey());
+			}
 		}
 		
 		finishedRobots = 0;
@@ -55,5 +63,9 @@ public class RouteExecuter implements Runnable, MessageListener {
 
 	public int getNumRobots() {
 		return numRobots;
+	}
+
+	public int getFinishedRobots() {
+		return finishedRobots;
 	}
 }

@@ -118,6 +118,9 @@ public class BTServer {
 	 * @param commands The LinkedList of String commands.
 	 */
 	public void sendCommands(String robotName, LinkedList<String> commands) {
+		System.out.println("Send commands for " + robotName + " to executer");
+		executer.changeNumRobots(1);
+		sendToRobot(robotName, "check");
 		commandMap.put(robotName, commands);
 	}
 
