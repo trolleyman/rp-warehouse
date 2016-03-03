@@ -55,10 +55,12 @@ public class RouteExecuter implements Runnable, MessageListener {
 
 	public void setNumRobots(int numRobots) {
 		this.numRobots = numRobots;
+		System.out.println("Num robots now " + numRobots);
 	}
 	
 	public void changeNumRobots(int change) {
 		this.numRobots += change;
+		System.out.println("Num robots now " + numRobots);
 	}
 
 	public int getNumRobots() {

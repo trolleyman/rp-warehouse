@@ -70,7 +70,7 @@ public class BTServer {
 	 * in new threads.
 	 * 
 	 * @param nxt The protocol type, name and id of the NXT.
-	 * @return true if the connection was opened and false if not.
+	 * @return True if the connection was opened and False if not.
 	 */
 	public synchronized boolean open(NXTInfo nxt) {
 		String name = nxt.name + " (" + nxt.deviceAddress + ")";
@@ -129,7 +129,7 @@ public class BTServer {
 		// Update the robot in the MainInterface
 		//MainInterface.get().updateRobot(new Robot(nxt.name, nxt.deviceAddress, 0, 0, 0.0));
 
-		System.out.println("Connection made to " + nxt.name);
+		System.out.println("Connection made to " + name);
 		return true;
 	}
 
@@ -141,7 +141,7 @@ public class BTServer {
 	 * @param commands The LinkedList of String commands.
 	 */
 	public void sendCommands(String robotName, LinkedList<String> commands) {
-		System.out.println("Send commands for " + robotName + " to executer");
+		System.out.println("Send commands for " + robotName);
 		executer.changeNumRobots(1);
 		sendToRobot(robotName, "check");
 		commandMap.put(robotName, commands);
