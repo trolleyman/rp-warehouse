@@ -11,8 +11,6 @@ import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
-import warehouse.pc.shared.MainInterface;
-import warehouse.shared.robot.Robot;
 
 /**
  * The BT communication "server". Can create new thread pairs for NXTs.
@@ -39,6 +37,9 @@ public class BTServer {
 	// The RouteExecuter and a HashMap of robot names to list of commands
 	private RouteExecuter executer;
 	private HashMap<String, LinkedList<String>> commandMap;
+	
+	// The lock for Bluetooth communications
+	private final static Object btLock = new Object();
 
 	/**
 	 * Setup the communication "server" for the current OS and driver. Initialise
@@ -193,5 +194,9 @@ public class BTServer {
 		for (Entry<String, ServerReceiver> entry : receivers.entrySet()) {
 			entry.getValue().addMessageListener(listener);
 		}
+	}
+
+	public static Object getLock() {
+		return btLock;
 	}
 }
