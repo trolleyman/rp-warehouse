@@ -1,10 +1,11 @@
-package warehouse.pc.bluetooth;
+package warehouse.pc.bluetooth.testing;
 
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.LinkedList;
 
 import lejos.pc.comm.NXTInfo;
+import warehouse.pc.bluetooth.BTServer;
 
 public class TestOpenServer implements Runnable {
 	
