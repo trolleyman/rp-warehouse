@@ -103,7 +103,7 @@ public class BTServer {
 				addListener(executer);				
 				
 				// Update the robot in the MainInterface
-				MainInterface.get().updateRobot(new Robot(nxt.name, nxt.deviceAddress, 0, 0, 0.0));
+				//MainInterface.get().updateRobot(new Robot(nxt.name, nxt.deviceAddress, 0, 0, 0.0));
 
 				System.out.println("Connection made to " + nxt.name);
 				return true;
