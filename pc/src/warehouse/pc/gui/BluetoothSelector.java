@@ -157,7 +157,22 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 				
 				System.out.println("Searching for robots...");
 				infos = comm.search(null);
-				System.out.println("Finished searching for robots!");
+				Arrays.sort(infos, (NXTInfo i1, NXTInfo i2) -> {
+					return i1.name.compareTo(i2.name);
+				});
+				if (infos.length == 0) {
+					System.out.println("Finished searching for robots.");
+				} else {
+					System.out.print("Finished searching for robots; found ");
+					for (int i = 0; i < infos.length; i++) {
+						System.out.print(infos[i].name);
+						if (i == infos.length - 2)
+							System.out.print(" and ");
+						else if (i != infos.length - 1)
+							System.out.print(", ");
+					}
+					System.out.println(".");
+				}
 				
 				updateOptions();
 			} catch (NXTCommException e) {
