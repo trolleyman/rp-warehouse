@@ -1,4 +1,4 @@
-package warehouse.pc.shared;
+package warehouse.pc.search;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,10 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 
 import rp.util.Collections;
+import warehouse.pc.shared.Bearing;
+import warehouse.pc.shared.Direction;
+import warehouse.pc.shared.Junction;
+import warehouse.pc.shared.Map;
 
 /**
  * Class to find a route between two nodes and return directions
