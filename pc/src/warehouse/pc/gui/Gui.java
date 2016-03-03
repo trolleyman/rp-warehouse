@@ -172,7 +172,7 @@ public class Gui implements Runnable, RobotListener {
 					return;
 				}
 				selectedItemName = table.getValueAt(i, 0).toString();
-				frame.repaint();
+				update();
 			}
 		});
 		JScrollPane scrollpane = new JScrollPane(table,

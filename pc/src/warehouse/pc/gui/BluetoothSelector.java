@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 
 import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
@@ -21,7 +22,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	private String errorMessage;
 	private boolean error;
 	private boolean running;
-
+	
 	public BluetoothSelector() {
 		super();
 		
@@ -39,6 +40,20 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 		t.start();
 	}
 	
+	/**
+	 * Returns the currently selected robot, or null if no robot is eelected.
+	 */
+	public NXTInfo getSelectedRobot() {
+		int i = this.getSelectedIndex();
+		if (i == -1 || infos.length == 0 || i >= infos.length)
+			return null;
+		
+		return infos[i];
+	}
+	
+	/**
+	 * Connects to the currently selected robot
+	 */
 	public void connect() {
 		synchronized (this) {
 			int i = this.getSelectedIndex();
@@ -46,11 +61,23 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 				return;
 			
 			NXTInfo info = infos[i];
+			
 			// Call open() in communication module to connect to a new robot.
-			MainInterface.get().getServer().open(info);
+			Thread t = new Thread(() -> {
+				if (!MainInterface.get().getServer().open(info)) {
+					JOptionPane.showMessageDialog(null,
+						"Could not connect to " + info.name + " (" + info.deviceAddress + ").",
+						"Connection Error",
+						JOptionPane.WARNING_MESSAGE);
+				}
+			});
+			t.start();
 		}
 	}
 	
+	/**
+	 * Updates the options list with the new robots.
+	 */
 	private void updateOptions() {
 		synchronized (this) {
 			// If infos hasn't changed, return.
@@ -104,7 +131,10 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 			oldInfos = infos;
 		}
 	}
-
+	
+	/**
+	 * Continually search for robots, then update the options list with the new robots.
+	 */
 	@Override
 	public void run() {
 		while (running) {
