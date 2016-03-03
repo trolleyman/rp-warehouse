@@ -3,6 +3,8 @@ package warehouse.nxt.bluetooth;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
+import lejos.nxt.Button;
+import lejos.nxt.LCD;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
 import warehouse.nxt.motion.Controller;
@@ -53,7 +55,11 @@ public class NXTClient implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-  	System.exit(0);
+  	
+  	LCD.clear();
+  	LCD.drawString("Server died,", 0, 0);
+  	LCD.drawString("Press to exit.", 0, 1);
+  	Button.waitForAnyPress();
 	}
   
   public void sendToServer(String message) {
