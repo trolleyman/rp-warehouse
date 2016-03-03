@@ -17,6 +17,8 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	private final String SEARCHING = "Searching...";
 	private final String NO_ROBOTS_DETECTED = "No robots detected.";
 	
+	private volatile boolean openingConnection;
+	
 	private NXTInfo[] oldInfos;
 	private NXTInfo[] infos;
 	private String errorMessage;
@@ -26,6 +28,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	public BluetoothSelector() {
 		super();
 		
+		openingConnection = false;
 		running = true;
 		errorMessage = "";
 		error = false;
@@ -56,6 +59,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	 */
 	public void connect() {
 		synchronized (this) {
+			openingConnection = true;
 			int i = this.getSelectedIndex();
 			if (i == -1 || infos.length == 0 || i >= infos.length)
 				return;
@@ -64,7 +68,9 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 			
 			// Call open() in communication module to connect to a new robot.
 			Thread t = new Thread(() -> {
-				if (!MainInterface.get().getServer().open(info)) {
+				boolean result = MainInterface.get().getServer().open(info);
+				openingConnection = false;
+				if (!result) {
 					JOptionPane.showMessageDialog(null,
 						"Could not connect to " + info.name + " (" + info.deviceAddress + ").",
 						"Connection Error",
@@ -80,6 +86,11 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	 */
 	private void updateOptions() {
 		synchronized (this) {
+			if (openingConnection && infos.length == 0) {
+				// This is to preotect against a case where whenever a connection is being opened on one thread
+				// comm.search(null) is interrupted and returns a zero-length array on the other.
+				return;
+			}
 			// If infos hasn't changed, return.
 			if (infos.length != 0 && oldInfos.length == infos.length) {
 				boolean equal = true;
