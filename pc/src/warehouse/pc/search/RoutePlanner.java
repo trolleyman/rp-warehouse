@@ -131,14 +131,16 @@ public class RoutePlanner {
 					Item item = job.get(k); // get the kth item from the job
 
 					Junction start = robot.getPosition();
-
+					Junction goal = null;
+					
+					
 					if (weights.get(robot) + item.getWeight() > maxWeight) {
 
-						Junction goal = base;
+						goal = base;
 						k--;
 						
 					} else {
-						Junction goal = item.getPosition();
+						goal = item.getPosition();
 					}
 
 					Direction facing = robot.getDirection();
