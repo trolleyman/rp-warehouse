@@ -18,10 +18,16 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	
 	private NXTInfo[] oldInfos;
 	private NXTInfo[] infos;
+	private String errorMessage;
+	private boolean error;
+	private boolean running;
 
 	public BluetoothSelector() {
 		super();
 		
+		running = true;
+		errorMessage = "";
+		error = false;
 		oldInfos = new NXTInfo[0];
 		infos = new NXTInfo[0];
 		
@@ -48,7 +54,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	private void updateOptions() {
 		synchronized (this) {
 			// If infos hasn't changed, return.
-			if (oldInfos.length == infos.length) {
+			if (infos.length != 0 && oldInfos.length == infos.length) {
 				boolean equal = true;
 				for (int i = 0; i < infos.length; i++) {
 					if (!infos[i].name.equals(oldInfos[i].name)) {
@@ -87,10 +93,10 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 				}
 			}
 			
-			if (infos.length == 0) {
+			if (error) {
+				this.addItem("Error: " + errorMessage);
+			} else if (infos.length == 0) {
 				this.addItem(NO_ROBOTS_DETECTED);
-			} else {
-				
 			}
 			
 			repaint();
@@ -101,8 +107,9 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 
 	@Override
 	public void run() {
-		while (true) {
+		while (running) {
 			int protocol = NXTCommFactory.BLUETOOTH;
+			error = false;
 			NXTComm comm;
 			try {
 				comm = NXTCommFactory.createNXTComm(protocol);
@@ -112,14 +119,19 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 				System.out.println("Finished searching for robots!");
 				
 				updateOptions();
-			} catch (NXTCommException e1) {
+			} catch (NXTCommException e) {
 				infos = new NXTInfo[0];
-				
+				System.err.println("Error searching for robots: " + e.getMessage());
+				errorMessage = e.getMessage();
+				error = true;
 				updateOptions();
+				if (errorMessage.equals("Bluetooth stack not detected")) {
+					running = false;
+				}
 			}
 			
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				
 			}

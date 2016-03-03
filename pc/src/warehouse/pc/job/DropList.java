@@ -44,11 +44,15 @@ public class DropList implements FileList {
 				//split line into array.
 				splitLine = line.split(",");
 				
-				int x = Integer.valueOf(splitLine[0]);
-				int y = Integer.valueOf(splitLine[1]);
-				
-				//Create drop point and add to list.
-				dropList.add(new Drop(x, y));
+				try {
+					int x = Integer.valueOf(splitLine[0]);
+					int y = Integer.valueOf(splitLine[1]);
+					
+					//Create drop point and add to list.
+					dropList.add(new Drop(x, y));
+				} catch (NumberFormatException e) {
+					// Ignore line.
+				}
 				
 				line = br.readLine();
 			}
