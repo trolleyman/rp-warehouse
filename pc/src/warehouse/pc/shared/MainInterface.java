@@ -35,6 +35,8 @@ public class MainInterface {
 	private State currentState;
 	private BTServer server;
 	
+	private RobotManager robotManager;
+	
 	private LocationList locList;
 	private ItemList itemList;
 	private JobList jobList;
@@ -42,6 +44,9 @@ public class MainInterface {
 	
 	private MainInterface() {
 		server = new BTServer();
+		
+		robotManager = null; // For now
+		
 		robotListeners = new ArrayList<>();
 		currentState = new State(TestMaps.TEST_MAP4, new Robot[] {
 				new Robot("Jeff", "0FBA8413", 0, 0, 0),
@@ -55,6 +60,13 @@ public class MainInterface {
 //		}
 		jobList = new JobList("jobs.csv", itemList);
 		dropList = new DropList("drops.csv");
+	}
+	
+	/**
+	 * Returns the robot manager that is in control of all the robots.
+	 */
+	public RobotManager getRobotManager() {
+		throw new AssertionError("RobotManager unimplemented.");
 	}
 	
 	/**
