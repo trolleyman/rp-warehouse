@@ -79,8 +79,8 @@ Obviously you should comment wherever necessary, where what is happening could b
 # Extra commands
 I would also recommend running these commands at some point:
 ```
-alias.plog log --decorate --oneline
-alias.tree log --decorate --oneline --graph --all
+git config --global alias.plog log --decorate --oneline
+git config --global alias.tree log --decorate --oneline --graph --all
 ```
 This enables you to run `git tree` which gives you a good overview of the project. If I run git tree at the moment I get this:
 ```
