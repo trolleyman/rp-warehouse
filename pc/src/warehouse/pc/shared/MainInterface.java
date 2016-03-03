@@ -7,6 +7,7 @@ import warehouse.pc.job.DropList;
 import warehouse.pc.job.ItemList;
 import warehouse.pc.job.JobList;
 import warehouse.pc.job.LocationList;
+import warehouse.pc.localisation.LocalisationManager;
 import warehouse.shared.robot.Robot;
 
 /**
@@ -37,6 +38,7 @@ public class MainInterface {
 	private State currentState;
 	private BTServer server;
 	
+	private LocalisationManager localisationManager;
 	private RobotManager robotManager;
 	
 	private LocationList locList;
@@ -52,6 +54,8 @@ public class MainInterface {
 		robotListeners = new ArrayList<>();
 		distanceListeners = new ArrayList<>();
 		
+		localisationManager = new LocalisationManager();
+		
 		currentState = new State(TestMaps.TEST_MAP4, new Robot[] {
 				new Robot("Jeff", "0FBA8413", 0, 0, 0),
 		});
@@ -64,6 +68,8 @@ public class MainInterface {
 //		}
 		jobList = new JobList("jobs.csv", itemList);
 		dropList = new DropList("drops.csv");
+		
+		this.addDistanceListener(localisationManager);
 	}
 	
 	/**
