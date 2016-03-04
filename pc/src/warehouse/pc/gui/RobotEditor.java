@@ -17,6 +17,8 @@ import warehouse.shared.robot.Robot;
 
 @SuppressWarnings("serial")
 public class RobotEditor extends JPanel {
+	private static String DEGREE_SYMBOL = "\u00B0";
+	
 	private Robot selectedRobot = null;
 	
 	private JLabel selectedRobotLabel;
@@ -66,7 +68,7 @@ public class RobotEditor extends JPanel {
 		JLabel yLabel = new JLabel("y:");
 		
 		JLabel headingLabel = new JLabel("Heading:");
-		JLabel degrees = new JLabel("°");
+		JLabel degrees = new JLabel(DEGREE_SYMBOL);
 		headingSpinner = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 360.0, 10.0));
 		
 		headingButton = new JButton("Set Heading");
@@ -122,9 +124,9 @@ public class RobotEditor extends JPanel {
 		super.doLayout();
 		
 		setPreferredSize(new Dimension(200, (int)
-			(headingButton.getY() + 6 + headingButton.getPreferredSize().getHeight())));
+			(headingButton.getY() + headingButton.getPreferredSize().getHeight())));
+		setMinimumSize(getPreferredSize());
 	}
-	
 	
 	/**
 	 * Selects a new robot to be edited. Can be null.
@@ -160,7 +162,6 @@ public class RobotEditor extends JPanel {
 			ySpinner.setValue(selectedRobot.getY());
 			headingSpinner.setValue(selectedRobot.getFacing());
 		}
-		
 		repaint();
 	}
 }
