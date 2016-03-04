@@ -202,6 +202,13 @@ public class RouteFinder {
 	private int getHeuristic(Junction current, Junction goal) {
 		return (Math.abs(current.getX() - goal.getX()) + Math.abs(current.getY() - goal.getY()));
 	}
+	
+	/**
+	 * Get the directions relative to the robot for a list of directions
+	 * @param oldList the original list of directions relative to north
+	 * @param direction the direction the robot is facing
+	 * @return a list of directions relative to the robot
+	 */
 
 	private LinkedList<Bearing> getActualDirections(ArrayList<Direction> oldList, Direction direction) {
 

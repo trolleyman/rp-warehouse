@@ -1,7 +1,9 @@
 package warehouse.pc.search;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 
 import warehouse.pc.job.Item;
@@ -27,7 +29,7 @@ public class RoutePlanner {
 	private Map map;
 	private Float maxWeight;
 	private HashMap<Robot, Float> weights;
-	private Junction base;
+	private ArrayList<Junction> bases;
 
 	/**
 	 * Create a new RoutePlanner for a map
@@ -44,8 +46,8 @@ public class RoutePlanner {
 	 *            the dropoff point
 	 */
 
-	public RoutePlanner(Map _map, int _maxWeight, HashMap<Robot, JobQueue> _jobs,
-			HashMap<Robot, CommandQueue> _commands, Junction _base) {
+	public RoutePlanner(Map _map, Float _maxWeight, HashMap<Robot, JobQueue> _jobs,
+			HashMap<Robot, CommandQueue> _commands, Junction _base, ArrayList<Junction> _dropList) {
 		finder = new RouteFinder(_map);
 		maxWeight = _maxWeight;
 		pairedJobs = _jobs;
@@ -98,15 +100,7 @@ public class RoutePlanner {
 	public HashMap<Robot, CommandQueue> getPairedCommands(Robot _robot) {
 		return this.pairedCommands;
 	}
-
-	/**
-	 * No idea what this does
-	 */
-
-	public void parseCommands() {
-
-	}
-
+	
 	/**
 	 * Makes lists of commands for the robots
 	 */
