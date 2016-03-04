@@ -2,6 +2,11 @@ package warehouse.pc.shared;
 
 import java.util.ArrayList;
 
+import warehouse.pc.bluetooth.BTServer;
+import warehouse.pc.job.DropList;
+import warehouse.pc.job.ItemList;
+import warehouse.pc.job.JobList;
+import warehouse.pc.job.LocationList;
 import warehouse.shared.robot.Robot;
 
 /**
@@ -14,24 +19,109 @@ import warehouse.shared.robot.Robot;
  * jobs that have been completed.
  */
 public class MainInterface {
-	private volatile static Object serverInitLock = new Object();
-	private volatile static MainInterface server = null;
+	private volatile static Object interfaceInitLock = new Object();
+	private volatile static MainInterface mainInterface = null;
 	
 	public static MainInterface get() {
-		synchronized (serverInitLock) {
-			if (server == null) {
-				server = new MainInterface();
+		synchronized (interfaceInitLock) {
+			if (mainInterface == null) {
+				mainInterface = new MainInterface();
 			}
-			return server;
+			return mainInterface;
 		}
 	}
 	
 	private ArrayList<RobotListener> robotListeners;
+	private ArrayList<DistanceListener> distanceListeners;
+	
 	private State currentState;
+	private BTServer server;
+	
+	private RobotManager robotManager;
+	
+	private LocationList locList;
+	private ItemList itemList;
+	private JobList jobList;
+	private DropList dropList;
 	
 	private MainInterface() {
+		server = new BTServer();
+		
+		robotManager = null; // For now
+		
 		robotListeners = new ArrayList<>();
-		currentState = new State(TestMaps.TEST_MAP4, new Robot[0]);
+		distanceListeners = new ArrayList<>();
+		
+		currentState = new State(TestMaps.TEST_MAP4, new Robot[] {
+				new Robot("Jeff", "0FBA8413", 0, 0, 0),
+		});
+		
+		locList = new LocationList("locations.csv");
+		itemList = new ItemList("items.csv", locList);
+//		for (Item i : itemList.getList()) {
+//			System.out.println(i.getName() + ": reward:" + i.getReward()
+//			+ ", weight:" + i.getWeight() + ", [" + i.getX() + "," + i.getY() + "]");
+//		}
+		jobList = new JobList("jobs.csv", itemList);
+		dropList = new DropList("drops.csv");
+	}
+	
+	/**
+	 * Returns the robot manager that is in control of all the robots.
+	 */
+	public RobotManager getRobotManager() {
+		throw new AssertionError("RobotManager unimplemented.");
+	}
+	
+	/**
+	 * Returns the drop list. This contains the list of every drop location.
+	 */
+	public DropList getDropList() {
+		return dropList;
+	}
+	
+	/**
+	 * Returns the job list. This contains the list of every job currently being tracked.
+	 */
+	public JobList getJobList() {
+		return jobList;
+	}
+	
+	/**
+	 * Returns the item list that records what the reward and weight is for each item.
+	 */
+	public ItemList getItemList() {
+		return itemList;
+	}
+	
+	/**
+	 * Returns the location list that records where the items are located in the map.
+	 */
+	public LocationList getLocationList() {
+		return locList;
+	}
+	
+	/**
+	 * Gets the current bluetooth server that has been initialized.
+	 */
+	public BTServer getServer() {
+		return server;
+	}
+	
+	/**
+	 * Adds a robot distance listener to the program that will be notified whenever a distance is recieved.
+	 */
+	public synchronized void addDistanceListener(DistanceListener _l) {
+		distanceListeners.add(_l);
+	}
+	
+	/**
+	 * Notifies all distance listeners that a distance has been recieved from a robot.
+	 */
+	public synchronized void distanceRecieved(Robot _robot, int _dist) {
+		for (DistanceListener l : distanceListeners) {
+			l.distanceRecieved(_robot, _dist);
+		}
 	}
 	
 	/**
@@ -64,9 +154,9 @@ public class MainInterface {
 	 * e.g. telling all robots to shut down.
 	 */
 	public void close() {
-		synchronized (serverInitLock) {
+		synchronized (interfaceInitLock) {
 			synchronized (this) {
-				server = null;
+				mainInterface = null;
 			}
 		}
 	}

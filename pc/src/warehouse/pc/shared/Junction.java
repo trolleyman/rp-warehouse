@@ -28,4 +28,8 @@ public class Junction {
 	public Junction[] getJunctions() {
 		return js;
 	}
+	
+	public String toString() {
+		return "(" + x + ", " + y + ")";
+	}
 }
