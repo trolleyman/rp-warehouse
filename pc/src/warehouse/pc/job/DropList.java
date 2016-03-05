@@ -1,24 +1,26 @@
 package warehouse.pc.job;
 
-import java.util.ArrayList;
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+
+import warehouse.pc.shared.Junction;
 
 /**
  * A list of locations of items on the grid.
  */
 public class DropList implements FileList {
 	
-	private ArrayList<Drop> dropList;
+	private ArrayList<Junction> dropList;
 	
 	public DropList(String _fileLocation) {
 		parseFile(_fileLocation);
 	}
 	
 	@Override
-	public ArrayList<Drop> getList() {
+	public ArrayList<Junction> getList() {
 		return this.dropList;
 	}
 	
@@ -31,7 +33,7 @@ public class DropList implements FileList {
 		FileReader fr;
 		String line;
 		String[] splitLine;
-		dropList = new ArrayList<Drop>();
+		dropList = new ArrayList<Junction>();
 		
 		try {
 			//Start file readers.
@@ -49,7 +51,7 @@ public class DropList implements FileList {
 					int y = Integer.valueOf(splitLine[1]);
 					
 					//Create drop point and add to list.
-					dropList.add(new Drop(x, y));
+					dropList.add(new Junction(x, y));
 				} catch (NumberFormatException e) {
 					// Ignore line.
 				}

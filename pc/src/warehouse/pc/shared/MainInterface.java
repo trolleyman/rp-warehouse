@@ -32,8 +32,12 @@ public class MainInterface {
 	}
 	
 	private ArrayList<RobotListener> robotListeners;
+	private ArrayList<DistanceListener> distanceListeners;
+	
 	private State currentState;
 	private BTServer server;
+	
+	private RobotManager robotManager;
 	
 	private LocationList locList;
 	private ItemList itemList;
@@ -42,7 +46,12 @@ public class MainInterface {
 	
 	private MainInterface() {
 		server = new BTServer();
+		
+		robotManager = null; // For now
+		
 		robotListeners = new ArrayList<>();
+		distanceListeners = new ArrayList<>();
+		
 		currentState = new State(TestMaps.TEST_MAP4, new Robot[] {
 				new Robot("Jeff", "0FBA8413", 0, 0, 0),
 		});
@@ -55,6 +64,13 @@ public class MainInterface {
 //		}
 		jobList = new JobList("jobs.csv", itemList);
 		dropList = new DropList("drops.csv");
+	}
+	
+	/**
+	 * Returns the robot manager that is in control of all the robots.
+	 */
+	public RobotManager getRobotManager() {
+		throw new AssertionError("RobotManager unimplemented.");
 	}
 	
 	/**
@@ -90,6 +106,22 @@ public class MainInterface {
 	 */
 	public BTServer getServer() {
 		return server;
+	}
+	
+	/**
+	 * Adds a robot distance listener to the program that will be notified whenever a distance is recieved.
+	 */
+	public synchronized void addDistanceListener(DistanceListener _l) {
+		distanceListeners.add(_l);
+	}
+	
+	/**
+	 * Notifies all distance listeners that a distance has been recieved from a robot.
+	 */
+	public synchronized void distanceRecieved(Robot _robot, int _dist) {
+		for (DistanceListener l : distanceListeners) {
+			l.distanceRecieved(_robot, _dist);
+		}
 	}
 	
 	/**
