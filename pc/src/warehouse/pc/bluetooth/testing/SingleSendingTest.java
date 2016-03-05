@@ -13,7 +13,7 @@ import lejos.pc.comm.NXTInfo;
 import warehouse.pc.bluetooth.BTServer;
 import warehouse.pc.bluetooth.MessageListener;
 
-public class SendingTest implements MessageListener {
+public class SingleSendingTest implements MessageListener {
 	
 	private final String name = "Dobot";
 	private final String address = "0016530FD7F4";
