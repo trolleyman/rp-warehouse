@@ -1,45 +1,66 @@
 package warehouse.pc.bluetooth.testing;
 
-import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.LinkedList;
+import static org.junit.Assert.*;
+
+import java.util.HashMap;
+import java.util.Map.Entry;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import lejos.pc.comm.NXTInfo;
 import warehouse.pc.bluetooth.BTServer;
+import warehouse.pc.bluetooth.MessageListener;
 
-public class MultiConnectionTest implements Runnable {
-	
-	private final String name1 = "Dobot";
-	private final String address1 = "0016530FD7F4";
-	private final String name2 = "Vader";
-	private final String address2 = "0016531B5A19";
-	
+public class MultiConnectionTest implements MessageListener {
+
+	private HashMap<String, String> robots;
 	private BTServer server;
-
-	public static void main(String[] args) {
-	// Custom System.out.println
-    PrintStream stream = new PrintStream(System.out) {
-      public void println(String s) {
-        String fullClassName = Thread.currentThread().getStackTrace()[2].getClassName();
-        String className = fullClassName.substring(fullClassName.lastIndexOf(".")+1);
-        String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
-        int lineNumber = Thread.currentThread().getStackTrace()[2].getLineNumber();
-        super.println("(" + className + "-" + methodName + " @ " + lineNumber + "): " + s); 
-      }
-    };
-    System.setOut(stream);
+	private int replies;
+	
+	@Before
+	public void setUp() throws Exception {
+		// Enable custom print stream
+		DebugPrintStream.enable();
 		
-		new MultiConnectionTest().run();
+		// Add robots to the test
+		robots = new HashMap<>();
+		robots.put("Dobot", "0016530FD7F4");
+		robots.put("Vader", "0016531B5A19");
+		
+		server = new BTServer();
+		replies = 0; 
+	}
+
+	@After
+	public void tearDown() throws Exception {
+	}
+
+	@Test
+	public void test() {
+		for (Entry<String, String> e : robots.entrySet()) {
+			assertTrue(server.open(new NXTInfo(BTServer.btProtocol, e.getKey(), e.getValue())));
+		}
+		
+		server.addListener(this);
+		
+		for (Entry<String, String> e : robots.entrySet()) {
+			server.sendToRobot(e.getKey(), "check");
+		}
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		
+		assertEquals(replies, robots.size());
 	}
 
 	@Override
-	public void run() {
-		server = new BTServer();
-		if (server.open(new NXTInfo(BTServer.btProtocol, name2, address2))) {
-			//server.sendCommands(name2, new LinkedList<String>(Arrays.asList("right", "right", "forward", "left")));
-		}
-		if (server.open(new NXTInfo(BTServer.btProtocol, name1, address1))) {
-			server.sendCommands(name1, new LinkedList<String>(Arrays.asList("left", "right", "forward")));
-		}
+	public void newMessage(String robotName, String message) {
+		replies++;
 	}
+
 }
