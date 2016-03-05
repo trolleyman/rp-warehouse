@@ -1,8 +1,7 @@
 package warehouse.pc.bluetooth.testing;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -23,17 +22,8 @@ public class SendingTest implements MessageListener {
 
 	@Before
 	public void setUp() throws Exception {
-		// Custom System.out.println
-    PrintStream stream = new PrintStream(System.out) {
-      public void println(String s) {
-        String fullClassName = Thread.currentThread().getStackTrace()[2].getClassName();
-        String className = fullClassName.substring(fullClassName.lastIndexOf(".")+1);
-        String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
-        int lineNumber = Thread.currentThread().getStackTrace()[2].getLineNumber();
-        super.println("(" + className + "-" + methodName + " @ " + lineNumber + "): " + s); 
-      }
-    };
-    System.setOut(stream);
+		// Enable custom print stream
+		DebugPrintStream.enable();
 		
 		server = new BTServer();
 		replies = 0;
