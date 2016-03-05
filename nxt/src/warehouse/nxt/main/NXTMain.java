@@ -69,6 +69,6 @@ public class NXTMain {
 	
 	
 	private void say( String _message ) { System.out.print( _message ); }	// Helper method to print
-	public static void main( String[] _arguments ) { new NXTMain(); }		// Helper method to throw errors
+	public static void main( String[] _arguments ) { new NXTMain(); }
 	
 }
