@@ -132,23 +132,36 @@ public class RoutePlanner {
 
 					Junction start = robot.getPosition();
 					Junction goal = null;
-					
+					Direction facing = robot.getDirection();
+					LinkedList<Bearing> list;
 					
 					if (weights.get(robot) + item.getWeight() > maxWeight) {
 
-						goal = base;
+						Junction closestBase = bases.get(0);
+						int steps = map.getHeight() + map.getWidth();
+						
+						for (int l = 0; l < bases.size(); l++){
+							
+							list = finder.findRoute(start, bases.get(l), facing);
+							if(list.size() < steps){
+								closestBase = bases.get(l);
+							}
+							
+						}
+						
+						goal = closestBase;
 						k--;
 						
 					} else {
 						goal = item.getPosition();
+						list = finder.findRoute(start, goal, facing); // find the route
+						Float newWeight = weights.get(robot) + item.getWeight();
+						weights.put(robot, newWeight);
 					}
-
-					Direction facing = robot.getDirection();
-
-					LinkedList<Bearing> list = finder.findRoute(start, goal, facing); // find the route
+					
 					pairedCommands.get(robot).addCommandList(list);
-					Float newWeight = weights.get(robot) + item.getWeight();
-					weights.put(robot, newWeight);
+					
+					
 
 				}
 
