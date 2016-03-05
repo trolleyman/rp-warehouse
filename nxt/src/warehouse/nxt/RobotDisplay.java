@@ -2,7 +2,6 @@ package warehouse.nxt;
 
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
-
 import lejos.nxt.Button;
 import lejos.nxt.Sound;
 import lejos.util.Delay;
@@ -13,31 +12,35 @@ import lejos.util.Delay;
 public class RobotDisplay {
 
 	// robot interface 
-	private String robotName = "BOT1";
 	private Graphics g;
 
-	// about current state
+	//Trackers
 	private boolean inDropOff = false; // Whether the robot is in drop off point
 	private boolean inPickUp = false; // Whether the robot is in pick up point
-
-	// about the job
-	private int counter = 0;
-	private int quantity = 5;
-	private String jobName = "Job";
-	private int weight = 2;
+	//private int counter = 0; not needed now
 	private int completedJobs = 0; 
 	
-	// about localisation
-	private int yCo = 40;
-	private int xCo = 24;
+	//Information passed though about the robot's job and location
+	private String robotName;
+	private int quantity;
+	private String jobName;
+	private int weight;
+	private int yCo;
+	private int xCo;
 
-	/*
-	 public Display(String jobName, int weight, int quantity, int xCo, int yCo) {
-	 
+	
+	 public RobotDisplay(String robotName, String jobName, int weight, int quantity, int xCo, int yCo) {
+		 this.robotName = robotName;
+		 this.jobName = jobName;
+		 this.weight = weight;
+		 this.quantity = quantity;
+		 this.xCo = xCo;
+		 this.yCo = yCo;
 	 }
-	 */
+	 
 	public static void main(String[] args) {
-		new RobotDisplay().show();
+		RobotDisplay display = new RobotDisplay("BOT1", "Job", 2, 5, 24, 40);
+		display.show();
 	}
 
 	/**
@@ -54,12 +57,12 @@ public class RobotDisplay {
 		while (Button.ESCAPE.isUp()) {
 			
 			// just for testing now.. Press RIGHT to activate pick up
-			if (Button.RIGHT.isDown()) {
+			if (Button.RIGHT.isDown() || inPickUp) {
 				pickUp();
 			}
 
 			// just for testing now.. Press LEFT to activate drop off
-			if (Button.LEFT.isDown()) {
+			if (Button.LEFT.isDown() || inDropOff) {
 				dropOff();
 			}
 
@@ -71,11 +74,12 @@ public class RobotDisplay {
 	 * Shows the interface when arriving at the pick up point
 	 */
 	private void pickUp() {
+		int counter = 0;
 		Sound.beepSequenceUp();
 		this.inPickUp = true;
 
 		// draws the screen during loading phase
-		drawPickUpMenu();
+		drawPickUpMenu(counter);
 		
 		if (inPickUp) {
 			// just for testing now.. Press ENTER to load item.
@@ -86,12 +90,12 @@ public class RobotDisplay {
 					g.drawRect(5, 5, 90, 45);
 					Sound.playTone(1000, 200);; // Added beeping sound
 					if(counter < 50) {
-						this.counter++;
-						drawPickUpUpdate();
+						counter++;
+						drawPickUpUpdate(counter);
 						Delay.msDelay(250);
 					} else {  // LOL for fancy fancy. Shakes the text when user tries to go over limit.
 						Sound.buzz();
-						drawPickUpUpdate();
+						drawPickUpUpdate(counter);
 						Delay.msDelay(250);
 					}
 				}
@@ -100,12 +104,12 @@ public class RobotDisplay {
 					g.drawRect(5, 5, 90, 45);
 					Sound.playTone(500, 200);;  // Added beeping sound
 					if(counter > 0) {
-						this.counter--;
-						drawPickUpUpdate();
+						counter--;
+						drawPickUpUpdate(counter);
 						Delay.msDelay(250);
 					} else { // Yup, again fancy fancy. Not really needed but for now just for fun.
 						Sound.buzz();
-						drawPickUpUpdate();
+						drawPickUpUpdate(counter);
 						Delay.msDelay(250);
 					}
 				}
@@ -124,19 +128,22 @@ public class RobotDisplay {
 				g.drawString("Need", 49, 15, Graphics.HCENTER);
 				g.drawString("More", 49, 31, Graphics.HCENTER);
 				Sound.beepSequence();
+				pickUp();
 			} else {
 				g.clear();
 				g.drawString("Over", 49, 6, Graphics.HCENTER);
 				g.drawString("The", 49, 23, Graphics.HCENTER);
 				g.drawString("Limit!", 49, 39, Graphics.HCENTER);
 				Sound.beepSequence();
+				pickUp();
+				
 			}
 			g.setFont(Font.getDefaultFont());
 			
 			Delay.msDelay(2000);
 			g.clear();
 			this.inPickUp = false;
-			this.counter = 0;
+			//counter = 0;
 		}
 	}
 
@@ -160,6 +167,7 @@ public class RobotDisplay {
 				g.drawString("You're", 49, 15, Graphics.HCENTER);
 				g.drawString("Welcome!", 49, 31, Graphics.HCENTER);		
 				g.setFont(Font.getDefaultFont());
+				completedJobs++;
 				Sound.beepSequenceUp();
 				Delay.msDelay(2000);
 				g.clear();
@@ -195,7 +203,7 @@ public class RobotDisplay {
 		g.setFont(Font.getDefaultFont());
 	}
 	
-	private void drawPickUpMenu() {
+	private void drawPickUpMenu(int counter) {
 		g.clear();
 
 		// Draws a box containing the information
@@ -214,7 +222,7 @@ public class RobotDisplay {
 		g.drawString("<- ", 5, 54, 0);
 	}
 	
-	private void drawPickUpUpdate() {
+	private void drawPickUpUpdate(int counter) {
 		// How many items are needed to be loaded
 		g.drawString("Required : " + String.valueOf(quantity), 10, 10, 0);
 		// 
@@ -225,5 +233,22 @@ public class RobotDisplay {
 		g.drawString("-", 20, 54, 0);
 		g.drawString(" ->", 80, 54, 0);
 		g.drawString("<- ", 5, 54, 0);
+	}
+
+	
+	public void setDropOff(boolean value) {
+		inDropOff = value;
+	}
+	public void setPickUp(boolean value) {
+		inPickUp = value;
+	}
+	public void setQuantity(int value) {
+		quantity = value;
+	}
+	public void setJobName(String value) {
+		jobName = value;
+	}
+	public void setWeight(int value) {
+		weight = value;
 	}
 }
