@@ -42,7 +42,7 @@ git branch -r *Only remote branches*
 Get a remote branch from the repo. Do this when someone has created a branch you want to pull into your local repo.
 ```
 git fetch *gets all changes from the remote repo*
-git checkout <branch-name> *set up a local branch to track the remote*
+git checkout -b <branch-name> remotes/origin/<branch-name> *set up a local branch to track the remote*
 ```
 Create a new branch
 ```
