@@ -16,8 +16,8 @@ import warehouse.pc.shared.Map;
 import warehouse.shared.robot.Robot;
 
 /**
- * Class to create lists of bearings for individual robots to take VERY MUCH IN
- * PROGRESS - THERE ARE LOTS OF SQUIGGLY RED LINES EVERYWHERE
+ * Class to create lists of bearings for individual robots to take 
+ * VERY MUCH IN PROGRESS - THERE ARE LOTS OF SQUIGGLY RED LINES EVERYWHERE
  *
  */
 
@@ -46,19 +46,25 @@ public class RoutePlanner {
 	 *            the dropoff point
 	 */
 
-	public RoutePlanner(Map _map, Float _maxWeight, HashMap<Robot, JobQueue> _jobs,
-			HashMap<Robot, CommandQueue> _commands, Junction _base, ArrayList<Junction> _dropList) {
+	public RoutePlanner(Map _map, Float _maxWeight, HashMap<Robot, JobQueue> _jobs, Junction _base, ArrayList<Junction> _dropList) {
 		finder = new RouteFinder(_map);
 		maxWeight = _maxWeight;
 		pairedJobs = _jobs;
-		pairedCommands = _commands;
-		base = _base;
+		
+		pairedCommands = new HashMap<Robot, CommandQueue>();
+		
+		for(Entry<Robot, JobQueue> entry : pairedJobs.entrySet()){
+			
+			pairedCommands.put(entry.getKey(), new CommandQueue());
+		}
+		
+		bases = _dropList;
 
 		weights = new HashMap<Robot, Float>();
 
 		for (Entry<Robot, CommandQueue> entry : pairedCommands.entrySet()) {
 
-			weights.put(entry.getKey(), 0);
+			weights.put(entry.getKey(), 0f);
 
 		}
 
