@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import warehouse.pc.shared.Junction;
+
 /**
  * A list of items to be available for pickup in jobs.
  */
@@ -65,9 +67,11 @@ public class ItemList implements FileList {
 				//The exception shouldn't be thrown if the files are correct.
 				int x;
 				int y;
+				Junction j;
 				if (found) {
-					x = locList.getList().get(count).getX();
-					y = locList.getList().get(count).getY();
+					j = locList.getList().get(count).getJunction();
+					x = j.getX();
+					y = j.getY();
 				} else {
 					throw new ItemNotInListException(name);
 				}

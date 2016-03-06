@@ -38,7 +38,7 @@ public class Job {
 	public String toString() {
 		String result = String.valueOf(id);
 		for(int i = 0; i < items.size(); i++) {
-			result += ", " + items.get(i).getName() + ", " + items.get(i).getQuantity();
+			result += ", " + items.get(i).getItem().getName() + ", " + items.get(i).getQuantity();
 		}
 		result += ", " + totalWeight + ", " + totalReward;
 		
