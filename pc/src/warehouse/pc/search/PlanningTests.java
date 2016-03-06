@@ -54,7 +54,7 @@ public class PlanningTests {
 		Item medium = new Item("medium", 10, 10f, 2, 1);
 		Item light = new Item("light", 10, 5f, 0, 0);
 		
-		Job testJob = new Job(0, _items, 60, 30)
+		//Job testJob = new Job(0, _items, 60, 30)
 		
 		ArrayList<Junction> bases = new ArrayList<>();
 		
