@@ -110,7 +110,6 @@ public class PlanningTests {
 		job1.add(new Job(0, list1, 65, 0));
 		map.put(robot1, job1);
 		
-		assertTrue
 		
 		
 	}
