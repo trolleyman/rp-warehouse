@@ -3,10 +3,10 @@ package warehouse.pc.search;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map.Entry;
 
 import warehouse.pc.job.Item;
+import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
 import warehouse.pc.shared.Bearing;
 import warehouse.pc.shared.CommandQueue;
@@ -128,12 +128,11 @@ public class RoutePlanner {
 			for (int j = 0; j < queue.size(); j++) {
 
 				Job job = queue.get(j); // get the next job from the job list
-				//ArrayList<Item> items = job.getItems();															// TODO
-				ArrayList<Item> items = new ArrayList<Item>();
+				ArrayList<ItemQuantity> items = job.getItems();				// get a list of items in the job												
 				
 				for (int k = 0; k < items.size(); k++) {
 
-					Item item = items.get(k); // get the kth item from the job										
+					Item item = items.get(k).getItem(); // get the kth item from the job										
 					
 					Junction start = map.getJunction((int)robot.getX(), (int)robot.getY());
 					Junction goal = null;
