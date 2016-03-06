@@ -4,11 +4,14 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import warehouse.pc.job.Item;
+import warehouse.pc.job.Job;
 import warehouse.pc.shared.Bearing;
 import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Junction;
@@ -46,7 +49,13 @@ public class PlanningTests {
 		tm3 = TestMaps.TEST_MAP3;
 		tm4 = TestMaps.TEST_MAP4;
 		
-		HashMap<Robot, JobQueue> pj = new HashMap<Robot, JobQueue>();
+		HashMap<Robot, LinkedList<Job>> pj = new HashMap<Robot, LinkedList<Job>>();
+		Item heavy = new Item("heavy", 10, 20f, 1, 3);
+		Item medium = new Item("medium", 10, 10f, 2, 1);
+		Item light = new Item("light", 10, 5f, 0, 0);
+		
+		Job testJob = new Job(0, _items, 60, 30)
+		
 		ArrayList<Junction> bases = new ArrayList<>();
 		
 		tpl = new RoutePlanner(tm1, 50f, pj, bases);

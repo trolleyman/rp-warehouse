@@ -127,12 +127,13 @@ public class RoutePlanner {
 
 			for (int j = 0; j < queue.size(); j++) {
 
-				Job job = queue.get(j); // get the next job from the job list										// TODO
+				Job job = queue.get(j); // get the next job from the job list
+				//ArrayList<Item> items = job.getItems();																// TODO
+				ArrayList<Item> items = new ArrayList<Item>();
 				
-				for (int k = 0; k < job.getItems().size(); k++) {
+				for (int k = 0; k < items.size(); k++) {
 
-					//Item item = job.get(k); // get the kth item from the job										// TODO
-					Item item = new Item("placeholder", 5f, 5f, 0, 0);				
+					Item item = items.get(k); // get the kth item from the job										
 					
 					Junction start = map.getJunction((int)robot.getX(), (int)robot.getY());
 					Junction goal = null;
