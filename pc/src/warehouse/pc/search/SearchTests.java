@@ -15,6 +15,17 @@ import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.TestMaps;
 
+/**
+ * Tests to check how optimal and successful the route finding algorithm is:
+ * 
+ * Not getting caught out by unique situations (e.g. goal = start)
+ * Producing paths that actually lead to the goal
+ * Producing optimal paths
+ * 
+ * @author George Kaye
+ *
+ */
+
 public class SearchTests {
 
 	RouteFinder ts1;
