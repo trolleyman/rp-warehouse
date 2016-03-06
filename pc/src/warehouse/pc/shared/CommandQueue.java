@@ -1,5 +1,6 @@
 package warehouse.pc.shared;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
@@ -11,14 +12,14 @@ import java.util.concurrent.BlockingQueue;
 
 public class CommandQueue{
 
-	private BlockingQueue<Bearing> commands;
+	private LinkedList<Bearing> commands;
 	
 	/**
 	 * Create a new CommandQueue
 	 */
 	
 	public CommandQueue(){
-		
+		commands = new LinkedList<Bearing>();
 	}
 	
 	/**
@@ -49,11 +50,16 @@ public class CommandQueue{
 	
 	public Bearing getNextCommand(){
 		
-		try {
-			return commands.take();
-		} catch (InterruptedException e) {}
-		
-		return null;
+		return commands.pop();
+	}
+	
+	/**
+	 * Get the whole list of commands
+	 * @return the list of commands
+	 */
+	
+	public LinkedList<Bearing> getCommands(){
+		return commands;
 	}
 	
 }

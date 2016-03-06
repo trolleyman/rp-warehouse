@@ -3,6 +3,7 @@ package warehouse.pc.search;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -19,6 +20,17 @@ import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.TestMaps;
 import warehouse.shared.robot.Robot;
+
+/**
+ * Tests to check the planning aspect of the route finding:
+ * 
+ * Handling multiple robots
+ * Returning to the base if the job would exceed the maximum weight
+ * 
+ * @author George Kaye
+ *
+ */
+
 
 public class PlanningTests {
 
@@ -49,13 +61,14 @@ public class PlanningTests {
 	Item medium;
 	Item light;
 	
+	ArrayList<Junction> bases;
 	HashMap<Robot, LinkedList<Job>> map;
 	
 	@Before
 	public void setUp() throws Exception {
 		
 		robot1 = new Robot("george", "george", 0.0, 0.0, 0.0);
-		robot2 = new Robot("jason", "jason", 0.0, 0.0, 0.0);
+		robot2 = new Robot("jason", "jason", 5.0, 0.0, 0.0);
 		
 		
 		tm1 = TestMaps.TEST_MAP1;
@@ -63,15 +76,17 @@ public class PlanningTests {
 		tm3 = TestMaps.TEST_MAP3;
 		tm4 = TestMaps.TEST_MAP4;
 		
-		heavy = new Item("heavy", 10, 20f, 1, 3);
-		medium = new Item("medium", 10, 10f, 2, 1);
-		light = new Item("light", 10, 5f, 0, 0);
+		heavy = new Item("heavy", 10, 20f, 1, 0);
+		medium = new Item("medium", 10, 10f, 2, 0);
+		light = new Item("light", 10, 5f, 3, 0);
 		
-		HashMap<Robot, LinkedList<Job>> map = new HashMap<Robot, LinkedList<Job>>();
-		ArrayList<Junction> bases = new ArrayList<>();
+		map = new HashMap<Robot, LinkedList<Job>>();
+		
+		bases = new ArrayList<>();
+		bases.add(tm2.getJunction(0, 0));
 		
 		tpl = new RoutePlanner(tm1, 60f, map, bases);
-		tp2 = new RoutePlanner(tm2, 60f, map, bases);
+
 		tp3 = new RoutePlanner(tm3, 60f, map, bases);
 		tp4 = new RoutePlanner(tm4, 60f, map, bases);
 		
@@ -86,7 +101,7 @@ public class PlanningTests {
 	 +---+---+---+---+---+---+
 	 |       |       |       |
 	 +       +       +       +
-	 |       |       |       |
+	 |       |       |      |
 	 +       +       +       +
 	 |       |       |       |
 	 +       +       +       +
@@ -96,21 +111,40 @@ public class PlanningTests {
 	 +---+---+---+---+---+---+*/
 	
 	
+	// robot is currently always facing NORTH
+	
 	@Test
 	public void test() {
 
 		
 		LinkedList<Job> job1 = new LinkedList<>();
+		LinkedList<Job> job2 = new LinkedList<>();
 		ArrayList<ItemQuantity> list = new ArrayList<>();
 		ArrayList<ItemQuantity> list1 = new ArrayList<>();
+		ArrayList<ItemQuantity> list2 = new ArrayList<>();
+		ArrayList<ItemQuantity> list3 = new ArrayList<>();
 		list.add(new ItemQuantity(heavy, 3));
 		list1.add(new ItemQuantity(light, 3));
 		list1.add(new ItemQuantity(medium, 5));
+		list2.add(new ItemQuantity(light, 10));
+		list2.add(new ItemQuantity(medium, 1));
+		list2.add(new ItemQuantity(heavy, 2));
 		job1.add(new Job(0, list, 60, 0));
-		job1.add(new Job(0, list1, 65, 0));
+		job1.add(new Job(1, list1, 65, 0));
+		job2.add(new Job(2, list2, 100, 0));
+		
 		map.put(robot1, job1);
+		map.put(robot2, job2);
 		
+		tp2 = new RoutePlanner(tm2, 60f, map, bases);
+		tp2.computeCommands();
+		LinkedList<Bearing> bearings = tp2.getCommands(robot1).getCommands();
+		LinkedList<Bearing> bearings1 = tp2.getCommands(robot2).getCommands();
 		
+		System.out.println(bearings);
+		System.out.println(bearings1);
+		assertTrue(bearings.equals(Arrays.asList(r, b, b, f, f, b, f, f, b)));
+		assertTrue(bearings1.equals(Arrays.asList(b, r, f, f, f, f, b, f)));
 		
 	}
 
