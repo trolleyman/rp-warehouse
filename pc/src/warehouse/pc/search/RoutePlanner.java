@@ -17,13 +17,13 @@ import warehouse.shared.robot.Robot;
 
 /**
  * Class to create lists of bearings for individual robots to take 
- * VERY MUCH IN PROGRESS - THERE ARE LOTS OF SQUIGGLY RED LINES EVERYWHERE
+ * Uses a lot of placeholders while the job and robot teams get their classes together
  *
  */
 
 public class RoutePlanner {
 
-	private HashMap<Robot, JobQueue> pairedJobs;
+	private HashMap<Robot, LinkedList<Job>> pairedJobs;
 	private HashMap<Robot, CommandQueue> pairedCommands;
 	private RouteFinder finder;
 	private Map map;
@@ -46,22 +46,25 @@ public class RoutePlanner {
 	 *            the dropoff point
 	 */
 
-	public RoutePlanner(Map _map, Float _maxWeight, HashMap<Robot, JobQueue> _jobs, Junction _base, ArrayList<Junction> _dropList) {
+	public RoutePlanner(Map _map, Float _maxWeight, HashMap<Robot, LinkedList<Job>> _jobs, ArrayList<Junction> _dropList) {
 		finder = new RouteFinder(_map);
 		maxWeight = _maxWeight;
 		pairedJobs = _jobs;
 		
 		pairedCommands = new HashMap<Robot, CommandQueue>();
 		
-		for(Entry<Robot, JobQueue> entry : pairedJobs.entrySet()){
+		// make a command queue for every robot, and put them in a hash table
+		
+		for(Entry<Robot, LinkedList<Job>> entry : pairedJobs.entrySet()){
 			
 			pairedCommands.put(entry.getKey(), new CommandQueue());
 		}
 		
 		bases = _dropList;
-
 		weights = new HashMap<Robot, Float>();
 
+		// set the weight for every robot to be 0 (carrying nothing)
+		
 		for (Entry<Robot, CommandQueue> entry : pairedCommands.entrySet()) {
 
 			weights.put(entry.getKey(), 0f);
@@ -111,29 +114,34 @@ public class RoutePlanner {
 	 * Makes lists of commands for the robots
 	 */
 
-	private void computeCommands() {
+	public void computeCommands() {
 
-		for (Entry<Robot, JobQueue> entry : pairedJobs.entrySet()) {
+		for (Entry<Robot, LinkedList<Job>> entry : pairedJobs.entrySet()) {
 
 			Robot robot = entry.getKey(); // getting the first robot
 
-			JobQueue queue = entry.getValue(); // getting the queue of jobs
+			LinkedList<Job> queue = entry.getValue(); // getting the queue of jobs
 
 			// this assumes the queue is already in the order we
 			// want the robot to pick them up in
 
 			for (int j = 0; j < queue.size(); j++) {
 
-				Job job = jobList.get(j); // get the jth job from the job list
+				Job job = queue.get(j); // get the next job from the job list										// TODO
+				
+				for (int k = 0; k < job.getItems().size(); k++) {
 
-				for (int k = 0; k < job.size(); k++) {
-
-					Item item = job.get(k); // get the kth item from the job
-
-					Junction start = robot.getPosition();
+					//Item item = job.get(k); // get the kth item from the job										// TODO
+					Item item = new Item("placeholder", 5f, 5f, 0, 0);				
+					
+					Junction start = map.getJunction((int)robot.getX(), (int)robot.getY());
 					Junction goal = null;
-					Direction facing = robot.getDirection();
-					LinkedList<Bearing> list;
+					//Direction facing = robot.getDirection();														// TODO
+					Direction facing = Direction.Y_POS;
+					LinkedList<Bearing> list = new LinkedList<Bearing>();
+					
+					// if adding that item would make the robot carry more than the max weight
+					// go to the nearest base instead and repeat this iteration
 					
 					if (weights.get(robot) + item.getWeight() > maxWeight) {
 
@@ -144,16 +152,19 @@ public class RoutePlanner {
 							
 							list = finder.findRoute(start, bases.get(l), facing);
 							if(list.size() < steps){
-								closestBase = bases.get(l);
+							closestBase = bases.get(l);
 							}
 							
 						}
 						
 						goal = closestBase;
+						weights.put(robot, 0f);
 						k--;
 						
+						
+						
 					} else {
-						goal = item.getPosition();
+						goal = item.getJunction();
 						list = finder.findRoute(start, goal, facing); // find the route
 						Float newWeight = weights.get(robot) + item.getWeight();
 						weights.put(robot, newWeight);

@@ -25,7 +25,6 @@ public class SearchTests {
 	Map tm2;
 	Map tm3;
 	Map tm4;
-	final boolean alexIsHelping = false;
 	
 	Direction xp = Direction.X_POS;
 	Direction xn = Direction.X_NEG;
@@ -110,7 +109,6 @@ public class SearchTests {
 		assertTrue(testRoute(ts2, tm2, 1, 6, 6, 4, yp).size() == 7);
 		assertTrue(testRoute(ts2, tm2, 3, 0, 3, 6, yn).size() == 8);
 		assertTrue(testRoute(ts1, tm1, 0, 0, 0, 0, yn).equals(Arrays.asList()));
-		assertFalse(alexIsHelping);
 		
 	}
 	
