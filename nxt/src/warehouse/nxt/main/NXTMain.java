@@ -2,11 +2,13 @@ package warehouse.nxt.main;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
 import warehouse.nxt.communication.NXTReceiver;
 import warehouse.nxt.communication.NXTSender;
+import warehouse.nxt.utils.MyString;
 import warehouse.nxt.utils.Robot;
 
 
@@ -45,7 +47,7 @@ public class NXTMain {
 		this.connection = Bluetooth.waitForConnection();
 
 		this.startStreams();
-		// this.getMyself();
+		this.getMyself();
 		// this.initRobotInterface();
 		// this.initRobotActions();
 		this.startThreads();
@@ -55,6 +57,23 @@ public class NXTMain {
 	private void startStreams() {
 		this.fromPC = this.connection.openDataInputStream();
 		this.toPC = this.connection.openDataOutputStream();
+	}
+	
+	// Really ugly way of getting X and Y from PC as " Position: <number>, <number> " !!! Attention, exactly that format
+	private void getMyself() {
+		String input;
+		try {
+			input = this.fromPC.readUTF();
+			String[] explosion = MyString.split( ": ", input );
+			
+			if( explosion[0].equals( "Position" ) ) {
+				String[] position = MyString.split( ", ", explosion[1] );
+				this.myself.x = Integer.parseInt( position[0] );
+				this.myself.y = Integer.parseInt( position[1] );
+			}
+			else { this.say( "Wrong data read from PC." ); }
+		}
+		catch( IOException _exception ) { _exception.printStackTrace(); }
 	}
 	
 	// Starts the Sender and Receiver Threads
