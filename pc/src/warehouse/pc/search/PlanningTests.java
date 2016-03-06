@@ -21,6 +21,17 @@ import warehouse.pc.shared.Map;
 import warehouse.pc.shared.TestMaps;
 import warehouse.shared.robot.Robot;
 
+/**
+ * Tests to check the planning aspect of the route finding:
+ * 
+ * Handling multiple robots
+ * Returning to the base if the job would exceed the maximum weight
+ * 
+ * @author George Kaye
+ *
+ */
+
+
 public class PlanningTests {
 
 	Map tm1;
