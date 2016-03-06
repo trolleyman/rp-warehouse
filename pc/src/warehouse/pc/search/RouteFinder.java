@@ -30,6 +30,7 @@ public class RouteFinder {
 	private HashMap<Junction, Junction> cameFrom; // Pointers to junctions once
 													// path is found
 
+	private Map map;
 	/**
 	 * Create a new RouteFinder object for a given map
 	 * 
@@ -40,7 +41,7 @@ public class RouteFinder {
 	public RouteFinder(Map _map) {
 
 		// add the junctions from the map to an ArrayList of nodes to be checked
-
+		map = _map;
 		nodes = new ArrayList<Junction>();
 		for (int i = 0; i < _map.getWidth(); i++) {
 			for (int j = 0; j < _map.getHeight(); j++) {
@@ -65,10 +66,15 @@ public class RouteFinder {
 
 		// if the goal or start is not on the map return null
 
+		start = map.getJunction(start.getX(), start.getY());
+		goal = map.getJunction(goal.getX(), goal.getY());
+		
+		
 		if (!nodes.contains(start) || !nodes.contains(goal)) {
 			return null;
 		}
 
+		
 		searched = new ArrayList<Junction>();
 		frontier = new LinkedHashMap<Junction, Integer>();
 		cameFrom = new HashMap<Junction, Junction>();

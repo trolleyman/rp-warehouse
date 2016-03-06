@@ -47,9 +47,11 @@ public class RoutePlanner {
 	 */
 
 	public RoutePlanner(Map _map, Float _maxWeight, HashMap<Robot, LinkedList<Job>> _jobs, ArrayList<Junction> _dropList) {
+		
 		finder = new RouteFinder(_map);
 		maxWeight = _maxWeight;
 		pairedJobs = _jobs;
+		map = _map;
 		
 		pairedCommands = new HashMap<Robot, CommandQueue>();
 		
@@ -133,6 +135,7 @@ public class RoutePlanner {
 				for (int k = 0; k < items.size(); k++) {
 
 					Item item = items.get(k).getItem(); // get the kth item from the job										
+					int quantity = items.get(k).getQuantity();
 					
 					Junction start = map.getJunction((int)robot.getX(), (int)robot.getY());
 					Junction goal = null;
@@ -143,7 +146,7 @@ public class RoutePlanner {
 					// if adding that item would make the robot carry more than the max weight
 					// go to the nearest base instead and repeat this iteration
 					
-					if (weights.get(robot) + item.getWeight() > maxWeight) {
+					if (weights.get(robot) + quantity * item.getWeight() > maxWeight) {
 
 						Junction closestBase = bases.get(0);
 						int steps = map.getHeight() + map.getWidth();
@@ -159,18 +162,28 @@ public class RoutePlanner {
 						
 						goal = closestBase;
 						weights.put(robot, 0f);
-						k--;
+						pairedCommands.get(robot).addCommandList(list);
+						
+						// this should be updated by the robot, here for testing purposes
+						
+						robot.setX(goal.getX());
+						robot.setY(goal.getY());
 						
 						
-						
-					} else {
-						goal = item.getJunction();
-						list = finder.findRoute(start, goal, facing); // find the route
-						Float newWeight = weights.get(robot) + item.getWeight();
-						weights.put(robot, newWeight);
 					}
-					
+						
+					goal = item.getJunction();
+					list = finder.findRoute(start, goal, facing); // find the route
+						
+					Float newWeight = weights.get(robot) + quantity * item.getWeight();
+					weights.put(robot, newWeight);
 					pairedCommands.get(robot).addCommandList(list);
+					
+					// this should be updated by the robot, here for testing purposes
+					
+					robot.setX(goal.getX());
+					robot.setY(goal.getY());
+					
 					
 					
 
