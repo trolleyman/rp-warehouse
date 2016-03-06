@@ -148,26 +148,19 @@ public class RoutePlanner {
 					
 					if (weights.get(robot) + quantity * item.getWeight() > maxWeight) {
 
-						Junction closestBase = bases.get(0);
-						int steps = map.getHeight() + map.getWidth();
+						goal = findClosestBase(start, facing);
+						list = finder.findRoute(start, goal, facing);
 						
-						for (int l = 0; l < bases.size(); l++){
-							
-							list = finder.findRoute(start, bases.get(l), facing);
-							if(list.size() < steps){
-							closestBase = bases.get(l);
-							}
-							
-						}
-						
-						goal = closestBase;
 						weights.put(robot, 0f);
+						System.out.println("base: " + start + " to " + goal);
+						System.out.println(list);
 						pairedCommands.get(robot).addCommandList(list);
 						
 						// this should be updated by the robot, here for testing purposes
 						
 						robot.setX(goal.getX());
 						robot.setY(goal.getY());
+						start = goal;
 						
 						
 					}
@@ -177,6 +170,8 @@ public class RoutePlanner {
 						
 					Float newWeight = weights.get(robot) + quantity * item.getWeight();
 					weights.put(robot, newWeight);
+					System.out.println("item: " + start + " to " + goal);
+					System.out.println(list);
 					pairedCommands.get(robot).addCommandList(list);
 					
 					// this should be updated by the robot, here for testing purposes
@@ -191,8 +186,42 @@ public class RoutePlanner {
 
 			}
 
+			// robot has done its last job and must go home
+			
+			Direction facing = Direction.Y_POS;
+			
+			Junction start = map.getJunction((int)robot.getX(), (int)robot.getY());
+			Junction goal = findClosestBase(start, facing);
+			LinkedList<Bearing> homeRoute = finder.findRoute(start, goal, facing);
+			
+			System.out.println("home: " + start + " to " + goal);
+			System.out.println(homeRoute);
+			pairedCommands.get(robot).addCommandList(homeRoute);
+			
+			
+			
+			
 		}
 
 	}
 
+
+		private Junction findClosestBase(Junction start, Direction facing){
+			Junction closestBase = bases.get(0);
+			int steps = map.getHeight() + map.getWidth();
+			LinkedList<Bearing> list = new LinkedList<Bearing>();
+			
+			for (int l = 0; l < bases.size(); l++){
+				
+				list = finder.findRoute(start, bases.get(l), facing);
+				
+				if(list.size() < steps){
+					closestBase = bases.get(l);
+					steps = list.size();
+				}
+		
+			}
+	
+			return closestBase;
+		}
 }

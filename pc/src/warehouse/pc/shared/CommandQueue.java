@@ -2,7 +2,6 @@ package warehouse.pc.shared;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * A queue of Bearings for the robot to follow

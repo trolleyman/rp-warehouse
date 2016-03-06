@@ -26,6 +26,8 @@ import warehouse.shared.robot.Robot;
  * 
  * Handling multiple robots
  * Returning to the base if the job would exceed the maximum weight
+ * Returns to a base when the jobs are finished
+ * Robots don't collide
  * 
  * @author George Kaye
  *
@@ -41,6 +43,7 @@ public class PlanningTests {
 	
 	Robot robot1;
 	Robot robot2;
+	Robot robot3;
 	
 	Direction xp = Direction.X_POS;
 	Direction xn = Direction.X_NEG;
@@ -69,6 +72,7 @@ public class PlanningTests {
 		
 		robot1 = new Robot("george", "george", 0.0, 0.0, 0.0);
 		robot2 = new Robot("jason", "jason", 5.0, 0.0, 0.0);
+		robot3 = new Robot("alex", "alex", 3.0, 0.0, 0.0);
 		
 		
 		tm1 = TestMaps.TEST_MAP1;
@@ -84,6 +88,7 @@ public class PlanningTests {
 		
 		bases = new ArrayList<>();
 		bases.add(tm2.getJunction(0, 0));
+		bases.add(tm2.getJunction(4, 0));
 		
 		tpl = new RoutePlanner(tm1, 60f, map, bases);
 
@@ -119,32 +124,56 @@ public class PlanningTests {
 		
 		LinkedList<Job> job1 = new LinkedList<>();
 		LinkedList<Job> job2 = new LinkedList<>();
+		LinkedList<Job> job3 = new LinkedList<>();
+		LinkedList<Job> job4 = new LinkedList<>();
 		ArrayList<ItemQuantity> list = new ArrayList<>();
 		ArrayList<ItemQuantity> list1 = new ArrayList<>();
 		ArrayList<ItemQuantity> list2 = new ArrayList<>();
 		ArrayList<ItemQuantity> list3 = new ArrayList<>();
+		ArrayList<ItemQuantity> list4 = new ArrayList<>();
 		list.add(new ItemQuantity(heavy, 3));
 		list1.add(new ItemQuantity(light, 3));
+		list1.add(new ItemQuantity(medium, 1));
 		list1.add(new ItemQuantity(medium, 5));
 		list2.add(new ItemQuantity(light, 10));
 		list2.add(new ItemQuantity(medium, 1));
 		list2.add(new ItemQuantity(heavy, 2));
+		list2.add(new ItemQuantity(light, 1));
+		list3.add(new ItemQuantity(light, 2));
+		list3.add(new ItemQuantity(heavy, 1));
+		list4.add(new ItemQuantity(heavy, 1));
+		list4.add(new ItemQuantity(medium, 1));
 		job1.add(new Job(0, list, 60, 0));
 		job1.add(new Job(1, list1, 65, 0));
 		job2.add(new Job(2, list2, 100, 0));
+		job3.add(new Job(3, list3, 40, 0));
+		job3.add(new Job(4, list4, 20, 0));
 		
 		map.put(robot1, job1);
 		map.put(robot2, job2);
+		map.put(robot3, job3);
 		
 		tp2 = new RoutePlanner(tm2, 60f, map, bases);
 		tp2.computeCommands();
 		LinkedList<Bearing> bearings = tp2.getCommands(robot1).getCommands();
 		LinkedList<Bearing> bearings1 = tp2.getCommands(robot2).getCommands();
+		LinkedList<Bearing> bearings2 = tp2.getCommands(robot3).getCommands();
 		
 		System.out.println(bearings);
 		System.out.println(bearings1);
-		assertTrue(bearings.equals(Arrays.asList(r, b, b, f, f, b, f, f, b)));
-		assertTrue(bearings1.equals(Arrays.asList(b, r, f, f, f, f, b, f)));
+		System.out.println(bearings2);
+		
+		assertTrue(bearings.equals(Arrays.asList(r, b, b, f, f, b, f, f, b, f, b, f)));
+		assertTrue(bearings1.equals(Arrays.asList(l, f, f, f, f, b, f, f, f)));
+		assertTrue(bearings2.equals(Arrays.asList(l, f, f, b, f, f)));
+		
+		for(int i = 0; i < bearings1.size(); i++){
+		
+			
+		
+		}
+		
+		
 		
 	}
 
