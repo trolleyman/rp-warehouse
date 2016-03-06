@@ -4,14 +4,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
-public class RouteExecuter implements Runnable, MessageListener {
+public class RouteExecuter implements Runnable {
 
 	private BTServer server;
 	private HashMap<String, LinkedList<String>> commands;
-
 	private boolean running;
-	private int numRobots;
-	private int finishedRobots;
 
 	public RouteExecuter(BTServer server, HashMap<String, LinkedList<String>> commandMap) {
 		this.server = server;
@@ -20,54 +17,27 @@ public class RouteExecuter implements Runnable, MessageListener {
 
 	@Override
 	public void run() {
+		running = true;
 
-	}
+		while (running) {
+			for (Entry<String, LinkedList<String>> entry : commands.entrySet()) {
+				String robotName = entry.getKey();
+				if (!entry.getValue().isEmpty()) {
+					String command = entry.getValue().pop();
+					server.sendToRobot(robotName, command);
+				} else {
+					commands.remove(robotName);
+					server.sendToRobot(robotName, "end");
+				}
+			}
 
-	@Override
-	public void newMessage(String robotName, String message) {
-		if (message.equals("ready")) {
-			finishedRobots++;
-			System.out.println("Num: " + numRobots + " Ready: " + finishedRobots);
-		}
-
-		if (finishedRobots == numRobots) {
-			System.out.println("All robots ready");
-			sendNextMove();
-		}
-	}
-
-	private void sendNextMove() {
-		for (Entry<String, LinkedList<String>> e : commands.entrySet()) {
-			String next = e.getValue().peek();
-			System.out.println(e.getKey() + ": " + next);
-			if (next != null) {
-				server.sendToRobot(e.getKey(), next);
-				e.getValue().removeFirst();
-			} else {
-				System.out.println("Reached end of the list for " + e.getKey());
-				changeNumRobots(-1);
-				commands.remove(e.getKey());
+			for (Entry<String, LinkedList<String>> entry : commands.entrySet()) {
+				String robotName = entry.getKey();
+				String reply = server.listen(robotName);
+				if (!reply.equals("ready")) {
+					System.err.println("Robot not ready.");
+				}
 			}
 		}
-		
-		finishedRobots = 0;
-	}
-
-	public void setNumRobots(int numRobots) {
-		this.numRobots = numRobots;
-		System.out.println("Num robots now " + numRobots);
-	}
-	
-	public void changeNumRobots(int change) {
-		this.numRobots += change;
-		System.out.println("Num robots now " + numRobots);
-	}
-
-	public int getNumRobots() {
-		return numRobots;
-	}
-
-	public int getFinishedRobots() {
-		return finishedRobots;
 	}
 }

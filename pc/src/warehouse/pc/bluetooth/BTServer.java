@@ -26,17 +26,12 @@ public class BTServer {
 	private static final long TIMEOUT_MILLIS = 5000;
 	private Boolean openSuccess = false;
 
-	// Maps of robot name against in/out queue
-	private HashMap<String, LinkedBlockingQueue<String>> toRobotQueues;
-	private HashMap<String, LinkedBlockingQueue<String>> fromRobotQueues;
-
-	// Maps of sender and receiver threads
-	private HashMap<String, ServerReceiver> receivers;
-	private HashMap<String, ServerSender> senders;
-
 	// The RouteExecuter and a HashMap of robot names to list of commands
 	private RouteExecuter executer;
 	private HashMap<String, LinkedList<String>> commandMap;
+	
+	// HashMap of robot names to connection class
+	private HashMap<String, Connection> connections;
 	
 	// The lock for Bluetooth communications
 	private final static Object btLock = new Object();
@@ -56,14 +51,10 @@ public class BTServer {
 			System.err.println("Could not open the btCommunication");
 		}
 
-		toRobotQueues = new HashMap<>();
-		fromRobotQueues = new HashMap<>();
-
-		receivers = new HashMap<>();
-		senders = new HashMap<>();
-
 		commandMap = new HashMap<>();
 		executer = new RouteExecuter(this, commandMap);
+		new Thread(executer, "RouteExecuter").start();
+		connections = new HashMap<>();
 	}
 
 	/**
@@ -116,28 +107,8 @@ public class BTServer {
 		DataOutputStream toRobot = new DataOutputStream(comm.getOutputStream());
 		DataInputStream fromRobot = new DataInputStream(comm.getInputStream());
 
-		// Create message queues
-		LinkedBlockingQueue<String> toRobotQueue = new LinkedBlockingQueue<>();
-		LinkedBlockingQueue<String> fromRobotQueue = new LinkedBlockingQueue<>();
-		toRobotQueues.put(nxt.name, toRobotQueue);
-		fromRobotQueues.put(nxt.name, fromRobotQueue);
-
-		// Create sender and receiver
-		ServerSender sender = new ServerSender(toRobot, toRobotQueue);
-		ServerReceiver receiver = new ServerReceiver(fromRobot, fromRobotQueue, nxt.name);
-		senders.put(nxt.name, sender);
-		receivers.put(nxt.name, receiver);
-
-		// Start threads
-		Thread senderThread = new Thread(sender);
-		Thread receiverThread = new Thread(receiver);
-		senderThread.start();
-		senderThread.setName(nxt.name + " - Sender");
-		receiverThread.start();
-		receiverThread.setName(nxt.name + " - Receiver");
-
-		// Update the listener for the executer
-		addListener(executer);
+		// Create the connection
+		connections.put(nxt.name, new Connection(nxt.name, fromRobot, toRobot));
 
 		// Update the robot in the MainInterface
 		// MainInterface.get().updateRobot(new Robot(nxt.name, nxt.deviceAddress, 0,
@@ -156,8 +127,6 @@ public class BTServer {
 	 */
 	public void sendCommands(String robotName, LinkedList<String> commands) {
 		System.out.println("Send commands for " + robotName);
-		executer.changeNumRobots(1);
-		sendToRobot(robotName, "check");
 		commandMap.put(robotName, commands);
 	}
 
@@ -172,28 +141,11 @@ public class BTServer {
 	 */
 	public void sendToRobot(String robotName, String message) {
 		System.out.println("Send " + message + " to " + robotName);
-		toRobotQueues.get(robotName).offer(message);
+		connections.get(robotName).send(message);
 	}
-
-	/**
-	 * Add a listener to a specific robot.
-	 * 
-	 * @param robotName The string name of the robot to listen to.
-	 * @param listener The listener class which will be called.
-	 */
-	public void addListener(String robotName, MessageListener listener) {
-		receivers.get(robotName).addMessageListener(listener);
-	}
-
-	/**
-	 * Add a listener to all robots connected.
-	 * 
-	 * @param listener The listener class which will be called.
-	 */
-	public void addListener(MessageListener listener) {
-		for (Entry<String, ServerReceiver> entry : receivers.entrySet()) {
-			entry.getValue().addMessageListener(listener);
-		}
+	
+	public String listen(String robotName) {
+		return connections.get(robotName).listen();
 	}
 
 	public static Object getLock() {
