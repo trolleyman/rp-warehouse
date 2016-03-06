@@ -42,7 +42,7 @@ public class NXTSender extends Thread {
 				
 				if( this.statusUpdated() ) { this.toPC.writeUTF( this.myself.status ); this.updateOldRobot(); }
 				if( this.positionUpdated() ) { /* NXTInterface.updatePosition( this.myself.x, this.myself.y ); */ this.updateOldRobot(); }
-			
+				
 			}
 		}
 		catch( Exception _exception ) { this.throwError( "NXTSender: Stream: Sending Failure." ); }

@@ -46,11 +46,19 @@ public class NXTReceiver extends Thread {
 		else { this.execute( _action ); }		
 	}
 	
-	// Executes the action got from the PC Valid: "Forward, Backward, Left, Right"
+	// Executes the action got from the PC Valid: "Forward, Backward, Left, Right, Pick <int>"
 	private void execute( String _action ) {
-		// NXTInterface.updateDirection( _action );
-		// NXTMotion.go( _action );
-		this.myself.status = "Moving " + _action;
+		if( ( _action.length() > 5 ) && ( _action.substring( 0, 4 ).equals( "Pick" ) ) ) {
+			int itemsCount = Integer.parseInt( _action.substring( 5 ) );
+			// NXTInterface.setItemsCount( itemsCount );
+			// NXTInterface.setPickUp( true );
+			this.myself.status = "Picking Items";
+		}
+		else {
+			// NXTInterface.updateDirection( _action );
+			// NXTMotion.go( _action );
+			this.myself.status = "Moving " + _action;
+		}
 	}
 	
 	// Helper method to throw errors

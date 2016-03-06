@@ -16,7 +16,7 @@ public class Robot {
 	public String name;		// Robot Name
 	public double x;		// Robot X Position
 	public double y;		// Robot Y Position
-	public String status;	// Robot Status
+	public String status;	// Robot Status ( Possible: Idle, Moving, Picking Items, Picked <int> )
 	
 	public Robot( String _name, double _x, double _y ) {
 		this.name = _name;
