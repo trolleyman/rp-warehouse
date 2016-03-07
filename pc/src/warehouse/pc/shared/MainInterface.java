@@ -55,11 +55,13 @@ public class MainInterface {
 		robotListeners = new ArrayList<>();
 		distanceListeners = new ArrayList<>();
 		
-		localisationManager = new LocalisationManager();
+		
 		
 		currentState = new State(TestMaps.TEST_MAP4, new Robot[] {
 				
 		});
+		
+		localisationManager = new LocalisationManager(map, robots);
 		
 		locList = new LocationList("locations.csv");
 		itemList = new ItemList("items.csv", locList);

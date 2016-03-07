@@ -2,6 +2,7 @@ package warehouse.pc.shared;
 
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 /**
@@ -130,36 +131,98 @@ public class Map {
 	 * Gets the distance in units from (x,y) to the closest wall in a certain direction.
 	 * 1 unit = 1 unit on grid. convert outside of this class.
 	 */
-	public int getRangeAt(int _x, int _y, Direction _dir)
-	{
-		int distance = 0;
-		int coordinateAddition = 1;
-		switch(_dir)
-		{
-		case Direction.X_POS:
-			while (getJunction(_x + coordinateAddition,_y) != null)
-			{
-				coordinateAddition += 1;
+	public double getRangeAt(double _x, double _y, Direction _dir) {
+		return getRangeAt(_x, _y, _dir.toFacing());
+	}
+	
+	/**
+	 * Returns the distance from the position {@code x,y} on the grid in the direction {@code facing}. If no object
+	 * is in the way, returns Infinity.
+	 * @param _x the y position
+	 * @param _y the x position
+	 * @param _facing the degrees clockwise from Y+
+	 * @return the distance to the nearest obstacle, or Infinity if it doesn't reach an obstacle.
+	 */
+	public double getRangeAt(double _x, double _y, double _facing) {
+		double minDistSquared = Double.POSITIVE_INFINITY;
+		double facingRads = Math.toRadians(_facing);
+		
+		for (Rectangle.Double wall : walls) {
+			Point2D.Double p = rectRaycast(wall, _x, _y, facingRads);
+			if (p != null) {
+				double distSq = p.distanceSq(_x, _y);
+				
+				if (distSq < minDistSquared) {
+					minDistSquared = distSq;
+				}
 			}
-			return coordinateAddition;
-		case Direction.X_NEG:
-			while (getJunction(_x - coordinateAddition,_y) != null)
-			{
-				coordinateAddition += 1;
-			}
-			return coordinateAddition;
-		case Direction.Y_POS:
-			while (getJunction(_x,_y + coordinateAddition) != null)
-			{
-				coordinateAddition += 1;
-			}
-			return coordinateAddition;
-		case Direction.Y_NEG:
-			while (getJunction(_x, _y - coordinateAddition) != null)
-			{
-				coordinateAddition += 1;
-			}
-			return coordinateAddition;
 		}
+		
+		return Math.sqrt(minDistSquared);
+	}
+	
+	/**
+	 * Returns the point where a ray starting at x,y and continuing at angle {@code _facing} (radians clockwise from Y+)
+	 * hits the rectangle {@code _rect}, or null if it doesn't hit.
+	 */
+	private Point2D.Double rectRaycast(Rectangle.Double _rect, double _x, double _y, double _facing) {
+		ArrayList<Point2D.Double> ps = new ArrayList<Point2D.Double>(4);
+		
+		double minX = _rect.getMinX();
+		double maxX = _rect.getMaxX();
+		double minY = _rect.getMinY();
+		double maxY = _rect.getMaxY();
+		
+		ps.add(lineRaycastVertical(_x, _y, _facing, minX, minY, maxY));
+		ps.add(lineRaycastVertical(_x, _y, _facing, maxX, minY, maxY));
+		ps.add(lineRaycastHorizontal(_x, _y, _facing, minY, minX, maxX));
+		ps.add(lineRaycastHorizontal(_x, _y, _facing, maxY, minX, maxX));
+		
+		// Get min distance point.
+		Point2D.Double ret = null;
+		double minDistSq = Double.POSITIVE_INFINITY;
+		for (Point2D.Double p : ps) {
+			if (p != null) {
+				double distSq = p.distanceSq(_x, _y);
+				
+				if (ret == null || distSq < minDistSq) {
+					ret = p;
+					minDistSq = distSq;
+				}
+			}
+		}
+		return ret;
+	}
+	
+	private Point2D.Double lineRaycastVertical(double fromX, double fromY, double facing, double toX, double minY, double maxY) {
+		double m = 1 / Math.tan(facing);
+		
+		if (Double.isInfinite(m)) {
+			return null;
+		}
+		
+		double toY = m * (toX - fromX);
+		
+		if (toY < minY || toY > maxY) {
+			return null;
+		}
+		
+		return new Point2D.Double(toX, toY);
+	}
+	
+	private Point2D.Double lineRaycastHorizontal(double fromX, double fromY, double facing, double toY, double minX, double maxX) {
+		double m = Math.tan(facing);
+		
+		if (Double.isInfinite(m)) {
+			return null;
+		}
+		
+		double toX = m * (toY - fromY);
+		
+		if (toX < minX || toX > maxX) {
+			return null;
+		}
+		
+		return new Point2D.Double(toX, toY);
 	}
 }
