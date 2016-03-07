@@ -37,7 +37,7 @@ public class MainInterface {
 	private State currentState;
 	private BTServer server;
 	
-	private RobotManager robotManager;
+	private IRobotManager robotManager;
 	
 	private LocationList locList;
 	private ItemList itemList;
@@ -69,7 +69,7 @@ public class MainInterface {
 	/**
 	 * Returns the robot manager that is in control of all the robots.
 	 */
-	public RobotManager getRobotManager() {
+	public IRobotManager getRobotManager() {
 		throw new AssertionError("RobotManager unimplemented.");
 	}
 	
