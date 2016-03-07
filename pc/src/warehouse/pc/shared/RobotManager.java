@@ -1,34 +1,41 @@
 package warehouse.pc.shared;
 
-/**
- * A RobotManager will be responsible for managing all of the robots in the system.
- * It will calculate the route planning for all of the robots, send each command to each robot
- * and update MainInterface with the new states of the robots.
- */
-public interface RobotManager extends Runnable {
-	/**
-	 * Starts the RobotManager
-	 */
+public class RobotManager implements IRobotManager {
 	@Override
-	public void run();
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void stop() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void recalculate() {
+		// TODO Auto-generated method stub
+		
+	}
 	
-	/**
-	 * Stops the TobotManager
-	 */
-	public void stop();
+	public CommandQueue getCommands(Robot r) {
+		
+	}
 	
-	/**
-	 * Pauses the RobotManager, allowing for resuming.
-	 */
-	public void pause();
-	
-	/**
-	 * Resumes the RobotManager. This will also call recalculate().
-	 */
-	public void resume();
-	
-	/**
-	 * Causes the RobotManager to recalculate it's plans
-	 */
-	public void recalculate();
+	public JobQueue getJobs(Robot r) {
+		
+	}
 }

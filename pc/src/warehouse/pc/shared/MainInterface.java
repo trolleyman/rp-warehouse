@@ -75,7 +75,7 @@ public class MainInterface {
 	/**
 	 * Returns the robot manager that is in control of all the robots.
 	 */
-	public RobotManager getRobotManager() {
+	public IRobotManager getRobotManager() {
 		throw new AssertionError("RobotManager unimplemented.");
 	}
 	
@@ -138,14 +138,17 @@ public class MainInterface {
 	}
 	
 	/**
-	 * Updated a robot {@code _r} with new information. If the robot is not recognized, a new robot is
-	 * inserted into the array.
+	 * Updated a robot {@code _r} with new information.
 	 */
 	public synchronized void updateRobot(Robot _r) {
 		currentState.updateRobot(_r);
 		for (RobotListener l : robotListeners) {
 			l.robotChanged(_r);
 		}
+	}
+	
+	public synchronized void removeRobot(Robot _r) {
+		
 	}
 	
 	/**

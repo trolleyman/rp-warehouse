@@ -7,4 +7,6 @@ import warehouse.shared.robot.Robot;
  */
 public interface RobotListener {
 	public void robotChanged(Robot _r);
+	public void robotAdded(Robot _r);
+	public void robotRemoved(Robot _r);
 }

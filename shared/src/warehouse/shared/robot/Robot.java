@@ -1,5 +1,7 @@
 package warehouse.shared.robot;
 
+import java.util.Optional;
+
 import warehouse.shared.robot.Identity;
 
 public class Robot {
