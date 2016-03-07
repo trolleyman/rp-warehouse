@@ -23,8 +23,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
-import org.junit.Test;
-
 import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemList;
 import warehouse.pc.shared.MainInterface;

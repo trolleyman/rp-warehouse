@@ -35,7 +35,8 @@ public class MainInterface {
 	private ArrayList<RobotListener> robotListeners;
 	private ArrayList<DistanceListener> distanceListeners;
 	
-	private State currentState;
+	private Map map;
+	private HashSet<Robot> robots;
 	private BTServer server;
 	
 	private IRobotManager robotManager;
@@ -53,9 +54,8 @@ public class MainInterface {
 		robotListeners = new ArrayList<>();
 		distanceListeners = new ArrayList<>();
 		
-		currentState = new State(TestMaps.TEST_MAP4, new Robot[] {
-				
-		});
+		map = TestMaps.TEST_MAP4;
+		robots = new HashSet<>();
 		
 		locList = new LocationList("locations.csv");
 		itemList = new ItemList("items.csv", locList);
@@ -136,7 +136,7 @@ public class MainInterface {
 	 * Gets the current map
 	 */
 	public synchronized Map getMap() {
-		return currentState.getMap();
+		return map;
 	}
 	
 	/**
@@ -144,7 +144,7 @@ public class MainInterface {
 	 * ***Don't modify this directly*** - Use MainInterface.updateRobot / MainInterface.removeRobot.
 	 */
 	public synchronized HashSet<Robot> getRobots() {
-		return currentState.getRobots();
+		return robots;
 	}
 	
 	/**
@@ -153,7 +153,8 @@ public class MainInterface {
 	 */
 	public synchronized void updateRobot(Robot _r) {
 		boolean added = false;
-		if (currentState.getRobots().contains(_r)) {
+		if (!robots.contains(_r)) {
+			robots.add(_r);
 			added = true;
 		}
 		if (added) {
@@ -172,19 +173,11 @@ public class MainInterface {
 	 * @param _r the robot
 	 */
 	public synchronized void removeRobot(Robot _r) {
-		if (getRobots().contains(_r)) {
-			currentState.removeRobot(_r);
+		if (robots.remove(_r)) {
 			for (RobotListener l : robotListeners) {
 				l.robotRemoved(_r);
 			}
 		}
-	}
-	
-	/**
-	 * Gets the current state of the system.
-	 */
-	public synchronized State getCurrentState() {
-		return currentState;
 	}
 	
 	/**
