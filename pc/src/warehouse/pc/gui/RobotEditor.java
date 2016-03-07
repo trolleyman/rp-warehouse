@@ -18,7 +18,7 @@ import javax.swing.SpringLayout;
 import org.junit.Test;
 
 import warehouse.pc.shared.MainInterface;
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.Robot;
 
 @SuppressWarnings("serial")
 public class RobotEditor extends JPanel {
@@ -139,6 +139,10 @@ public class RobotEditor extends JPanel {
 	public void selectRobot(Robot _selectedRobot) {
 		selectedRobot = _selectedRobot;
 		update();
+	}
+	
+	public Robot getSelectedRobot() {
+		return selectedRobot;
 	}
 	
 	private void update() {
