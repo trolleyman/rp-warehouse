@@ -70,45 +70,12 @@ public class BTServer {
 	public synchronized boolean open(NXTInfo nxt) {
 		String name = nxt.name + " (" + nxt.deviceAddress + ")";
 		System.out.println("Trying connect to " + name + ".");
-
-		openSuccess = false;
-
-		// Create a new thread to allow a timeout period for connecting.
-		Thread t = new Thread(() -> {
-			try {
-				openSuccess = comm.open(nxt);
-			} catch (NXTCommException e) {
-				openSuccess = false;
-				return;
-			}
-		});
-
-		// Marking the thread as a Daemon allows it to end if the program ends.
-		t.setDaemon(true);
-		t.start();
-
-		// Wait for the thread to end (ends when it is connected). Only wait for the
-		// timeout period. If the thread is alive after the timeout period then the
-		// connection failed.
-		try {
-			t.join(TIMEOUT_MILLIS);
-		} catch (InterruptedException e) {
-
-		}
-		if (t.isAlive()) {
-			System.out.println("Connection to " + name + " failed. (Timed out)");
-			return false;
-		} else if (!openSuccess) {
-			System.out.println("Connection to " + name + " failed.");
-			return false;
-		}
-
-		// Make in and out streams
-		DataOutputStream toRobot = new DataOutputStream(comm.getOutputStream());
-		DataInputStream fromRobot = new DataInputStream(comm.getInputStream());
+		
+		Connection connection = new Connection(nxt);
+		connection.open(comm);
 
 		// Create the connection
-		connections.put(nxt.name, new Connection(nxt.name, fromRobot, toRobot));
+		connections.put(nxt.name, connection);
 
 		// Update the robot in the MainInterface
 		// MainInterface.get().updateRobot(new Robot(nxt.name, nxt.deviceAddress, 0,
@@ -140,7 +107,6 @@ public class BTServer {
 	 * @param message The message string to send.
 	 */
 	public void sendToRobot(String robotName, String message) {
-		System.out.println("Send " + message + " to " + robotName);
 		connections.get(robotName).send(message);
 	}
 	

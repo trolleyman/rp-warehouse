@@ -4,24 +4,41 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import lejos.pc.comm.NXTComm;
+import lejos.pc.comm.NXTCommException;
+import lejos.pc.comm.NXTInfo;
+
 public class Connection {
 
 	private DataInputStream fromRobot;
 	private DataOutputStream toRobot;
-	private String robotName;
+	private NXTInfo nxt;
 
-	public Connection(String robotName, DataInputStream fromRobot, DataOutputStream toRobot) {
-		this.robotName = robotName;
-		this.fromRobot = fromRobot;
-		this.toRobot = toRobot;
+	public Connection(NXTInfo nxt) {
+		this.nxt = nxt;
+	}
+
+	public boolean open(NXTComm comm) {
+		try {
+			comm.open(nxt);
+		} catch (NXTCommException e) {
+			e.printStackTrace();
+		}
+
+		// Make in and out streams
+		toRobot = new DataOutputStream(comm.getOutputStream());
+		fromRobot = new DataInputStream(comm.getInputStream());
+		
+		send("check");
+
+		return true;
 	}
 
 	public void send(String command) {
+		System.out.println("Sending " + command + " to " + nxt.name);
 		try {
-			synchronized (BTServer.getLock()) {
-				toRobot.writeUTF(command);
-				toRobot.flush();
-			}
+			toRobot.writeUTF(command);
+			toRobot.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -29,15 +46,14 @@ public class Connection {
 
 	public String listen() {
 		String reply = null;
-		
+		System.out.println("Robot " + nxt.name + " is listening");
+
 		try {
-			synchronized (BTServer.getLock()) {
-				reply = fromRobot.readUTF();
-			}
+			reply = fromRobot.readUTF();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return reply;
 	}
 }
