@@ -1,4 +1,4 @@
-// package warehouse.nxt;
+package warehouse.nxt;
 
 public class RobotDisplayModel {
 	private RobotDisplay display;
@@ -25,5 +25,9 @@ public class RobotDisplayModel {
 	
 	public void setWeight(int value) {
 		display.setWeight(value);
+	}
+	
+	public void directionUpdate(String value) {
+		display.directionUpdate(value);
 	}
 }

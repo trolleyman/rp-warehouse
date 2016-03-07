@@ -1,5 +1,4 @@
-
-// package warehouse.nxt;
+package warehouse.nxt;
 
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
@@ -32,12 +31,20 @@ public class RobotDisplay implements DisplayInterface {
 
 	// for drawing
 	int action = 0;
-
+//For testing without client info (test values)
 	public RobotDisplay(String robotName, String jobName, int weight, int quantity, int xCo, int yCo) {
 		this.robotName = robotName;
 		this.jobName = jobName;
 		this.weight = weight;
 		this.quantity = quantity;
+		this.xCo = xCo;
+		this.yCo = yCo;
+
+	}
+	//For testing with client info (like the final design)
+	public RobotDisplay(String robotName, int xCo, int yCo) {
+		this.robotName = robotName;
+		this.jobName = "None";
 		this.xCo = xCo;
 		this.yCo = yCo;
 
@@ -51,7 +58,8 @@ public class RobotDisplay implements DisplayInterface {
 	 * = Integer.parseInt(data[5]); }
 	 */
 	public static void main(String[] args) {
-		RobotDisplay display = new RobotDisplay("BOT1", "Job", 6, 5, 24, 40);
+		//RobotDisplay display = new RobotDisplay("BOT1", "Job", 6, 5, 24, 40); //for testing
+		RobotDisplay display = new RobotDisplay("BOT1", 24, 40);
 		display.show();
 	}
 
@@ -79,7 +87,7 @@ public class RobotDisplay implements DisplayInterface {
 
 			// just for testing now.. Press RIGHT to activate pick up
 			if (Button.RIGHT.isDown() || inPickUp) {
-				pickUp();
+				pickUp(quantity, weight);
 			}
 
 			// just for testing now.. Press LEFT to activate drop off
@@ -94,8 +102,10 @@ public class RobotDisplay implements DisplayInterface {
 	/**
 	 * Shows the interface when arriving at the pick up point
 	 */
-	public void pickUp() {
+	public void pickUp(int quantity, int weight) {
 		int counter = 0;
+		this.quantity = quantity;
+		this.weight = weight;
 		Sound.beepSequenceUp();
 		this.inPickUp = true;
 		g.setFont(Font.getDefaultFont());
@@ -178,7 +188,7 @@ public class RobotDisplay implements DisplayInterface {
 					g.drawString("More", 49, 31, Graphics.HCENTER);
 					Sound.beepSequence();
 					Delay.msDelay(2000);
-					pickUp();
+					pickUp(quantity, weight);
 				} else {
 					g.clear();
 					g.drawString("Over", 49, 6, Graphics.HCENTER);
@@ -186,7 +196,7 @@ public class RobotDisplay implements DisplayInterface {
 					g.drawString("Limit!", 49, 39, Graphics.HCENTER);
 					Sound.beepSequence();
 					Delay.msDelay(2000);
-					pickUp();
+					pickUp(quantity, weight);
 				}
 			}
 
@@ -338,5 +348,20 @@ public class RobotDisplay implements DisplayInterface {
 
 	public void setWeight(int value) {
 		weight = value;
+	}
+
+	public void directionUpdate(String direction) {
+		g.clear();
+		if (direction == "forward")
+			action = 1;
+		else if (direction == "left")
+			action = 2;
+		else if (direction == "right")
+			action = 3;
+		else if (direction == "backwards")
+			action = 4;
+		else
+			action = 0;
+		drawMainMenuUpdate();
 	}
 }
