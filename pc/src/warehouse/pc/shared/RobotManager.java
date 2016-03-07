@@ -52,5 +52,4 @@ public class RobotManager implements IRobotManager {
 		robotJobs.remove(_r);
 		recalculate();
 	}
-
 }

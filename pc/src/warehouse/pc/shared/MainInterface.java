@@ -39,7 +39,7 @@ public class MainInterface {
 	private HashSet<Robot> robots;
 	private BTServer server;
 	
-	private IRobotManager robotManager;
+	private RobotManager robotManager;
 	
 	private LocationList locList;
 	private ItemList itemList;
@@ -64,7 +64,7 @@ public class MainInterface {
 		jobList = new JobList("jobs.csv", itemList);
 		dropList = new DropList("drops.csv");
 		
-		robotManager = new RobotManager(); // For now
+		robotManager = new RobotManager();
 	}
 	
 	/**
