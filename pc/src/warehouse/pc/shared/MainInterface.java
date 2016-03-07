@@ -57,7 +57,7 @@ public class MainInterface {
 		localisationManager = new LocalisationManager();
 		
 		currentState = new State(TestMaps.TEST_MAP4, new Robot[] {
-				new Robot("Jeff", "0FBA8413", 0, 0, 0),
+				
 		});
 		
 		locList = new LocationList("locations.csv");

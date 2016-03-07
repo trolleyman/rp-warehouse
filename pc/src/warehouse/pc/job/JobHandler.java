@@ -1,5 +1,9 @@
 package warehouse.pc.job;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+
 import warehouse.shared.robot.Robot;
 
 /**
@@ -8,6 +12,7 @@ import warehouse.shared.robot.Robot;
 public class JobHandler {
 
 	private JobSelector selector;
+	private HashMap<Robot, LinkedList<Job>> map;
 	
 	/**
 	 * Initialises the Job Selector with the location of the csv files
@@ -15,6 +20,51 @@ public class JobHandler {
 	 */
 	public JobHandler(String locationsLocation, String itemsLocation, String jobsLocation, String dropsLocation){
 		selector = new JobSelector(locationsLocation, itemsLocation, jobsLocation, dropsLocation);
+		this.map = new HashMap<Robot, LinkedList<Job>>();
+	}
+	
+	/**
+	 * Creates a map of robot to queue of jobs.
+	 * @param robots Array of robots to be used
+	 * @return Map
+	 */
+	public HashMap<Robot, LinkedList<Job>> createJobMap(Robot[] robots) {
+		//Here is where jobs will be assigned.
+		//Temporarily for now, jobs will just be taken from the list and given to each robot.
+		
+		//Inititate job queue for each robot.
+		ArrayList<LinkedList<Job>> jobQueues = new ArrayList<LinkedList<Job>>();
+		for (int i = 0; i < robots.length; i++) {
+			jobQueues.add(new LinkedList<Job>());
+		}
+		
+		//Add jobs to each queue.
+		boolean endOfQueue = false;
+		while (!endOfQueue) {
+			for (int i = 0; i < selector.numberOfJobs(); i++) {
+				// TODO using dummy values
+				if (selector.getJob(0, 0, 50).isPresent()) {
+					jobQueues.get(i % robots.length).offer(selector.getJob(0, 0, 50).get());
+				} else {
+					endOfQueue = true;
+				}
+			}
+		}
+		
+		//Add queues to map.
+		for (int i = 0; i < robots.length; i++) {
+			map.put(robots[i], jobQueues.get(i));
+		}
+		
+		//Return map
+		return this.getMap();
+	}
+	
+	/**
+	 * Returns the map linking robots to queues of jobs.
+	 */
+	public HashMap<Robot, LinkedList<Job>> getMap() {
+		return this.map;
 	}
 	
 	/**

@@ -5,7 +5,7 @@ import java.util.Optional;
 import warehouse.shared.robot.Identity;
 
 public class Robot {
-	private Identity identity;		// Initialization of the Robot information
+	private Identity identity;		// Initialisation of the Robot information
 	private double xPos;			// Current Position of the Robot ( horizontal axis )
 	private double yPos;			// Current Position of the Robot ( vertical axis )
 	private double facing;			// Which Direction the robot is facing clockwise in degrees

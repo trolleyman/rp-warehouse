@@ -23,6 +23,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
+import org.junit.Test;
+
 import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemList;
 import warehouse.pc.shared.MainInterface;
@@ -172,7 +174,7 @@ public class Gui implements Runnable, RobotListener {
 					return;
 				}
 				selectedItemName = table.getValueAt(i, 0).toString();
-				frame.repaint();
+				update();
 			}
 		});
 		JScrollPane scrollpane = new JScrollPane(table,
