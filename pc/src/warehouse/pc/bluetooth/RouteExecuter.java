@@ -20,6 +20,17 @@ public class RouteExecuter implements Runnable {
 		running = true;
 
 		while (running) {
+			
+			// If there are no commands to send, sleep for a second
+			if (commands.isEmpty()) {
+				try {
+					//System.out.println("No commands for any robots, sleeping for 1000ms");
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
 			for (Entry<String, LinkedList<String>> entry : commands.entrySet()) {
 				String robotName = entry.getKey();
 				if (!entry.getValue().isEmpty()) {
@@ -27,12 +38,14 @@ public class RouteExecuter implements Runnable {
 					server.sendToRobot(robotName, command);
 				} else {
 					commands.remove(robotName);
+					System.out.println("End of list for " + robotName);
 					server.sendToRobot(robotName, "end");
 				}
 			}
 
 			for (Entry<String, LinkedList<String>> entry : commands.entrySet()) {
 				String robotName = entry.getKey();
+				System.out.println("Waiting for reply from " + robotName);
 				String reply = server.listen(robotName);
 				if (!reply.equals("ready")) {
 					System.err.println("Robot not ready.");

@@ -5,7 +5,8 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ MultiConnectionTest.class, SingleConnectionTest.class, SingleSendingTest.class })
+@SuiteClasses({ MultiConnectionTest.class, MultiExecutionTest.class, MultiSendingTest.class, SingleConnectionTest.class,
+		SingleSendingTest.class })
 public class ConnectionTestSuite {
 
 }
