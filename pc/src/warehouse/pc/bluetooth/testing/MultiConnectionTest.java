@@ -27,7 +27,8 @@ public class MultiConnectionTest implements MessageListener {
 		// Add robots to the test
 		robots = new HashMap<>();
 		robots.put("Dobot", "0016530FD7F4");
-		robots.put("Vader", "0016531B5A19");
+		//robots.put("Vader", "0016531B5A19");
+		robots.put("Jeff", "00165317BE35");
 		
 		server = new BTServer();
 		replies = 0; 
