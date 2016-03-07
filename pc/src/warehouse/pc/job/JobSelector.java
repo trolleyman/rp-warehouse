@@ -11,13 +11,17 @@ public class JobSelector {
 	private ArrayList<Job> jobs;
 	
 	public JobSelector(String locationsLocation, String itemsLocation, String jobsLocation, String dropsLocation){
-		
 		LocationList locList = new LocationList(locationsLocation);
 		ItemList itemList = new ItemList(itemsLocation, locList);
 		JobList jobList = new JobList(jobsLocation, itemList);
 		@SuppressWarnings("unused")
 		DropList dropList = new DropList(dropsLocation);
 		
+		jobs = jobList.getList();
+		jobs.sort(new RewardComparator()); //This sorts the jobs into reward order
+	}
+	
+	public JobSelector(LocationList locList, ItemList itemList, JobList jobList, DropList dropList){
 		jobs = jobList.getList();
 		jobs.sort(new RewardComparator()); //This sorts the jobs into reward order
 	}
@@ -67,6 +71,6 @@ public class JobSelector {
 	public static void main(String[] args){
 		//Testing
 		//JobSelector q = new JobSelector("locations.csv", "items.csv", "jobs.csv", "drops.csv");
-		//System.out.println(q.getJob(0, 0, 0.2f));	
+		//System.out.println(q.getJob(0, 0, 0.2f));
 	}
 }

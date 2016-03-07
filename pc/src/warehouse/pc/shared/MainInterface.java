@@ -49,8 +49,6 @@ public class MainInterface {
 	private MainInterface() {
 		server = new BTServer();
 		
-		robotManager = null; // For now
-		
 		robotListeners = new ArrayList<>();
 		distanceListeners = new ArrayList<>();
 		
@@ -65,6 +63,8 @@ public class MainInterface {
 //		}
 		jobList = new JobList("jobs.csv", itemList);
 		dropList = new DropList("drops.csv");
+		
+		robotManager = new RobotManager(); // For now
 	}
 	
 	/**
