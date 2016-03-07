@@ -6,7 +6,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 import warehouse.pc.job.Job;
 import warehouse.pc.shared.IRobotManager;
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.Robot;
 
 public class RobotManager implements IRobotManager {
 	HashMap<Robot, LinkedBlockingDeque<Job>> robotJobs = new HashMap<>();

@@ -71,7 +71,7 @@ public class MainInterface {
 	 * Returns the robot manager that is in control of all the robots.
 	 */
 	public IRobotManager getRobotManager() {
-		throw new AssertionError("RobotManager unimplemented.");
+		return robotManager;
 	}
 	
 	/**
