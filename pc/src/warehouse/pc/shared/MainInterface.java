@@ -39,7 +39,7 @@ public class MainInterface {
 	private HashSet<Robot> robots;
 	private BTServer server;
 	
-	private IRobotManager robotManager;
+	private RobotManager robotManager;
 	
 	private LocationList locList;
 	private ItemList itemList;
@@ -48,8 +48,6 @@ public class MainInterface {
 	
 	private MainInterface() {
 		server = new BTServer();
-		
-		robotManager = null; // For now
 		
 		robotListeners = new ArrayList<>();
 		distanceListeners = new ArrayList<>();
@@ -65,6 +63,8 @@ public class MainInterface {
 //		}
 		jobList = new JobList("jobs.csv", itemList);
 		dropList = new DropList("drops.csv");
+		
+		robotManager = new RobotManager();
 	}
 	
 	/**

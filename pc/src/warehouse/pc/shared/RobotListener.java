@@ -9,6 +9,4 @@ public interface RobotListener {
 	public void robotAdded(Robot _r);
 	public void robotRemoved(Robot _r);
 	public void robotChanged(Robot _r);
-	public void robotAdded(Robot _r);
-	public void robotRemoved(Robot _r);
 }

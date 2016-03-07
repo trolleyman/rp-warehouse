@@ -1,12 +1,10 @@
-package warehouse.pc.gui;
+package warehouse.pc.shared;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import warehouse.pc.job.Job;
-import warehouse.pc.shared.IRobotManager;
-import warehouse.shared.robot.Robot;
 
 public class RobotManager implements IRobotManager {
 	HashMap<Robot, LinkedBlockingDeque<Job>> robotJobs = new HashMap<>();
@@ -49,5 +47,4 @@ public class RobotManager implements IRobotManager {
 		robotJobs.remove(_r);
 		recalculate();
 	}
-
 }
