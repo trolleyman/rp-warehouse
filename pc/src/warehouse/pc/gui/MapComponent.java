@@ -286,4 +286,17 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 	public void robotChanged(Robot _r) {
 		this.repaint();
 	}
+
+	@Override
+	public void robotAdded(Robot _r) {
+		this.repaint();
+	}
+
+	@Override
+	public void robotRemoved(Robot _r) {
+		if (selected == _r) {
+			selected = null;
+		}
+		this.repaint();
+	}
 }

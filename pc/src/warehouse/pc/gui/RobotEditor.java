@@ -141,6 +141,10 @@ public class RobotEditor extends JPanel {
 		update();
 	}
 	
+	public Robot getSelectedRobot() {
+		return selectedRobot;
+	}
+	
 	private void update() {
 		if (selectedRobot == null) {
 			selectedRobotLabel.setText("Selected Robot: None");
