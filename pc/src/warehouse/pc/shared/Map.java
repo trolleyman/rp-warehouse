@@ -125,4 +125,41 @@ public class Map {
 	public Rectangle.Double[] getWalls() {
 		return walls;
 	}
+	
+	/**
+	 * Gets the distance in units from (x,y) to the closest wall in a certain direction.
+	 * 1 unit = 1 unit on grid. convert outside of this class.
+	 */
+	public int getRangeAt(int _x, int _y, Direction _dir)
+	{
+		int distance = 0;
+		int coordinateAddition = 1;
+		switch(_dir)
+		{
+		case Direction.X_POS:
+			while (getJunction(_x + coordinateAddition,_y) != null)
+			{
+				coordinateAddition += 1;
+			}
+			return coordinateAddition;
+		case Direction.X_NEG:
+			while (getJunction(_x - coordinateAddition,_y) != null)
+			{
+				coordinateAddition += 1;
+			}
+			return coordinateAddition;
+		case Direction.Y_POS:
+			while (getJunction(_x,_y + coordinateAddition) != null)
+			{
+				coordinateAddition += 1;
+			}
+			return coordinateAddition;
+		case Direction.Y_NEG:
+			while (getJunction(_x, _y - coordinateAddition) != null)
+			{
+				coordinateAddition += 1;
+			}
+			return coordinateAddition;
+		}
+	}
 }
