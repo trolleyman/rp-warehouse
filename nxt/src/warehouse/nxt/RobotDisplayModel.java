@@ -1,4 +1,4 @@
-package warehouse.nxt;
+// package warehouse.nxt;
 
 public class RobotDisplayModel {
 	private RobotDisplay display;
