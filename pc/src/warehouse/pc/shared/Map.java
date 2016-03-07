@@ -4,6 +4,9 @@ import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
+import lejos.geom.Line;
+import rp.robotics.mapping.GridMap;
+
 /**
  * A map that represents a grid of junctions.
  * Some junctions can be disabled by being blocked by walls, that are calculated in the constructor.
@@ -15,11 +18,26 @@ public class Map {
 	
 	private int width;
 	private int height;
-
-	public Map(int _width, int _height, Rectangle.Double[] _walls) {
+	
+	private double cellSize;
+	
+	private static Rectangle.Double[] linesToWalls(Line[] lines, float cellSize) {
+		Rectangle.Double[] rects = new Rectangle.Double[lines.length];
+		for (Line line : lines) {
+			
+		}
+		return new Rectangle.Double[0];
+	}
+	
+	public Map(GridMap map) {
+		this(map.getXSize(), map.getYSize(), linesToWalls(map.getLines(), map.getCellSize()), map.getCellSize());
+	}
+	
+	public Map(int _width, int _height, Rectangle.Double[] _walls, double _cellSize) {
 		this.walls = _walls;
 		this.width = _width;
 		this.height = _height;
+		this.cellSize = _cellSize;
 		
 		js = new Junction[height][width];
 		for (int y = 0; y < height; y++) {
