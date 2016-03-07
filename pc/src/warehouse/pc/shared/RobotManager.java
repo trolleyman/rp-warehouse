@@ -12,7 +12,7 @@ public class RobotManager implements IRobotManager {
 	boolean running;
 	
 	public RobotManager() {
-		System.out.println("TEST");
+		
 	}
 
 	@Override
