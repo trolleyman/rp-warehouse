@@ -1,16 +1,21 @@
 package warehouse.pc.gui;
 
+import static org.junit.Assert.assertTrue;
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SpringLayout;
+
+import org.junit.Test;
 
 import warehouse.pc.shared.MainInterface;
 import warehouse.shared.robot.Robot;
@@ -163,5 +168,39 @@ public class RobotEditor extends JPanel {
 			headingSpinner.setValue(selectedRobot.getFacing());
 		}
 		repaint();
+	}
+	
+	@Test
+	public void testRobotEditor() {
+		JFrame frame = new JFrame();
+		frame.add(this);
+		Robot r = new Robot("Jeff", "ID", 1, 2, 10.0);
+		MainInterface.get().updateRobot(r);
+		
+		assertTrue(selectedRobot == null);
+		assertTrue(selectedRobotLabel.getText().equals("Selected Robot: None"));
+		assertTrue(robotIDLabel.getText().equals("ID: ?"));
+		assertTrue(xSpinner.getValue().equals(0.0));
+		assertTrue(!xSpinner.isEnabled());
+		assertTrue(ySpinner.getValue().equals(0.0));
+		assertTrue(!ySpinner.isEnabled());
+		assertTrue(!posButton.isEnabled());
+		assertTrue(headingSpinner.getValue().equals(0.0));
+		assertTrue(!headingSpinner.isEnabled());
+		assertTrue(!headingButton.isEnabled());
+		
+		selectRobot(r);
+		
+		assertTrue(selectedRobot == r);
+		assertTrue(selectedRobotLabel.getText().equals("Selected Robot: " + r.getName()));
+		assertTrue(robotIDLabel.getText().equals("ID: " + r.getID()));
+		assertTrue(xSpinner.getValue().equals(r.getX()));
+		assertTrue(xSpinner.isEnabled());
+		assertTrue(ySpinner.getValue().equals(r.getY()));
+		assertTrue(ySpinner.isEnabled());
+		assertTrue(posButton.isEnabled());
+		assertTrue(headingSpinner.getValue().equals(r.getFacing()));
+		assertTrue(headingSpinner.isEnabled());
+		assertTrue(headingButton.isEnabled());
 	}
 }

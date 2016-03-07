@@ -3,7 +3,7 @@ package warehouse.pc.job;
 /**
  * Code just for local testing.
  */
-public class JobListTest {
+public class JobListTesting {
 	
 	public static void main(String[] args) {
 		//Set file locations

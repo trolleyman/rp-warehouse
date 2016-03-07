@@ -25,11 +25,14 @@ public class Junction {
 		js[_d.ordinal()] = _j;
 	}
 	
-	public Junction[] getJunctions() {
+	public Junction[] getNeighbours() {
 		return js;
 	}
 	
+	@Override
 	public String toString() {
-		return "(" + x + ", " + y + ")";
+		return "[" + x + ", " + y + "]";
+
+
 	}
 }
