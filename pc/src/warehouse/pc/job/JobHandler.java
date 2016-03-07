@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import warehouse.pc.shared.Map;
 import warehouse.shared.robot.Robot;
 
 /**
@@ -18,8 +19,8 @@ public class JobHandler {
 	 * Initialises the Job Selector with the location of the csv files
 	 * The locations should be "locations.csv", "items.csv", "jobs.csv", "drops.csv" in that order
 	 */
-	public JobHandler(String locationsLocation, String itemsLocation, String jobsLocation, String dropsLocation){
-		selector = new JobSelector(locationsLocation, itemsLocation, jobsLocation, dropsLocation);
+	public JobHandler(String locationsLocation, String itemsLocation, String jobsLocation, String dropsLocation, Map map){
+		selector = new JobSelector(locationsLocation, itemsLocation, jobsLocation, dropsLocation, map);
 		this.map = new HashMap<Robot, LinkedList<Job>>();
 	}
 	
