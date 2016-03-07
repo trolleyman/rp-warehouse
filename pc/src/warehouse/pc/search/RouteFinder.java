@@ -62,7 +62,7 @@ public class RouteFinder {
 	 * @return the ArrayList of directions
 	 */
 
-	public LinkedList<Bearing> findRoute(Junction start, Junction goal, Direction direction) {
+	public ArrayList<Direction> findRoute(Junction start, Junction goal, Direction direction) {
 
 		// if the goal or start is not on the map return null
 
@@ -105,7 +105,8 @@ public class RouteFinder {
 
 			if ((currentJunct.getX() == goal.getX()) && (currentJunct.getY() == goal.getY())) {
 				ArrayList<Direction> directionList = makePath(start, goal);
-				return getActualDirections(directionList, direction);
+				//return getActualDirections(directionList, direction);
+				return directionList;
 			}
 
 			// remove the junction from the frontier and add it to the explored
@@ -216,7 +217,7 @@ public class RouteFinder {
 	 * @return a list of directions relative to the robot
 	 */
 
-	private LinkedList<Bearing> getActualDirections(ArrayList<Direction> oldList, Direction direction) {
+	LinkedList<Bearing> getActualDirections(ArrayList<Direction> oldList, Direction direction) {
 
 		LinkedList<Bearing> newList = new LinkedList<Bearing>();
 
