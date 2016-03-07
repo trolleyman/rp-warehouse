@@ -20,7 +20,7 @@ import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.TestMaps;
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.Robot;
 
 /**
  * Tests to check the planning aspect of the route finding:
