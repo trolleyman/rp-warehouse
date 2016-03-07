@@ -7,7 +7,7 @@ import warehouse.pc.job.DropList;
 import warehouse.pc.job.ItemList;
 import warehouse.pc.job.JobList;
 import warehouse.pc.job.LocationList;
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.Robot;
 
 /**
  * The main interface for the whole project. Get the server using Server::get().

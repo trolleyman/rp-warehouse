@@ -3,7 +3,7 @@ package warehouse.pc.shared;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.Robot;
 
 public class State {
 	private Map map;

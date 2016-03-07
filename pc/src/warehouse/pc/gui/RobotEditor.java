@@ -18,7 +18,7 @@ import javax.swing.SpringLayout;
 import org.junit.Test;
 
 import warehouse.pc.shared.MainInterface;
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.Robot;
 
 @SuppressWarnings("serial")
 public class RobotEditor extends JPanel {

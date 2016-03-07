@@ -29,7 +29,7 @@ import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemList;
 import warehouse.pc.shared.MainInterface;
 import warehouse.pc.shared.RobotListener;
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.Robot;
 
 public class Gui implements Runnable, RobotListener {
 	public static void main(String[] args) {
