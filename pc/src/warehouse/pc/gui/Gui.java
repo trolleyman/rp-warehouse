@@ -23,11 +23,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
-import org.junit.Test;
-
 import rp.robotics.mapping.GridMap;
 import rp.robotics.mapping.LineMap;
-import rp.robotics.mapping.MapUtils;
 import rp.robotics.simulation.MapBasedSimulation;
 import rp.robotics.visualisation.ExampleGridMapVisualisation;
 import rp.robotics.visualisation.GridMapVisualisation;

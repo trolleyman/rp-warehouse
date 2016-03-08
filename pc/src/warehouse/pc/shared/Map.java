@@ -96,7 +96,7 @@ public class Map {
 	}
 	
 	private Rectangle.Double calculateBounds() {
-		return new Rectangle.Double(-xOffset, -yOffset, xOffset * 2 + width * cellSize, yOffset * 2 + height * cellSize);
+		return new Rectangle.Double(-xOffset, -yOffset, xOffset * 2 + width, yOffset * 2 + height);
 	}
 	
 	private void linkJunctions() {
@@ -208,5 +208,12 @@ public class Map {
 	 */
 	public Rectangle.Double[] getWalls() {
 		return walls;
+	}
+	
+	/**
+	 * Returns the bounding box of the map
+	 */
+	public Rectangle.Double getBounds() {
+		return bounds;
 	}
 }
