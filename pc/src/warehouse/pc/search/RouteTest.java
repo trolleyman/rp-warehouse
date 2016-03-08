@@ -1,8 +1,9 @@
 package warehouse.pc.search;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
-import warehouse.pc.shared.Bearing;
+import warehouse.pc.shared.Command;
 import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.TestMaps;
@@ -24,8 +25,9 @@ public class RouteTest {
 
 		// change the start node, goal node and initial direction
 		
-		LinkedList<Bearing> testArray = testSearch.findRoute(testMap.getJunction(2, 0), testMap.getJunction(0, 3),
+		ArrayList<Direction> testArray = testSearch.findRoute(testMap.getJunction(2, 0), testMap.getJunction(0, 3),
 				Direction.Y_NEG);
+		LinkedList<Command> directions = testSearch.getActualDirections(testArray, Direction.Y_NEG);
 
 		// prints a list of bearings
 		

@@ -5,9 +5,11 @@ package warehouse.pc.shared;
  *
  */
 
-public enum Bearing {
+public enum Command {
 	LEFT,
 	RIGHT,
 	FORWARD,
 	BACKWARD,
+	PICK,
+	DROP,
 }

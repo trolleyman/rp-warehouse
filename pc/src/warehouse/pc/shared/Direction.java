@@ -60,9 +60,9 @@ public enum Direction {
 	/**
 	 * Applies a list of bearings to this Direction, returning the Direction transformed.
 	 */
-	public Direction applyCommands(List<Bearing> bearings) {
+	public Direction applyCommands(List<Command> bearings) {
 		Direction facing = this;
-		for (Bearing b : bearings) {
+		for (Command b : bearings) {
 			int turn = 0;
 			switch (b) {
 			case FORWARD:
