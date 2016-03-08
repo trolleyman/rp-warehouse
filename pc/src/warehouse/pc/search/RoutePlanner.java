@@ -13,10 +13,10 @@ import warehouse.pc.shared.CommandQueue;
 import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.Robot;
 
 /**
- * Class to create lists of bearings for individual robots to take 
+ * Class to create lists of bearings for individual robots to take
  * Uses a lot of placeholders while the job and robot teams get their classes together
  *
  */
@@ -130,11 +130,11 @@ public class RoutePlanner {
 			for (int j = 0; j < queue.size(); j++) {
 
 				Job job = queue.get(j); // get the next job from the job list
-				ArrayList<ItemQuantity> items = job.getItems();				// get a list of items in the job												
+				ArrayList<ItemQuantity> items = job.getItems();				// get a list of items in the job
 				
 				for (int k = 0; k < items.size(); k++) {
 
-					Item item = items.get(k).getItem(); // get the kth item from the job										
+					Item item = items.get(k).getItem(); // get the kth item from the job
 					int quantity = items.get(k).getQuantity();
 					
 					Junction start = map.getJunction((int)robot.getX(), (int)robot.getY());
