@@ -94,7 +94,7 @@ public class NXTMain {
 	
 	// Starts the Sender and Receiver Threads
 	private void startThreads() {
-		this.sender = new NXTSender( this.toPC, this.myself );
+		this.sender = new NXTSender( this.toPC, this.myself, this.robotMotion, this.robotInterface );
 		this.receiver = new NXTReceiver( this.fromPC, this.connection, this.myself, this.robotMotion, this.robotInterface );
 		
 		this.sender.start();

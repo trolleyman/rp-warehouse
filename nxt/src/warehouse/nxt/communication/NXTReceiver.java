@@ -55,7 +55,7 @@ public class NXTReceiver extends Thread {
 		
 	}
 	
-	// Checks whether it needs to shut down or to execute an action ( lame but maybe good for later )
+	// Categorises commands into Go or Do
 	private void find( String _action ) {
 		
 		String[] explosion = MyString.split( ":", _action );
