@@ -44,10 +44,16 @@ public class Map {
 						map.getCellSize(),
 						map.getCoordinatesOfGridPosition(0, 0).getX(),
 						map.getCoordinatesOfGridPosition(0, 0).getY()),
-				map.getCellSize());
+				map.getCellSize(),
+				map.getCoordinatesOfGridPosition(0, 0).getX(),
+				map.getCoordinatesOfGridPosition(0, 0).getY());
 	}
 	
 	public Map(int _width, int _height, Rectangle.Double[] _walls, double _cellSize) {
+		this(_width, _height, _walls, _cellSize, _cellSize / 2.0, _cellSize / 2.0);
+	}
+	
+	public Map(int _width, int _height, Rectangle.Double[] _walls, double _cellSize, double xOffset, double yOffset) {
 		this.walls = _walls;
 		this.width = _width;
 		this.height = _height;
@@ -138,8 +144,20 @@ public class Map {
 	}
 	
 	/**
-	 * Transforms Grid co-ordinates into real-life coordinates.
+	 * Transforms Grid x co-ordinate into real-life x coordinate.
+	 * Real-life coordinates start at the 0,0 junction.
 	 */
+	public double getRealX(double gridX) {
+		return gridX * cellSize;
+	}
+	
+	/**
+	 * Transforms Grid y co-ordinate into real-life y coordinate.
+	 * Real-life coordinates start at the 0,0 junction.
+	 */
+	public double getRealY(double gridY) {
+		return gridY * cellSize;
+	}
 	
 	/**
 	 * Returns the junction located at x, y on the map, or null if it does not exist.
