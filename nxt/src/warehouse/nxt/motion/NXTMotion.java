@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
+import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.robotics.subsumption.Arbitrator;
 import lejos.robotics.subsumption.Behavior;
@@ -16,24 +17,29 @@ import warehouse.nxt.utils.WheeledRobotConfiguration;
 
 public class NXTMotion {
 
+	private static final double THRESHOLD = 7;
+
 	private Robot myself;
 	private ArrayList<String> moves;
 	private PathProvider provider;
 	private Arbitrator arbitrator;
+	private final UltrasonicSensor eyes;
 
 	public NXTMotion( Robot _myself ) {
 		
 		this.myself = _myself;
 		this.moves = new ArrayList<String>();
-		
+
+		this.provider = new SetPath( this.moves );
 		
 		WheeledRobotConfiguration config = new WheeledRobotConfiguration( 0.056f, 0.111f, 0.111f, Motor.B, Motor.A );
 		DifferentialDriveRobot robot = new DifferentialDriveRobot( config );
 		DifferentialPilot pilot = robot.getDifferentialPilot();
-
-		this.provider = new SetPath( this.moves );
+		LightSensor left =  new LightSensor( SensorPort.S1 );
+		LightSensor right = new LightSensor( SensorPort.S2 );
+		LightSensorCalibration calibration = new LightSensorCalibration( left, right );
 		
-		LightSensorCalibration calibration = new LightSensorCalibration( new LightSensor( SensorPort.S1 ), new LightSensor( SensorPort.S2 ) );
+		this.eyes = new UltrasonicSensor( SensorPort.S3 );
 		
 		TrackingBehaviour tracking = new TrackingBehaviour( pilot, calibration, provider );
 		JunctionBehaviour junction = new JunctionBehaviour( pilot, calibration, provider );
@@ -50,6 +56,13 @@ public class NXTMotion {
 		
 	}
 	
-	public int getDistance() { return 0; }
+	public int getDistance() {
+		int distance_one = this.eyes.getDistance();
+		int distance_two = this.eyes.getDistance();
+		
+		while( ( distance_one - distance_two ) > THRESHOLD ) { distance_one = distance_two; distance_two = this.eyes.getDistance(); }
+		
+		return ( int ) Math.ceil( ( distance_one + distance_two ) / 2 );
+	}
 	
 }
