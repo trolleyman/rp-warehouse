@@ -1,8 +1,6 @@
 package warehouse.pc.bluetooth.testing;
 
-import static org.junit.Assert.*;
-
-import java.io.PrintStream;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -12,7 +10,7 @@ import lejos.pc.comm.NXTInfo;
 import warehouse.pc.bluetooth.BTServer;
 import warehouse.pc.bluetooth.MessageListener;
 
-public class OpenConnectionTest implements MessageListener {
+public class SingleConnectionTest implements MessageListener {
 
 	private final String name = "Dobot";
 	private final String address = "0016530FD7F4";
@@ -21,17 +19,8 @@ public class OpenConnectionTest implements MessageListener {
 
 	@Before
 	public void setUp() throws Exception {
-		// Custom System.out.println
-		PrintStream stream = new PrintStream(System.out) {
-			public void println(String s) {
-				String fullClassName = Thread.currentThread().getStackTrace()[2].getClassName();
-				String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
-				String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
-				int lineNumber = Thread.currentThread().getStackTrace()[2].getLineNumber();
-				super.println("(" + className + "-" + methodName + " @ " + lineNumber + "): " + s);
-			}
-		};
-		System.setOut(stream);
+		// Enable custom print stream
+		DebugPrintStream.enable();
 
 		server = new BTServer();
 		reply = false;
