@@ -1,7 +1,9 @@
 package warehouse.pc.search;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -9,7 +11,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import warehouse.pc.shared.Bearing;
+import warehouse.pc.shared.Command;
 import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
@@ -42,10 +44,10 @@ public class SearchTests {
 	Direction yp = Direction.Y_POS;
 	Direction yn = Direction.Y_NEG;
 	
-	Bearing r = Bearing.RIGHT;
-	Bearing l = Bearing.LEFT;
-	Bearing f = Bearing.FORWARD;
-	Bearing b = Bearing.BACKWARD;
+	Command r = Command.RIGHT;
+	Command l = Command.LEFT;
+	Command f = Command.FORWARD;
+	Command b = Command.BACKWARD;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -78,12 +80,13 @@ public class SearchTests {
 	 * @return the linkedlist of the path
 	 */
 	
-	private LinkedList<Bearing> testRoute(RouteFinder finder, Map map, int startx, int starty, int goalx, int goaly, Direction direction){
+	private LinkedList<Command> testRoute(RouteFinder finder, Map map, int startx, int starty, int goalx, int goaly, Direction direction){
 		
 		Junction start = map.getJunction(startx, starty);
 		Junction goal = map.getJunction(goalx, goaly);
 		
-		return finder.findRoute(start, goal, direction);			
+		ArrayList<Direction> route = finder.findRoute(start, goal, direction);
+		return finder.getActualDirections(route, direction);			
 		
 		
 	}

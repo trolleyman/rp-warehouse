@@ -41,7 +41,7 @@ public class ServerReceiver implements Runnable {
 
 			running = true;
 			while (running) {
-				System.out.println("Waiting to read");
+				System.out.println(robotName + " waiting to read");
 				String input = fromRobot.readUTF();
 				System.out.println("Got " + input + " from " + robotName);
 				fromRobotQueue.put(input);

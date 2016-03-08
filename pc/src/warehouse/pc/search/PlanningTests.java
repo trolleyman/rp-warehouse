@@ -15,7 +15,7 @@ import org.junit.Test;
 import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
-import warehouse.pc.shared.Bearing;
+import warehouse.pc.shared.Command;
 import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
@@ -51,10 +51,10 @@ public class PlanningTests {
 	Direction yp = Direction.Y_POS;
 	Direction yn = Direction.Y_NEG;
 	
-	Bearing r = Bearing.RIGHT;
-	Bearing l = Bearing.LEFT;
-	Bearing f = Bearing.FORWARD;
-	Bearing b = Bearing.BACKWARD;
+	Command r = Command.RIGHT;
+	Command l = Command.LEFT;
+	Command f = Command.FORWARD;
+	Command b = Command.BACKWARD;
 	
 	RoutePlanner tpl;
 	RoutePlanner tp2;
@@ -156,9 +156,9 @@ public class PlanningTests {
 		
 		tp2 = new RoutePlanner(tm2, 60f, map, bases);
 		tp2.computeCommands();
-		LinkedList<Bearing> bearings = tp2.getCommands(robot1).getCommands();
-		LinkedList<Bearing> bearings1 = tp2.getCommands(robot2).getCommands();
-		LinkedList<Bearing> bearings2 = tp2.getCommands(robot3).getCommands();
+		LinkedList<Command> bearings = tp2.getCommands(robot1).getCommands();
+		LinkedList<Command> bearings1 = tp2.getCommands(robot2).getCommands();
+		LinkedList<Command> bearings2 = tp2.getCommands(robot3).getCommands();
 		
 		System.out.println(bearings);
 		System.out.println(bearings1);
@@ -176,7 +176,7 @@ public class PlanningTests {
 		
 	}
 	
-	private void locationTest(List<Bearing> bearings1, List<Bearing> bearings2, Robot robot1, Robot robot2, Direction dir1, Direction dir2){
+	private void locationTest(List<Command> bearings1, List<Command> bearings2, Robot robot1, Robot robot2, Direction dir1, Direction dir2){
 		
 		for(int i = 0; i < bearings1.size(); i++){
 			
