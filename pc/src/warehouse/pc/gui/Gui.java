@@ -52,14 +52,14 @@ public class Gui implements Runnable, RobotListener {
 			}
 		}
 		
-		//displayMap(MapUtils.create2014Map2());
-		//displayMap((LineMap) MapUtils.createRealWarehouse());
+		//displayMap(MapUtils.create2014Map2(), 2.0f);
+		//displayMap(MapUtils.createRealWarehouse(), 200.0f);
 		
 		Gui g = new Gui();
 		g.run();
 	}
 	
-	public static void displayMap(LineMap lineMap) {
+	public static void displayMap(LineMap lineMap, float scale) {
 		// Grid map configuration
 
 		// Grid junction numbers
@@ -72,12 +72,12 @@ public class Gui implements Runnable, RobotListener {
 		int yInset = 31;
 
 		displayMap(new GridMap(xJunctions, yJunctions, xInset, yInset,
-				junctionSeparation, lineMap));
+				junctionSeparation, lineMap), scale);
 	}
 	
-	public static void displayMap(GridMap gridMap) {
+	public static void displayMap(GridMap gridMap, float scale) {
 		GridMapVisualisation mapVis = new GridMapVisualisation(gridMap,
-				(LineMap) gridMap, 2);
+				(LineMap) gridMap, scale);
 		
 		MapBasedSimulation sim = new MapBasedSimulation((LineMap) gridMap);
 		

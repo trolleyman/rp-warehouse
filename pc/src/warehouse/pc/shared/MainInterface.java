@@ -57,7 +57,7 @@ public class MainInterface {
 		
 		// currentState = new State(new Map(new GridMap(10, 7, 14, 31, 30, MapUtils.create2014Map2())));
 		// currentState = new State(new Map(MapUtils.createRealWarehouse()));
-		currentState = new State(new Map(new GridMap(10, 7, 14, 31, 30, MapUtils.create2014Map2())));
+		currentState = new State(new Map(MapUtils.createRealWarehouse()));
 		
 		locList = new LocationList("locations.csv");
 		itemList = new ItemList("items.csv", locList);

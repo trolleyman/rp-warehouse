@@ -201,8 +201,8 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 					}
 				}
 				
-				_g2.fillOval((int) (j.getX() * xScale - w / 2.0) + 0,
-							 (int) (j.getY() * yScale - h / 2.0) + 0,
+				_g2.fillOval((int) (x * xScale - w / 2.0) + 0,
+							 (int) (y * yScale - h / 2.0) + 0,
 							 (int) (w), (int) (h));
 			}
 		}

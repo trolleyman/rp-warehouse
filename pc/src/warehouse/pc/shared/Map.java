@@ -2,6 +2,7 @@ package warehouse.pc.shared;
 
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 import lejos.geom.Line;
@@ -26,7 +27,7 @@ public class Map {
 	private static Rectangle.Double[] linesToWalls(Line[] lines, double cellSize, double xOffset, double yOffset) {
 		ArrayList<Rectangle.Double> rects = new ArrayList<>();
 		for (Line line : lines) {
-			Rectangle bounds = line.getBounds();
+			Rectangle2D bounds = line.getBounds2D();
 			
 			rects.add(new Rectangle.Double(
 					(bounds.getMinX() - xOffset) / cellSize,
