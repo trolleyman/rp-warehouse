@@ -113,12 +113,24 @@ public class RoutePlanner {
 	}
 	
 	/**
-	 * Update the hashmap with a new set of robots and linked lists
+	 * Update the hashmaps with a new set of robots and linked lists
 	 * @param _hash the new hashmap
 	 */
 	
 	public void update(HashMap<Robot, LinkedList<Job>> _hash){
+		
 		this.pairedJobs = _hash;
+		
+		for(Entry<Robot, LinkedList<Job>> entry : pairedJobs.entrySet()){
+			
+			pairedCommands.put(entry.getKey(), new CommandQueue());
+		}
+		
+		for (Entry<Robot, CommandQueue> entry : pairedCommands.entrySet()) {
+
+			weights.put(entry.getKey(), 0f);
+
+		}
 	}
 	
 	/**

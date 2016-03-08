@@ -38,7 +38,8 @@ public class PlanningTests {
 	Map mapA;
 
 	Robot robotA;
-
+	Robot robotB;
+	
 	Direction xp = Direction.X_POS;
 	Direction xn = Direction.X_NEG;
 	Direction yp = Direction.Y_POS;
@@ -61,13 +62,15 @@ public class PlanningTests {
 	ArrayList<Junction> bases;
 	HashMap<Robot, LinkedList<Job>> map;
 	
-	LinkedList<Command> bearings;
+	LinkedList<Command> bearingsA;
+	LinkedList<Command> bearingsB;
 
 	@Before
 	public void setUp() throws Exception {
 
-		robotA = new Robot("miketheliar", "miketheliar", 4.0, 2.0, 180.0);
-
+		robotA = new Robot("wazowski", "wazowski", 4.0, 2.0, 180.0);
+		robotB = new Robot("watkeysdowie", "watkeysdowie", 4.0, 2.0, 180.0);
+		
 		mapA = TestMaps.TEST_MAP2;
 
 		yazoo = new Item("yazoo", 50, 25f, 6, 2);
@@ -93,20 +96,25 @@ public class PlanningTests {
 		listA.add(new ItemQuantity(yazoo, 1));
 		listA.add(new ItemQuantity(crackers, 5));
 
-		jobA.add(new Job(0, listA, 140, 0));
+		Job firstJob = new Job(0, listA, 140, 0);
+		
+		jobA.add(firstJob);
+		jobB.add(firstJob);
 
 		listB.add(new ItemQuantity(crackers, 10));
 		listB.add(new ItemQuantity(yazoo, 1));
 
-		//jobA.add(new Job(1, listB, 75, 0));
+		jobB.add(new Job(1, listB, 75, 0));
 
 		map.put(robotA, jobA);
+		map.put(robotB, jobB);
 
 		plannerA = new RoutePlanner(mapA, 60f, map, bases);
 		plannerA.computeCommands();
 
-		bearings = plannerA.getCommands(robotA).getCommands();
-
+		bearingsA = plannerA.getCommands(robotA).getCommands();
+		bearingsB = plannerA.getCommands(robotB).getCommands();
+		
 	}
 
 	@After
