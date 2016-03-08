@@ -44,7 +44,7 @@ public class NXTSender extends Thread {
 				try { Thread.sleep( 100 ); }
 				catch( Exception _exception ) { /* I guess we dont care */ }
 				
-				this.toPC.writeUTF( "Distance:" + this.robotMotion.getDistance(); );
+				this.toPC.writeUTF( "Distance:" + this.robotMotion.getDistance() );
 				
 				if( this.statusUpdated() ) { this.toPC.writeUTF( this.myself.status ); this.updateOldRobot(); }
 				if( this.positionUpdated() ) { this.robotInterface.updatePosition( this.myself.x, this.myself.y ); this.updateOldRobot(); }

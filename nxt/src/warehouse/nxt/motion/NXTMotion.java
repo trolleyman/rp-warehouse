@@ -12,4 +12,6 @@ public class NXTMotion {
 	
 	public void go( String _direction ) {  }
 	
+	public int getDistance() { return 0; }
+	
 }
