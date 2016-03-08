@@ -30,7 +30,8 @@ public class NXTSender {
 	 */
 	public void sendToServer(String message) {
 		try {
-
+			
+			System.out.println("Sending " + message);
 			toServer.writeUTF(message);
 			toServer.flush();
 
