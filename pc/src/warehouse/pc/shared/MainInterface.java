@@ -55,7 +55,7 @@ public class MainInterface {
 		distanceListeners = new ArrayList<>();
 		
 		//map = new Map(new GridMap(10, 7, 14, 31, 30, MapUtils.create2014Map2()));
-		//map = new Map(MapUtils.createRealWarehouse());
+		map = new Map(MapUtils.createRealWarehouse());
 		//map = TestMaps.TEST_MAP4;
 		robots = new HashSet<>();
 		

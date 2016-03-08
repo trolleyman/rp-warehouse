@@ -96,7 +96,18 @@ public class Map {
 	}
 	
 	private Rectangle.Double calculateBounds() {
-		return new Rectangle.Double(-xOffset, -yOffset, xOffset * 2 + width, yOffset * 2 + height);
+		Rectangle.Double bounds = new Rectangle.Double(
+				-xOffset,
+				-yOffset,
+				xOffset * 2 + (width - 1),
+				yOffset * 2 + (height - 1));
+		
+		for (Rectangle.Double wall : walls) {
+			// src1, src2, dest
+			Rectangle.Double.union(bounds, wall, bounds);
+		}
+		
+		return bounds;
 	}
 	
 	private void linkJunctions() {
