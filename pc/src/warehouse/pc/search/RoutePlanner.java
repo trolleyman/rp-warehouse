@@ -113,6 +113,15 @@ public class RoutePlanner {
 	}
 	
 	/**
+	 * Update the hashmap with a new set of robots and linked lists
+	 * @param _hash the new hashmap
+	 */
+	
+	public void update(HashMap<Robot, LinkedList<Job>> _hash){
+		this.pairedJobs = _hash;
+	}
+	
+	/**
 	 * Makes lists of commands for the robots
 	 */
 

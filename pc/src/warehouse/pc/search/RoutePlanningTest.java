@@ -16,13 +16,8 @@ import warehouse.pc.shared.TestMaps;
 
 public class RoutePlanningTest {
 
-	static Map tm1;
-	static Map tm2;
-	static Map tm3;
-	static Map tm4;
+	static Map mapA;
 	
-	static Robot robot1;
-	static Robot robot2;
 	static Robot robotA;
 	
 	static Direction xp = Direction.X_POS;
@@ -35,14 +30,8 @@ public class RoutePlanningTest {
 	static Command f = Command.FORWARD;
 	static Command b = Command.BACKWARD;
 	
-	static RoutePlanner tpl;
-	static RoutePlanner tp2;
-	static RoutePlanner tp3;
-	static RoutePlanner tp4;
+	static RoutePlanner plannerA;
 	
-	static Item heavy;
-	static Item medium;
-	static Item light;
 	static Item yazoo;
 	static Item lego;
 	static Item crackers;
@@ -52,23 +41,9 @@ public class RoutePlanningTest {
 	
 	public static void main(String[] args) {
 		
-		
-		robot1 = new Robot("george", "george", 0.0, 0.0, 0.0);
-		robot2 = new Robot("jason", "jason", 5.0, 0.0, 0.0);
-		
 		robotA = new Robot("miketheliar", "miketheliar", 4.0, 2.0, 180.0);
 		
-		
-		
-		
-		tm1 = TestMaps.TEST_MAP1;
-		tm2 = TestMaps.TEST_MAP2;
-		tm3 = TestMaps.TEST_MAP3;
-		tm4 = TestMaps.TEST_MAP4;
-		
-		heavy = new Item("heavy", 10, 20f, 4, 0);
-		medium = new Item("medium", 10, 10f, 2, 0);
-		light = new Item("light", 10, 5f, 3, 0);
+		mapA = TestMaps.TEST_MAP2;
 		
 		yazoo = new Item("yazoo", 50, 25f, 6, 2);
 		lego = new Item("lego", 20, 10f, 1, 1);
@@ -77,13 +52,8 @@ public class RoutePlanningTest {
 		map = new HashMap<Robot, LinkedList<Job>>();
 		bases = new ArrayList<Junction>();
 		
-		bases.add(tm2.getJunction(0, 0));
-		bases.add(tm2.getJunction(6, 0));
-		
-		tpl = new RoutePlanner(tm1, 60f, map, bases);
-
-		tp3 = new RoutePlanner(tm3, 60f, map, bases);
-		tp4 = new RoutePlanner(tm4, 60f, map, bases);
+		bases.add(mapA.getJunction(0, 0));
+		bases.add(mapA.getJunction(6, 0));
 		
 		LinkedList<Job> jobA = new LinkedList<>();
 		LinkedList<Job> jobB = new LinkedList<>();
@@ -105,16 +75,13 @@ public class RoutePlanningTest {
 		
 		jobA.add(new Job(1, listB, 75, 0));
 		
-		
-		
 		map.put(robotA, jobA);
 		
+		plannerA = new RoutePlanner(mapA, 60f, map, bases);
+		plannerA.computeCommands();
 		
-		tp2 = new RoutePlanner(tm2, 60f, map, bases);
-		tp2.computeCommands();
 		
-		
-		LinkedList<Command> bearings = tp2.getCommands(robotA).getCommands();
+		LinkedList<Command> bearings = plannerA.getCommands(robotA).getCommands();
 		
 		System.out.println(bearings);
 		
