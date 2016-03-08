@@ -8,12 +8,15 @@ public class Robot implements Comparable<Robot> {
 	private double yPos;
 	// Which Direction the robot is facing clockwise in degrees relative to Y+
 	private double facing;
+	// Direction the robot is facing in a Direction
+	private Direction direction;
 	
 	public Robot(String _name, String _id, double _xPos, double _yPos, double _facing) {
 		this.identity = new RobotIdentity( _name, _id);
 		this.xPos = _xPos;
 		this.yPos = _yPos;
 		this.facing = _facing;
+		this.direction = Direction.fromFacing(facing);
 	}
 	
 	/**
@@ -53,6 +56,13 @@ public class Robot implements Comparable<Robot> {
 	}
 	
 	/**
+	 * Gets the direction the robot is facing (one of the four Directions)
+	 * @return the direction
+	 */
+	
+	public Direction getDirection(){ return this.direction;}
+	
+	/**
 	 * Gets the current direction the robot is facing in in degrees clockwise from the Y+ vector.
 	 */
 	public double getFacing() { return this.facing; }
@@ -67,6 +77,11 @@ public class Robot implements Comparable<Robot> {
 		if (facing < 0.0)
 			facing = facing + 360.0;
 		
+		update();
+	}
+	
+	public void setDirection(Direction _direction){
+		this.direction = _direction;
 		update();
 	}
 	
