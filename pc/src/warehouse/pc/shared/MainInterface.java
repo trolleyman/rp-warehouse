@@ -3,6 +3,8 @@ package warehouse.pc.shared;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import rp.robotics.mapping.GridMap;
+import rp.robotics.mapping.MapUtils;
 import warehouse.pc.bluetooth.BTServer;
 import warehouse.pc.job.DropList;
 import warehouse.pc.job.ItemList;
@@ -52,7 +54,9 @@ public class MainInterface {
 		robotListeners = new ArrayList<>();
 		distanceListeners = new ArrayList<>();
 		
-		map = TestMaps.TEST_MAP4;
+		// map = new Map(new GridMap(10, 7, 14, 31, 30, MapUtils.create2014Map2()));
+		// map = new Map(MapUtils.createRealWarehouse());
+		map = new Map(MapUtils.createRealWarehouse());
 		robots = new HashSet<>();
 		
 		locList = new LocationList("locations.csv");
