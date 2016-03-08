@@ -57,8 +57,8 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 		double sf = Math.min((double) getWidth() / map.getBounds().getWidth(),
 						     (double) getHeight() / map.getBounds().getHeight());
 		int padding = (int) (20.0 * (sf * 0.025));
-		int width = (int) (getWidth() - padding * 1);
-		int height = (int) (getHeight() - padding * 1);
+		int width = (int) (getWidth() - padding * 2);
+		int height = (int) (getHeight() - padding * 2);
 		
 		locList = mi.getLocationList();
 		double mapWidth = map.getBounds().getWidth();
@@ -78,7 +78,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 		at.setToScale(1.0, -1.0);
 		
 		xTrans = padding * 2;
-		yTrans = padding * -1 + yScale * mapHeight;
+		yTrans = padding * 0 + yScale * mapHeight;
 		g2.translate(xTrans, yTrans);
 		g2.transform(at);
 		
