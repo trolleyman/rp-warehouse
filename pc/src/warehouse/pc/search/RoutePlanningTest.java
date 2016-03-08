@@ -1,9 +1,6 @@
 package warehouse.pc.search;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -26,7 +23,7 @@ public class RoutePlanningTest {
 	
 	static Robot robot1;
 	static Robot robot2;
-	static Robot robot3;
+	static Robot robotA;
 	
 	static Direction xp = Direction.X_POS;
 	static Direction xn = Direction.X_NEG;
@@ -47,6 +44,8 @@ public class RoutePlanningTest {
 	static Item medium;
 	static Item light;
 	static Item yazoo;
+	static Item lego;
+	static Item crackers;
 	
 	static ArrayList<Junction> bases;
 	static HashMap<Robot, LinkedList<Job>> map;
@@ -56,7 +55,8 @@ public class RoutePlanningTest {
 		
 		robot1 = new Robot("george", "george", 0.0, 0.0, 0.0);
 		robot2 = new Robot("jason", "jason", 5.0, 0.0, 0.0);
-		robot3 = new Robot("miketheliar", "miketheliar", 3.0, 0.0, 0.0);
+		
+		robotA = new Robot("miketheliar", "miketheliar", 4.0, 2.0, 180.0);
 		
 		
 		
@@ -69,37 +69,52 @@ public class RoutePlanningTest {
 		heavy = new Item("heavy", 10, 20f, 4, 0);
 		medium = new Item("medium", 10, 10f, 2, 0);
 		light = new Item("light", 10, 5f, 3, 0);
-		yazoo = new Item("yazoo", 50, 25f, 5, 1);
+		
+		yazoo = new Item("yazoo", 50, 25f, 6, 2);
+		lego = new Item("lego", 20, 10f, 1, 1);
+		crackers = new Item("crackers", 1, 5f, 4, 0);
 		
 		map = new HashMap<Robot, LinkedList<Job>>();
 		bases = new ArrayList<Junction>();
 		
 		bases.add(tm2.getJunction(0, 0));
-		bases.add(tm2.getJunction(4, 0));
+		bases.add(tm2.getJunction(6, 0));
 		
 		tpl = new RoutePlanner(tm1, 60f, map, bases);
 
 		tp3 = new RoutePlanner(tm3, 60f, map, bases);
 		tp4 = new RoutePlanner(tm4, 60f, map, bases);
 		
-		LinkedList<Job> job1 = new LinkedList<>();
-		ArrayList<ItemQuantity> list = new ArrayList<>();
-		ArrayList<ItemQuantity> list1 = new ArrayList<>();
-		ArrayList<ItemQuantity> yazooList = new ArrayList<>();
-		list.add(new ItemQuantity(heavy, 3));
-		list1.add(new ItemQuantity(light, 3));
-		list1.add(new ItemQuantity(medium, 1));
-		list1.add(new ItemQuantity(medium, 5));
-		yazooList.add(new ItemQuantity(yazoo, 2));
-		job1.add(new Job(0, list, 60, 0));
-		job1.add(new Job(1, yazooList, 50, 0));
-		//job1.add(new Job(1, list1, 65, 0));
+		LinkedList<Job> jobA = new LinkedList<>();
+		LinkedList<Job> jobB = new LinkedList<>();
+		LinkedList<Job> jobC = new LinkedList<>();
 		
-		map.put(robot1, job1);
+		ArrayList<ItemQuantity> listA = new ArrayList<>();
+		ArrayList<ItemQuantity> listB = new ArrayList<>();
+		ArrayList<ItemQuantity> listC = new ArrayList<>();
+
+		listA.add(new ItemQuantity(yazoo, 2));
+		listA.add(new ItemQuantity(lego, 4));
+		listA.add(new ItemQuantity(yazoo, 1));
+		listA.add(new ItemQuantity(crackers, 5));
+		
+		jobA.add(new Job(0, listA, 140, 0));
+		
+		listB.add(new ItemQuantity(crackers, 10));
+		listB.add(new ItemQuantity(yazoo, 1));
+		
+		jobB.add(new Job(1, listB, 75, 0));
+		
+		
+		map.put(robotA, jobA);
+		//map.put(robotA, jobB);
+		
 		
 		tp2 = new RoutePlanner(tm2, 60f, map, bases);
 		tp2.computeCommands();
-		LinkedList<Command> bearings = tp2.getCommands(robot1).getCommands();
+		
+		
+		LinkedList<Command> bearings = tp2.getCommands(robotA).getCommands();
 		
 		System.out.println(bearings);
 		
