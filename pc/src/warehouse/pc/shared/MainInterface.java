@@ -188,6 +188,7 @@ public class MainInterface {
 		synchronized (interfaceInitLock) {
 			synchronized (this) {
 				mainInterface = null;
+				System.exit(0);
 			}
 		}
 	}

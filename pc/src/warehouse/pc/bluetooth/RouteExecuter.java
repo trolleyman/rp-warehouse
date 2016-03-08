@@ -4,23 +4,17 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
-public class RouteExecuter implements Runnable, MessageListener {
+public class RouteExecuter implements MessageListener {
 
 	private BTServer server;
 	private HashMap<String, LinkedList<String>> commands;
 
-	private boolean running;
 	private int numRobots;
 	private int finishedRobots;
 
 	public RouteExecuter(BTServer server, HashMap<String, LinkedList<String>> commandMap) {
 		this.server = server;
 		this.commands = commandMap;
-	}
-
-	@Override
-	public void run() {
-
 	}
 
 	@Override
@@ -55,10 +49,12 @@ public class RouteExecuter implements Runnable, MessageListener {
 
 	public void setNumRobots(int numRobots) {
 		this.numRobots = numRobots;
+		System.out.println("Num robots now " + numRobots);
 	}
 	
 	public void changeNumRobots(int change) {
 		this.numRobots += change;
+		System.out.println("Num robots now " + numRobots);
 	}
 
 	public int getNumRobots() {

@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
-import warehouse.pc.shared.Bearing;
+import warehouse.pc.shared.Command;
 import warehouse.pc.shared.CommandQueue;
 import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Junction;
@@ -96,7 +96,7 @@ public class RoutePlanner {
 	 * @return the next command
 	 */
 
-	public Bearing getNextCommand(Robot _robot) {
+	public Command getNextCommand(Robot _robot) {
 		return pairedCommands.get(_robot).getNextCommand();
 	}
 
@@ -139,9 +139,9 @@ public class RoutePlanner {
 					
 					Junction start = map.getJunction((int)robot.getX(), (int)robot.getY());
 					Junction goal = null;
-					//Direction facing = robot.getDirection();														// TODO
-					Direction facing = Direction.Y_POS;
-					LinkedList<Bearing> list = new LinkedList<Bearing>();
+					Direction facing = robot.getDirection();
+					ArrayList<Direction> directList = new ArrayList<Direction>();
+					LinkedList<Command> list = new LinkedList<Command>();
 					
 					// if adding that item would make the robot carry more than the max weight
 					// go to the nearest base instead and repeat this iteration
@@ -149,36 +149,49 @@ public class RoutePlanner {
 					if (weights.get(robot) + quantity * item.getWeight() > maxWeight) {
 
 						goal = findClosestBase(start, facing);
-						list = finder.findRoute(start, goal, facing);
+						directList = finder.findRoute(start, goal, facing);
+						list = finder.getActualDirections(directList, facing);
 						
 						weights.put(robot, 0f);
 						System.out.println("base: " + start + " to " + goal);
 						System.out.println(list);
 						pairedCommands.get(robot).addCommandList(list);
+						pairedCommands.get(robot).addCommand(Command.DROP);
 						
 						// this should be updated by the robot, here for testing purposes
 						
 						robot.setX(goal.getX());
 						robot.setY(goal.getY());
+						
+						if(directList.size() != 0){
+						robot.setDirection(directList.get(directList.size() - 1));
+						}
+										
+						
 						start = goal;
 						
 						
 					}
 						
 					goal = item.getJunction();
-					list = finder.findRoute(start, goal, facing); // find the route
+					directList = finder.findRoute(start, goal, facing);
+					list = finder.getActualDirections(directList, facing);
 						
 					Float newWeight = weights.get(robot) + quantity * item.getWeight();
 					weights.put(robot, newWeight);
 					System.out.println("item: " + start + " to " + goal);
 					System.out.println(list);
 					pairedCommands.get(robot).addCommandList(list);
+					pairedCommands.get(robot).addCommand(Command.PICK);
 					
 					// this should be updated by the robot, here for testing purposes
 					
 					robot.setX(goal.getX());
 					robot.setY(goal.getY());
 					
+					if(directList.size() != 0){
+					robot.setDirection(directList.get(directList.size() - 1));
+					}
 					
 					
 
@@ -192,13 +205,21 @@ public class RoutePlanner {
 			
 			Junction start = map.getJunction((int)robot.getX(), (int)robot.getY());
 			Junction goal = findClosestBase(start, facing);
-			LinkedList<Bearing> homeRoute = finder.findRoute(start, goal, facing);
+			ArrayList<Direction> directList = finder.findRoute(start, goal, facing);
+			LinkedList<Command> list = finder.getActualDirections(directList, facing);
 			
 			System.out.println("home: " + start + " to " + goal);
-			System.out.println(homeRoute);
-			pairedCommands.get(robot).addCommandList(homeRoute);
+			System.out.println(list);
+			pairedCommands.get(robot).addCommandList(list);
+			pairedCommands.get(robot).addCommand(Command.DROP);
 			
 			
+			robot.setX(goal.getX());
+			robot.setY(goal.getY());
+			
+			if(directList.size() != 0){
+			robot.setDirection(directList.get(directList.size() - 1));
+			}
 			
 			
 		}
@@ -209,7 +230,7 @@ public class RoutePlanner {
 		private Junction findClosestBase(Junction start, Direction facing){
 			Junction closestBase = bases.get(0);
 			int steps = map.getHeight() + map.getWidth();
-			LinkedList<Bearing> list = new LinkedList<Bearing>();
+			ArrayList<Direction> list = new ArrayList<Direction>();
 			
 			for (int l = 0; l < bases.size(); l++){
 				

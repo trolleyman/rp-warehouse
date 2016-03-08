@@ -19,9 +19,12 @@ import lejos.pc.comm.NXTInfo;
  *
  */
 public class BTServer {
-	private static final long TIMEOUT_MILLIS = 5000;
+
 	public static int btProtocol;
 	private NXTComm comm;
+
+	private static final long TIMEOUT_MILLIS = 5000;
+	private Boolean openSuccess = false;
 
 	// Maps of robot name against in/out queue
 	private HashMap<String, LinkedBlockingQueue<String>> toRobotQueues;
@@ -34,6 +37,9 @@ public class BTServer {
 	// The RouteExecuter and a HashMap of robot names to list of commands
 	private RouteExecuter executer;
 	private HashMap<String, LinkedList<String>> commandMap;
+	
+	// The lock for Bluetooth communications
+	private final static Object btLock = new Object();
 
 	/**
 	 * Setup the communication "server" for the current OS and driver. Initialise
@@ -59,21 +65,24 @@ public class BTServer {
 		commandMap = new HashMap<>();
 		executer = new RouteExecuter(this, commandMap);
 	}
-	
-	private Boolean openSuccess = false;
-	
+
 	/**
 	 * Try to open a connection and threads to a NXT. First the in and output
 	 * streams are made, then passed to the sender and receiver which are started
 	 * in new threads.
 	 * 
+	 * Times out after TIMEOUT_MILIS
+	 * 
 	 * @param nxt The protocol type, name and id of the NXT.
-	 * @return true if the connection was opened and false if not.
+	 * @return True if the connection was opened and False if not.
 	 */
 	public synchronized boolean open(NXTInfo nxt) {
 		String name = nxt.name + " (" + nxt.deviceAddress + ")";
 		System.out.println("Trying connect to " + name + ".");
+
 		openSuccess = false;
+
+		// Create a new thread to allow a timeout period for connecting.
 		Thread t = new Thread(() -> {
 			try {
 				openSuccess = comm.open(nxt);
@@ -82,12 +91,18 @@ public class BTServer {
 				return;
 			}
 		});
+
+		// Marking the thread as a Daemon allows it to end if the program ends.
 		t.setDaemon(true);
 		t.start();
+
+		// Wait for the thread to end (ends when it is connected). Only wait for the
+		// timeout period. If the thread is alive after the timeout period then the
+		// connection failed.
 		try {
 			t.join(TIMEOUT_MILLIS);
 		} catch (InterruptedException e) {
-			
+
 		}
 		if (t.isAlive()) {
 			System.out.println("Connection to " + name + " failed. (Timed out)");
@@ -96,7 +111,7 @@ public class BTServer {
 			System.out.println("Connection to " + name + " failed.");
 			return false;
 		}
-		
+
 		// Make in and out streams
 		DataOutputStream toRobot = new DataOutputStream(comm.getOutputStream());
 		DataInputStream fromRobot = new DataInputStream(comm.getInputStream());
@@ -120,14 +135,15 @@ public class BTServer {
 		senderThread.setName(nxt.name + " - Sender");
 		receiverThread.start();
 		receiverThread.setName(nxt.name + " - Receiver");
-		
+
 		// Update the listener for the executer
 		addListener(executer);
-		
-		// Update the robot in the MainInterface
-		//MainInterface.get().updateRobot(new Robot(nxt.name, nxt.deviceAddress, 0, 0, 0.0));
 
-		System.out.println("Connection made to " + nxt.name);
+		// Update the robot in the MainInterface
+		// MainInterface.get().updateRobot(new Robot(nxt.name, nxt.deviceAddress, 0,
+		// 0, 0.0));
+
+		System.out.println("Connection made to " + name);
 		return true;
 	}
 
@@ -139,7 +155,7 @@ public class BTServer {
 	 * @param commands The LinkedList of String commands.
 	 */
 	public void sendCommands(String robotName, LinkedList<String> commands) {
-		System.out.println("Send commands for " + robotName + " to executer");
+		System.out.println("Send commands for " + robotName);
 		executer.changeNumRobots(1);
 		sendToRobot(robotName, "check");
 		commandMap.put(robotName, commands);
@@ -178,5 +194,9 @@ public class BTServer {
 		for (Entry<String, ServerReceiver> entry : receivers.entrySet()) {
 			entry.getValue().addMessageListener(listener);
 		}
+	}
+
+	public static Object getLock() {
+		return btLock;
 	}
 }
