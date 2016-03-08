@@ -59,7 +59,9 @@ public class Gui implements Runnable, RobotListener {
 		g.run();
 	}
 	
-	public static void displayMap(LineMap lineMap, float scale) {
+	// Used for testing - Displays a LineMap
+	@SuppressWarnings("unused")
+	private static void displayMap(LineMap lineMap, float scale) {
 		// Grid map configuration
 
 		// Grid junction numbers
@@ -75,7 +77,7 @@ public class Gui implements Runnable, RobotListener {
 				junctionSeparation, lineMap), scale);
 	}
 	
-	public static void displayMap(GridMap gridMap, float scale) {
+	private static void displayMap(GridMap gridMap, float scale) {
 		GridMapVisualisation mapVis = new GridMapVisualisation(gridMap,
 				(LineMap) gridMap, scale);
 		
@@ -85,8 +87,6 @@ public class Gui implements Runnable, RobotListener {
 		
 		ExampleGridMapVisualisation.displayVisualisation(mapVis);
 	}
-	
-	
 	
 	public String selectedItemName;
 	private JFrame frame;
