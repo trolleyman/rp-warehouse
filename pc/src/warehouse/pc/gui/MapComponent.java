@@ -26,7 +26,7 @@ import warehouse.pc.shared.Robot;
 
 @SuppressWarnings("serial")
 public class MapComponent extends JComponent implements MouseListener, RobotListener {
-	private MainInterface mi;
+	private final MainInterface mi = MainInterface.get();
 	
 	private Map map;
 	
@@ -45,8 +45,8 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 		this.gui = _gui;
 		addMouseListener(this);
 		map = mi.getMap();
-		locList = MainInterface.get().getLocationList();
-		MainInterface.get().addRobotListener(this);
+		locList = mi.getLocationList();
+		mi.addRobotListener(this);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 		int width = (int) (getWidth() - padding * 2.5);
 		int height = (int) (getHeight() - padding * 2.1);
 		
-		locList = MainInterface.get().getLocationList();
+		locList = mi.getLocationList();
 		int mapWidth = map.getWidth() - 1;
 		int mapHeight = map.getHeight() - 1;
 		
@@ -194,7 +194,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 				double h = 5.0;
 				
 				_g2.setColor(Color.BLACK);
-				for (Junction drop : MainInterface.get().getDropList().getList()) {
+				for (Junction drop : mi.getDropList().getList()) {
 					if (drop.getX() == x && drop.getY() == y) {
 						w *= 1.5;
 						h *= 1.5;
