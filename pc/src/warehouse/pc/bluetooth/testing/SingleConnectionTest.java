@@ -2,6 +2,8 @@ package warehouse.pc.bluetooth.testing;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +20,7 @@ public class SingleConnectionTest {
 	@Before
 	public void setUp() throws Exception {
 		// Enable custom print stream
-		DebugPrintStream.enable();
+		Debug.enableStream();
 
 		server = new BTServer();
 	}
@@ -30,5 +32,6 @@ public class SingleConnectionTest {
 	@Test
 	public void test() {
 		assertTrue(server.open(new NXTInfo(BTServer.btProtocol, name, address)));
+		//Debug.waitForPress();
 	}
 }

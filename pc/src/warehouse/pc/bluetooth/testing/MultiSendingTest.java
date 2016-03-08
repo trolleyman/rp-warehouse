@@ -21,7 +21,7 @@ public class MultiSendingTest {
 	@Before
 	public void setUp() throws Exception {
 		// Enable custom print stream
-		DebugPrintStream.enable();
+		Debug.enableStream();
 		
 		// Add robots to the test
 		robots = new HashMap<>();

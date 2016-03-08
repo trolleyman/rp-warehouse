@@ -28,9 +28,6 @@ public class Connection {
 		// Make in and out streams
 		toRobot = new DataOutputStream(comm.getOutputStream());
 		fromRobot = new DataInputStream(comm.getInputStream());
-		
-		send("check");
-
 		return true;
 	}
 

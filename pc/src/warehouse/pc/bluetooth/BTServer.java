@@ -1,11 +1,7 @@
 package warehouse.pc.bluetooth;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map.Entry;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;

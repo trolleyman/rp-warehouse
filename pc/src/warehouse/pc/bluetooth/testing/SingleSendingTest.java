@@ -19,7 +19,7 @@ public class SingleSendingTest {
 	@Before
 	public void setUp() throws Exception {
 		// Enable custom print stream
-		DebugPrintStream.enable();
+		Debug.enableStream();
 
 		server = new BTServer();
 	}
@@ -34,10 +34,22 @@ public class SingleSendingTest {
 
 		// Send a check to robot
 		server.sendToRobot(name, "check");
+		server.sendToRobot(name, "forward");
+		server.sendToRobot(name, "left");
+		
+		//Debug.sleep(10000);
 
 		// Check we get a response
 		String reply = server.listen(name);
 		System.out.println("Replied " + reply);
+		String reply1 = server.listen(name);
+		System.out.println("Replied " + reply1);
+		String reply2 = server.listen(name);
+		System.out.println("Replied " + reply2);
 		assertEquals(reply, "ready");
+		assertEquals(reply1, "ready");
+		assertEquals(reply2, "ready");
+		
+		Debug.waitForPress();
 	}
 }

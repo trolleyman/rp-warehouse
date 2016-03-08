@@ -14,7 +14,7 @@ public class TestMultipleRobots {
 
 	public static void main(String[] args) {
 		// Enable custom print stream
-		DebugPrintStream.enable();
+		Debug.enableStream();
 		
 		// Add robots to the test
 		HashMap<String, String> robots = new HashMap<>();
