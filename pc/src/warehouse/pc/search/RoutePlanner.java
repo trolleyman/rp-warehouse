@@ -130,6 +130,9 @@ public class RoutePlanner {
 			for (int j = 0; j < queue.size(); j++) {
 
 				Job job = queue.get(j); // get the next job from the job list
+				
+				System.out.println(job);
+				
 				ArrayList<ItemQuantity> items = job.getItems();				// get a list of items in the job
 				
 				for (int k = 0; k < items.size(); k++) {

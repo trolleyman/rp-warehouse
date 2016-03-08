@@ -103,11 +103,11 @@ public class RoutePlanningTest {
 		listB.add(new ItemQuantity(crackers, 10));
 		listB.add(new ItemQuantity(yazoo, 1));
 		
-		jobB.add(new Job(1, listB, 75, 0));
+		jobA.add(new Job(1, listB, 75, 0));
+		
 		
 		
 		map.put(robotA, jobA);
-		//map.put(robotA, jobB);
 		
 		
 		tp2 = new RoutePlanner(tm2, 60f, map, bases);
