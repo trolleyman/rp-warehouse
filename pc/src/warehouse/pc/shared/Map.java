@@ -19,18 +19,32 @@ public class Map {
 	private int width;
 	private int height;
 	
+	private double xOffset;
+	private double yOffset;
 	private double cellSize;
 	
-	private static Rectangle.Double[] linesToWalls(Line[] lines, float cellSize) {
-		Rectangle.Double[] rects = new Rectangle.Double[lines.length];
+	private static Rectangle.Double[] linesToWalls(Line[] lines, double cellSize, double xOffset, double yOffset) {
+		ArrayList<Rectangle.Double> rects = new ArrayList<>();
 		for (Line line : lines) {
+			Rectangle bounds = line.getBounds();
 			
+			rects.add(new Rectangle.Double(
+					(bounds.getMinX() - xOffset) / cellSize,
+					(bounds.getMinY() - yOffset) / cellSize,
+					bounds.getWidth() / cellSize,
+					bounds.getHeight() / cellSize));
 		}
-		return new Rectangle.Double[0];
+		return rects.toArray(new Rectangle.Double[rects.size()]);
 	}
 	
 	public Map(GridMap map) {
-		this(map.getXSize(), map.getYSize(), linesToWalls(map.getLines(), map.getCellSize()), map.getCellSize());
+		this(map.getXSize(),
+				map.getYSize(),
+				linesToWalls(map.getLines(),
+						map.getCellSize(),
+						map.getCoordinatesOfGridPosition(0, 0).getX(),
+						map.getCoordinatesOfGridPosition(0, 0).getY()),
+				map.getCellSize());
 	}
 	
 	public Map(int _width, int _height, Rectangle.Double[] _walls, double _cellSize) {
@@ -38,6 +52,8 @@ public class Map {
 		this.width = _width;
 		this.height = _height;
 		this.cellSize = _cellSize;
+		this.xOffset = this.cellSize / 2.0;
+		this.yOffset = this.cellSize / 2.0;
 		
 		js = new Junction[height][width];
 		for (int y = 0; y < height; y++) {
@@ -120,6 +136,10 @@ public class Map {
 	public int getHeight() {
 		return height;
 	}
+	
+	/**
+	 * Transforms Grid co-ordinates into real-life coordinates.
+	 */
 	
 	/**
 	 * Returns the junction located at x, y on the map, or null if it does not exist.

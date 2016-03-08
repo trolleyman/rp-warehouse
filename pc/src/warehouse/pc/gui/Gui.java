@@ -25,6 +25,13 @@ import javax.swing.table.TableModel;
 
 import org.junit.Test;
 
+import rp.robotics.mapping.GridMap;
+import rp.robotics.mapping.LineMap;
+import rp.robotics.mapping.MapUtils;
+import rp.robotics.simulation.MapBasedSimulation;
+import rp.robotics.visualisation.ExampleGridMapVisualisation;
+import rp.robotics.visualisation.GridMapVisualisation;
+import rp.robotics.visualisation.MapVisualisationComponent;
 import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemList;
 import warehouse.pc.shared.MainInterface;
@@ -45,9 +52,41 @@ public class Gui implements Runnable, RobotListener {
 			}
 		}
 		
+		//displayMap(MapUtils.create2014Map2());
+		//displayMap((LineMap) MapUtils.createRealWarehouse());
+		
 		Gui g = new Gui();
 		g.run();
 	}
+	
+	public static void displayMap(LineMap lineMap) {
+		// Grid map configuration
+
+		// Grid junction numbers
+		int xJunctions = 10;
+		int yJunctions = 7;
+
+		float junctionSeparation = 30;
+
+		int xInset = 14;
+		int yInset = 31;
+
+		displayMap(new GridMap(xJunctions, yJunctions, xInset, yInset,
+				junctionSeparation, lineMap));
+	}
+	
+	public static void displayMap(GridMap gridMap) {
+		GridMapVisualisation mapVis = new GridMapVisualisation(gridMap,
+				(LineMap) gridMap, 2);
+		
+		MapBasedSimulation sim = new MapBasedSimulation((LineMap) gridMap);
+		
+		MapVisualisationComponent.populateVisualisation(mapVis, sim);
+		
+		ExampleGridMapVisualisation.displayVisualisation(mapVis);
+	}
+	
+	
 	
 	public String selectedItemName;
 	private JFrame frame;
