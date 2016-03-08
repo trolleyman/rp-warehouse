@@ -12,4 +12,5 @@ public enum Command {
 	BACKWARD,
 	PICK,
 	DROP,
+	WAIT,
 }

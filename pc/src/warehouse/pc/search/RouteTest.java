@@ -20,19 +20,19 @@ public class RouteTest {
 
 		// change the test map
 		
-		Map testMap = TestMaps.TEST_MAP3;
+		Map testMap = TestMaps.TEST_MAP2;
 		RouteFinder testSearch = new RouteFinder(testMap);
 
 		// change the start node, goal node and initial direction
 		
-		ArrayList<Direction> testArray = testSearch.findRoute(testMap.getJunction(2, 0), testMap.getJunction(0, 3),
-				Direction.Y_NEG);
-		LinkedList<Command> directions = testSearch.getActualDirections(testArray, Direction.Y_NEG);
+		ArrayList<Direction> testArray = testSearch.findRoute(testMap.getJunction(5, 1), testMap.getJunction(4, 0),
+				Direction.X_POS);
+		LinkedList<Command> directions = testSearch.getActualDirections(testArray, Direction.X_POS);
 
 		// prints a list of bearings
 		
 		for (int i = 0; i < testArray.size(); i++) {
-			System.out.println("[" + testArray.get(i) + "], ");
+			System.out.println("[" + directions.get(i) + "], ");
 
 		}
 

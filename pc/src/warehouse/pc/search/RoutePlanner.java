@@ -162,8 +162,10 @@ public class RoutePlanner {
 						
 						robot.setX(goal.getX());
 						robot.setY(goal.getY());
-						robot.setDirection(directList.get(directList.size() - 1));
 						
+						if(directList.size() != 0){
+						robot.setDirection(directList.get(directList.size() - 1));
+						}
 										
 						
 						start = goal;
@@ -214,11 +216,10 @@ public class RoutePlanner {
 			
 			robot.setX(goal.getX());
 			robot.setY(goal.getY());
+			
+			if(directList.size() != 0){
 			robot.setDirection(directList.get(directList.size() - 1));
-			
-			
-			robot.setX(robot);
-			
+			}
 			
 			
 		}

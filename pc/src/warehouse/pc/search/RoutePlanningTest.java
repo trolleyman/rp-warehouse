@@ -46,6 +46,7 @@ public class RoutePlanningTest {
 	static Item heavy;
 	static Item medium;
 	static Item light;
+	static Item yazoo;
 	
 	static ArrayList<Junction> bases;
 	static HashMap<Robot, LinkedList<Job>> map;
@@ -55,7 +56,9 @@ public class RoutePlanningTest {
 		
 		robot1 = new Robot("george", "george", 0.0, 0.0, 0.0);
 		robot2 = new Robot("jason", "jason", 5.0, 0.0, 0.0);
-		robot3 = new Robot("alex", "alex", 3.0, 0.0, 0.0);
+		robot3 = new Robot("miketheliar", "miketheliar", 3.0, 0.0, 0.0);
+		
+		
 		
 		
 		tm1 = TestMaps.TEST_MAP1;
@@ -66,10 +69,11 @@ public class RoutePlanningTest {
 		heavy = new Item("heavy", 10, 20f, 4, 0);
 		medium = new Item("medium", 10, 10f, 2, 0);
 		light = new Item("light", 10, 5f, 3, 0);
+		yazoo = new Item("yazoo", 50, 25f, 5, 1);
 		
 		map = new HashMap<Robot, LinkedList<Job>>();
+		bases = new ArrayList<Junction>();
 		
-		bases = new ArrayList<>();
 		bases.add(tm2.getJunction(0, 0));
 		bases.add(tm2.getJunction(4, 0));
 		
@@ -81,12 +85,15 @@ public class RoutePlanningTest {
 		LinkedList<Job> job1 = new LinkedList<>();
 		ArrayList<ItemQuantity> list = new ArrayList<>();
 		ArrayList<ItemQuantity> list1 = new ArrayList<>();
+		ArrayList<ItemQuantity> yazooList = new ArrayList<>();
 		list.add(new ItemQuantity(heavy, 3));
 		list1.add(new ItemQuantity(light, 3));
 		list1.add(new ItemQuantity(medium, 1));
 		list1.add(new ItemQuantity(medium, 5));
+		yazooList.add(new ItemQuantity(yazoo, 2));
 		job1.add(new Job(0, list, 60, 0));
-		job1.add(new Job(1, list1, 65, 0));
+		job1.add(new Job(1, yazooList, 50, 0));
+		//job1.add(new Job(1, list1, 65, 0));
 		
 		map.put(robot1, job1);
 		
@@ -95,10 +102,6 @@ public class RoutePlanningTest {
 		LinkedList<Command> bearings = tp2.getCommands(robot1).getCommands();
 		
 		System.out.println(bearings);
-		
-		/*assertTrue(bearings.equals(Arrays.asList(r, b, b, f, f, b, f, f, b, f, b, f)));
-		assertTrue(bearings1.equals(Arrays.asList(l, f, f, f, f, b, f, f, f)));
-		assertTrue(bearings2.equals(Arrays.asList(l, f, f, b, f, f)));*/
 		
 	}
 	
