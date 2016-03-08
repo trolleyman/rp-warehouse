@@ -1,8 +1,6 @@
 package warehouse.pc.bluetooth.testing;
 
-import static org.junit.Assert.*;
-
-import java.io.PrintStream;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
