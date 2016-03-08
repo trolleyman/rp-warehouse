@@ -123,8 +123,8 @@ public class PlanningTests {
 
 	@Test
 	public void test() {
-		System.out.println(bearings);
-		assertTrue(bearings.equals(Arrays.asList(f, l, f, l, p, b, f, d, b, l, f, f, f, f, p, l, r, d, r, r, f, f, f, f, f, l, p, b, f, r, f, p, b, f, d)));
+		assertTrue(bearingsA.equals(Arrays.asList(f, l, f, l, p, b, f, d, b, l, f, f, f, f, p, l, r, d, r, r, f, f, f, f, f, l, p, b, f, r, f, p, b, f, d)));
+		assertTrue(bearingsB.equals(Arrays.asList(f, l, f, l, p, b, f, d, b, l, f, f, f, f, p, l, r, d, r, r, f, f, f, f, f, l, p, b, f, r, f, p, b, f, d, b, f, p, b, f, d, l, f, p, b, f, d)));
 
 		//locationTest(bearings, bearings1, robot1, robot2, Direction.Y_POS, Direction.Y_POS);
 

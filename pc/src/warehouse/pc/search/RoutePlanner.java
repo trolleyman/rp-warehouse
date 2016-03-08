@@ -152,8 +152,6 @@ public class RoutePlanner {
 
 				Job job = queue.get(j); // get the next job from the job list
 				
-				System.out.println(job);
-				
 				ArrayList<ItemQuantity> items = job.getItems();				// get a list of items in the job
 				
 				for (int k = 0; k < items.size(); k++) {
@@ -179,9 +177,9 @@ public class RoutePlanner {
 						
 						
 						weights.put(robot, 0f);
-						System.out.println("base: " + start + " to " + goal);
+						/*System.out.println("base: " + start + " to " + goal);
 						System.out.println(directList);
-						System.out.println(list);
+						System.out.println(list);*/
 						pairedCommands.get(robot).addCommandList(list);
 						pairedCommands.get(robot).addCommand(Command.DROP);
 						
@@ -207,9 +205,9 @@ public class RoutePlanner {
 						
 					Float newWeight = weights.get(robot) + quantity * item.getWeight();
 					weights.put(robot, newWeight);
-					System.out.println("item: " + start + " to " + goal);
+					/*System.out.println("item: " + start + " to " + goal);
 					System.out.println(directList);
-					System.out.println(list);
+					System.out.println(list);*/
 					pairedCommands.get(robot).addCommandList(list);
 					pairedCommands.get(robot).addCommand(Command.PICK);
 					
@@ -237,9 +235,9 @@ public class RoutePlanner {
 			ArrayList<Direction> directList = finder.findRoute(start, goal, facing);
 			LinkedList<Command> list = finder.getActualDirections(directList, facing);
 			
-			System.out.println("home: " + start + " to " + goal);
+			/*System.out.println("home: " + start + " to " + goal);
 			System.out.println(directList);
-			System.out.println(list);
+			System.out.println(list);*/
 			pairedCommands.get(robot).addCommandList(list);
 			pairedCommands.get(robot).addCommand(Command.DROP);
 			
