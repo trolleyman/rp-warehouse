@@ -212,6 +212,19 @@ public class Gui implements Runnable, RobotListener {
 	public void robotChanged(Robot _r) {
 		update();
 	}
+	
+	@Override
+	public void robotAdded(Robot _r) {
+		update();
+	}
+
+	@Override
+	public void robotRemoved(Robot _r) {
+		if (_r == editor.getSelectedRobot()) {
+			editor.selectRobot(null);
+		}
+		update();
+	}
 
 	@Override
 	public void run() {
