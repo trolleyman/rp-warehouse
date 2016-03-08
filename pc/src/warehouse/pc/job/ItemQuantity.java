@@ -5,16 +5,16 @@ package warehouse.pc.job;
  */
 public class ItemQuantity {
 	
-	private final String name;
+	private final Item item;
 	private final int quantity;
 	
-	public ItemQuantity(String _name, int _quantity) {
-		this.name = _name;
+	public ItemQuantity(Item _item, int _quantity) {
+		this.item = _item;
 		this.quantity = _quantity;
 	}
 	
-	public String getName() {
-		return this.name;
+	public Item getItem() {
+		return this.item;
 	}
 	
 	public int getQuantity() {

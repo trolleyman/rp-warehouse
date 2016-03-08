@@ -26,6 +26,7 @@ public class JobList implements FileList {
 	
 	/**
 	 * Takes a csv file and reads it into an ArrayList of jobs.
+	 * @throws ItemNotInListException 
 	 */
 	private void parseFile(String _fileLocation) {
 		//Initialise variables.
@@ -52,7 +53,29 @@ public class JobList implements FileList {
 				for(int i = 1; i < splitLine.length; i += 2) {
 					String itemName = splitLine[i];
 					int quantity = Integer.valueOf(splitLine[i + 1]);
-					ItemQuantity iq = new ItemQuantity(itemName, quantity);
+					
+					//Find item from name in itemList.
+					boolean itemFound = false;
+					int count = 0;
+					Item item = null;
+					try {
+						while (!itemFound) {
+							if (itemList.get(count).getName().equals(itemName)) {
+								item = itemList.get(count);
+								itemFound = true;
+							} else {
+								count++;
+							}
+							
+							if (count > itemList.size()) {
+								throw new ItemNotInListException("Item not found in itemList.");
+							}
+						}
+					} catch (ItemNotInListException e) {
+						System.err.println(e);
+					}
+					
+					ItemQuantity iq = new ItemQuantity(item, quantity);
 					iqs.add(iq);
 				}
 				
@@ -83,7 +106,7 @@ public class JobList implements FileList {
 		
 		//For each ItemQuantity in a job, add its weight to the total.
 		for (int i = 0; i < _iqs.size(); i++) {
-			 String name = _iqs.get(i).getName();
+			 String name = _iqs.get(i).getItem().getName();
 			 boolean itemFound = false;
 			 int count = 0;
 			 
@@ -111,7 +134,7 @@ public class JobList implements FileList {
 		
 		//For each ItemQuantity in a job, add its reward to the total.
 		for (int i = 0; i < _iqs.size(); i++) {
-			 String name = _iqs.get(i).getName();
+			 String name = _iqs.get(i).getItem().getName();
 			 boolean itemFound = false;
 			 int count = 0;
 			 

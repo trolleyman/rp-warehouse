@@ -2,34 +2,33 @@ package warehouse.pc.shared;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.Robot;
 
 public class State {
 	private Map map;
-	private ArrayList<Robot> robots;
+	private HashSet<Robot> robots;
 	
 	public State(Map _map) {
 		this.map = _map;
-		this.robots = new ArrayList<>();
+		this.robots = new HashSet<>();
 	}
 	public State(Map _map, ArrayList<Robot> _robots) {
 		this.map = _map;
-		this.robots = new ArrayList<>();
-		
-	    for(Robot r : _robots) {
-	        if (!robots.contains(r)) {
-	            robots.add(r);
-	        }
-	    }
+		this.robots = new HashSet<>();
+	}
+	public State(Map _map, HashSet<Robot> _robots) {
+		this.map = _map;
+		this.robots = _robots;
 	}
 	
 	public State(Map _map, Robot[] _robots) {
 		this(_map, new ArrayList<>(Arrays.asList(_robots)));
 	}
 
-	public Robot[] getRobots() {
-		return robots.toArray(new Robot[robots.size()]);
+	public HashSet<Robot> getRobots() {
+		return this.robots;
 	}
 	
 	/**
@@ -51,5 +50,14 @@ public class State {
 	
 	public Map getMap() {
 		return map;
+	}
+	
+	/**
+	 * Removes a robot from the currently tracked robots
+	 * @param _r the robot
+	 * @return true if the robot was in the array, and has been removed.
+	 */
+	public boolean removeRobot(Robot _r) {
+		return robots.remove(_r);
 	}
 }

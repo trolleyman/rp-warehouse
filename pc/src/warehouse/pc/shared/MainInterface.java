@@ -1,13 +1,14 @@
 package warehouse.pc.shared;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import warehouse.pc.bluetooth.BTServer;
 import warehouse.pc.job.DropList;
 import warehouse.pc.job.ItemList;
 import warehouse.pc.job.JobList;
 import warehouse.pc.job.LocationList;
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.Robot;
 
 /**
  * The main interface for the whole project. Get the server using Server::get().
@@ -53,7 +54,7 @@ public class MainInterface {
 		distanceListeners = new ArrayList<>();
 		
 		currentState = new State(TestMaps.TEST_MAP4, new Robot[] {
-				new Robot("Jeff", "0FBA8413", 0, 0, 0),
+				
 		});
 		
 		locList = new LocationList("locations.csv");
@@ -132,13 +133,50 @@ public class MainInterface {
 	}
 	
 	/**
+	 * Gets the current map
+	 */
+	public synchronized Map getMap() {
+		return currentState.getMap();
+	}
+	
+	/**
+	 * Gets all the current robots and their statuses.
+	 * ***Don't modify this directly*** - Use MainInterface.updateRobot / MainInterface.removeRobot.
+	 */
+	public synchronized HashSet<Robot> getRobots() {
+		return currentState.getRobots();
+	}
+	
+	/**
 	 * Updated a robot {@code _r} with new information. If the robot is not recognized, a new robot is
 	 * inserted into the array.
 	 */
 	public synchronized void updateRobot(Robot _r) {
-		currentState.updateRobot(_r);
-		for (RobotListener l : robotListeners) {
-			l.robotChanged(_r);
+		boolean added = false;
+		if (currentState.getRobots().contains(_r)) {
+			added = true;
+		}
+		if (added) {
+			for (RobotListener l : robotListeners) {
+				l.robotAdded(_r);
+			}
+		} else {
+			for (RobotListener l : robotListeners) {
+				l.robotChanged(_r);
+			}
+		}
+	}
+	
+	/**
+	 * Removes a robot if it exists
+	 * @param _r the robot
+	 */
+	public synchronized void removeRobot(Robot _r) {
+		if (getRobots().contains(_r)) {
+			currentState.removeRobot(_r);
+			for (RobotListener l : robotListeners) {
+				l.robotRemoved(_r);
+			}
 		}
 	}
 	
@@ -157,6 +195,7 @@ public class MainInterface {
 		synchronized (interfaceInitLock) {
 			synchronized (this) {
 				mainInterface = null;
+				System.exit(0);
 			}
 		}
 	}

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 /**
  * A map that represents a grid of junctions.
- * Some junctions can be diabled by being blocked by walls, that are calculated in the constructor.
+ * Some junctions can be disabled by being blocked by walls, that are calculated in the constructor.
  */
 public class Map {
 	private Junction[][] js;
@@ -35,11 +35,11 @@ public class Map {
 				if (js[y][x] != null) {
 					if (y + 1 < height && !rectanglesIntersectLine(walls, x, y, x, y + 1))
 						js[y][x].setJunction(Direction.Y_POS, js[y + 1][x]);
-					if (y - 1 > 0      && !rectanglesIntersectLine(walls, x, y, x, y - 1))
+					if (y - 1 >= 0     && !rectanglesIntersectLine(walls, x, y, x, y - 1))
 						js[y][x].setJunction(Direction.Y_NEG, js[y - 1][x]);
 					if (x + 1 < width  && !rectanglesIntersectLine(walls, x, y, x + 1, y))
 						js[y][x].setJunction(Direction.X_POS, js[y][x + 1]);
-					if (x - 1 > 0      && !rectanglesIntersectLine(walls, x, y, x - 1, y + 1))
+					if (x - 1 >= 0     && !rectanglesIntersectLine(walls, x, y, x - 1, y))
 						js[y][x].setJunction(Direction.X_NEG, js[y][x - 1]);
 				}
 			}
