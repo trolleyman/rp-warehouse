@@ -65,7 +65,20 @@ public class NXTReceiver extends Thread {
 		switch( type ) {
 			case "Do" : this.action( data );break;
 			case "Go" : this.move( explosion[ 1 ] );break;
+			case "Cancel Job" : this.cancel( data );
 			default : this.throwError( "NXTReceiver: Unknown data format received." ); break;
+		}
+	}
+	
+	// Executes a cancel request
+	// Usage: "Cancel Job: Shut Down"
+	//    OR: "Cancel Job: <String: NextJobName>"
+	private void cancel( String[] _next ) {
+		if( _next[ 0 ].equals( "Shut Down" ) ) { this.connection.close(); System.exit( 0 ); }
+		else {
+			this.robotInterface.setJobName( _next[ 0 ] );
+			this.myself.jobName = _next[ 0 ];
+			this.robotInterface.show();
 		}
 	}
 	
@@ -75,10 +88,10 @@ public class NXTReceiver extends Thread {
 	//        Do: Drop Off
 	private void action( String[] _action ) {
 		switch( _action[ 0 ] ) {
-			case "Shut Down" : this.connection.close(); System.exit( 0 ); break;
-			case "Pick Up"	 : this.robotInterface.pickUp( Integer.parseInt( _action[ 1 ] ), Integer.parseInt( _action[ 2 ] ) ); this.myself.status = "Picking Items"; break;
-			case "Drop Off"  : this.robotInterface.dropOff(); this.myself.status = "Finished"; break;
-			default          : this.throwError( "NXTReceiver: Unknown data format received after 'Do: '." ); break;
+			case "Shut Down"  : this.connection.close(); System.exit( 0 ); break;
+			case "Pick Up"	  : this.robotInterface.pickUp( Integer.parseInt( _action[ 1 ] ), Integer.parseInt( _action[ 2 ] ) ); this.myself.status = "Picking Items"; break;
+			case "Drop Off"   : this.robotInterface.dropOff(); this.myself.status = "Finished"; break;
+			default           : this.throwError( "NXTReceiver: Unknown data format received after 'Do: '." ); break;
 		}
 	}
 	
