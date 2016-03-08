@@ -52,6 +52,15 @@ public class NXTMotion {
 	
 		this.moves.add( _direction );
 		this.arbitrator.start();
+		
+		switch( _direction ) {
+			case "Left" 	: this.myself.x -= 1; break;
+			case "Right" 	: this.myself.x += 1; break;
+			case "Forward" 	: this.myself.y += 1; break;
+			case "Backward" : this.myself.y -= 1; break;
+			default 		: break;
+		}
+		
 		this.myself.status = "Idle";
 		
 	}

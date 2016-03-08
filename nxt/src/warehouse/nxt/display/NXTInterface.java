@@ -6,6 +6,14 @@ import javax.microedition.lcdui.Graphics;
 import lejos.nxt.Button;
 import lejos.nxt.Sound;
 import lejos.util.Delay;
+/**
+ * 
+ * Type: Class
+ * Name: NXTReceiver
+ * Description: Class that handles the Robot Display, printing data coresponding to the robot.
+ *              
+ * 
+ **/
 
 public class NXTInterface {
 

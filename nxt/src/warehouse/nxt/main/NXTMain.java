@@ -53,14 +53,16 @@ public class NXTMain {
 
 		this.startStreams();
 		this.getMyself();
-		this.initRobotInterface( this.myself.name, this.myself.x, this.myself.y );
+		this.initRobotInterface();
 		this.initRobotMotion();
 		this.startThreads();
+		
+		this.robotInterface.show();
 	}
 		
 	// Initialize Robot Interface
-	private void initRobotInterface( String _name, int _x, int _y ) {
-		this.robotInterface = new NXTInterface( _name, _x, _y );
+	private void initRobotInterface() {
+		this.robotInterface = new NXTInterface( this.myself.name, this.myself.x, this.myself.y );
 	}
 	
 	private void initRobotMotion() {
@@ -73,7 +75,8 @@ public class NXTMain {
 		this.toPC = this.connection.openDataOutputStream();
 	}
 	
-	// Really ugly way of getting X and Y from PC as " Position: <number>, <number> " !!! Attention, exactly that format
+	// Get Robot information from the PC
+	// Usage: Robot: <String: Name> <int: x> <int: y> <String: JobName>
 	private void getMyself() {
 		String input;
 		
@@ -87,6 +90,7 @@ public class NXTMain {
 				this.myself.name = data[ 0 ];
 				this.myself.x = Integer.parseInt( data[ 1 ] );
 				this.myself.y = Integer.parseInt( data[ 2 ] );
+				this.myself.jobName = data[3];
 			}
 		}
 		catch( IOException _exception ) { _exception.printStackTrace(); }

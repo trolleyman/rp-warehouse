@@ -5,6 +5,8 @@ import lejos.robotics.subsumption.Behavior;
 import warehouse.nxt.motion.LightSensorCalibration;
 import warehouse.nxt.motion.PathProvider;
 
+
+
 public class JunctionBehaviour implements Behavior {
 	private static final double THRESHOLD = 90.0;
 	private static final double TURNING_OFFSET = 0.07;
