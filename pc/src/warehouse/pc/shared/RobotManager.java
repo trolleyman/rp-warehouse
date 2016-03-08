@@ -1,13 +1,17 @@
 package warehouse.pc.shared;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import warehouse.pc.bluetooth.BTServer;
+import warehouse.pc.bluetooth.ServerSender;
 import warehouse.pc.job.Job;
 
 public class RobotManager implements IRobotManager {
 	HashMap<Robot, LinkedBlockingDeque<Job>> robotJobs = new HashMap<>();
 	HashMap<Robot, CommandQueue> robotCommands = new HashMap<>();
+	HashMap<Robot, ServerSender> senders = new HashMap<>();
 	
 	boolean running;
 	
@@ -28,7 +32,9 @@ public class RobotManager implements IRobotManager {
 	
 	@Override
 	public void step() {
-		
+		for (Entry<Robot, ServerSender> sender : senders.entrySet()) {
+			
+		}
 	}
 
 	@Override
