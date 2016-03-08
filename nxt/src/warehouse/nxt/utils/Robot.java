@@ -14,11 +14,11 @@ package warehouse.nxt.utils;
 public class Robot {
 
 	public String name;		// Robot Name
-	public double x;		// Robot X Position
-	public double y;		// Robot Y Position
-	public String status;	// Robot Status ( Possible: Idle, Moving, Picking Items, Picked <int> )
+	public int x;			// Robot X Position
+	public int y;			// Robot Y Position
+	public String status;	// Robot Status ( Possible: Idle, Moving, Picking Items, Picked <int>, Finished )
 	
-	public Robot( String _name, double _x, double _y ) {
+	public Robot( String _name, int _x, int _y ) {
 		this.name = _name;
 		this.x = _x;
 		this.y = _y;
