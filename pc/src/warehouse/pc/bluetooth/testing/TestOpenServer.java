@@ -15,7 +15,7 @@ public class TestOpenServer implements Runnable {
 
 	public static void main(String[] args) {
 		// Enable custom print stream
-		DebugPrintStream.enable();
+		Debug.enableStream();
 		
 		new TestOpenServer().run();
 	}

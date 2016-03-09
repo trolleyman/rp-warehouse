@@ -1,10 +1,11 @@
 package warehouse.pc.bluetooth.testing;
 
+import java.io.IOException;
 import java.io.PrintStream;
 
-public class DebugPrintStream {
+public class Debug {
 
-	public static void enable() {
+	public static void enableStream() {
 		PrintStream stream = new PrintStream(System.out) {
 			public void println(String s) {
 				String fullClassName = Thread.currentThread().getStackTrace()[2].getClassName();
@@ -15,5 +16,22 @@ public class DebugPrintStream {
 			}
 		};
 		System.setOut(stream);
+	}
+	
+	public static void waitForPress() {
+		try {
+			System.out.println("Press enter to continue...");
+			System.in.read();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void sleep(int millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }
