@@ -1,7 +1,9 @@
 package warehouse.pc.bluetooth;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Map.Entry;
 
 public class RouteExecuter implements Runnable {
@@ -31,13 +33,17 @@ public class RouteExecuter implements Runnable {
 				}
 			}
 			
-			for (Entry<String, LinkedList<String>> entry : commands.entrySet()) {
+			for (Iterator<Map.Entry<String, LinkedList<String>>> it = commands.entrySet().iterator(); it.hasNext();) {
+				Map.Entry<String, LinkedList<String>> entry = it.next();
+				
 				String robotName = entry.getKey();
+				
 				if (!entry.getValue().isEmpty()) {
 					String command = entry.getValue().pop();
 					server.sendToRobot(robotName, command);
+					
 				} else {
-					commands.remove(robotName);
+					it.remove();
 					System.out.println("End of list for " + robotName);
 					server.sendToRobot(robotName, "end");
 				}
