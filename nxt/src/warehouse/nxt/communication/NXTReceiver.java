@@ -64,7 +64,7 @@ public class NXTReceiver extends Thread {
 		String[] data = MyString.split( "," , explosion[ 1 ] );
 		switch( type ) {
 			case "Do" : this.action( data );break;
-			case "Go" : this.move( explosion[ 1 ] );break;
+			case "Go" : this.move( data );break;
 			case "Cancel Job" : this.cancel( data );
 			default : this.throwError( "NXTReceiver: Unknown data format received." ); break;
 		}
@@ -96,16 +96,16 @@ public class NXTReceiver extends Thread {
 	}
 	
 	// Executes goable actions like "Go: Right" and "Go: Forward"
-	// Usage: Go: Forward
-	//        Go: Backward
-	//        Go: Left
-	//        Go: Right
-	private void move( String _direction ) {
-		switch( _direction ) {
-		case "Right" 	: this.robotInterface.directionUpdate( "Right" ); this.myself.status = "Moving Right"; this.robotMotion.go( "Right" ); break;
-		case "Left" 	: this.robotInterface.directionUpdate( "Left" ); this.myself.status = "Moving Left"; this.robotMotion.go( "Left" ); break;
-		case "Forward" 	: this.robotInterface.directionUpdate( "Forward" ); this.myself.status = "Moving Forward"; this.robotMotion.go( "Forward" ); break;
-		case "Backward" : this.robotInterface.directionUpdate( "Backward" ); this.myself.status = "Moving Backward"; this.robotMotion.go( "Backward" ); break;
+	// Usage: Go: Forward, <int: x>, <int: y>
+	//        Go: Backward, <int: x>, <int: y>
+	//        Go: Left, <int: x>, <int: y>
+	//        Go: Right, <int: x>, <int:y>
+	private void move( String[] _data ) {
+		switch( _data[0] ) {
+		case "Right" 	: this.robotInterface.directionUpdate( "Right" ); this.myself.status = "Moving Right"; this.robotMotion.go( "Right", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) ); break;
+		case "Left" 	: this.robotInterface.directionUpdate( "Left" ); this.myself.status = "Moving Left"; this.robotMotion.go( "Left", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) ); break;
+		case "Forward" 	: this.robotInterface.directionUpdate( "Forward" ); this.myself.status = "Moving Forward"; this.robotMotion.go( "Forward", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) ); break;
+		case "Backward" : this.robotInterface.directionUpdate( "Backward" ); this.myself.status = "Moving Backward"; this.robotMotion.go( "Backward", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) ); break;
 		default 		: this.throwError( "NXTReceiver: Unknown data format received after 'Go: '." ); break;
 		}
 	}

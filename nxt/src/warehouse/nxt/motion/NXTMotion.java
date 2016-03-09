@@ -48,19 +48,13 @@ public class NXTMotion {
 
 	}
 	
-	public void go( String _direction ) {
+	public void go( String _direction, int _x, int _y ) {
 	
 		this.moves.add( _direction );
 		this.arbitrator.start();
 		
-		switch( _direction ) {
-			case "Left" 	: this.myself.x -= 1; break;
-			case "Right" 	: this.myself.x += 1; break;
-			case "Forward" 	: this.myself.y += 1; break;
-			case "Backward" : this.myself.y -= 1; break;
-			default 		: break;
-		}
-		
+		this.myself.x = _x;
+		this.myself.y = _y;
 		this.myself.status = "Idle";
 		
 	}
