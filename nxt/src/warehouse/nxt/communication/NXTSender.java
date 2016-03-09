@@ -2,6 +2,8 @@ package warehouse.nxt.communication;
 
 import java.io.DataOutputStream;
 
+import warehouse.nxt.display.NXTInterface;
+import warehouse.nxt.motion.NXTMotion;
 import warehouse.nxt.utils.Robot;
 
 
@@ -20,14 +22,18 @@ import warehouse.nxt.utils.Robot;
 
 public class NXTSender extends Thread {
 
-	private DataOutputStream toPC;		// Output Stream to PC
-	private Robot myself;				// Robot Object Instance for this robot
-	private Robot myself_old;			// new Instance of the initial Robot Object which will not be changed anywhere but this class
+	private DataOutputStream toPC;			// Output Stream to PC
+	private Robot myself;					// Robot Object Instance for this robot
+	private Robot myself_old;				// new Instance of the initial Robot Object which will not be changed anywhere but this class
+	private NXTMotion robotMotion;			// Robot Motion Object which handles movements and Robot side actions
+	private NXTInterface robotInterface;	// Robot Interface Object which handles display
 
-	public NXTSender( DataOutputStream _toPC, Robot _myself ) {
+	public NXTSender( DataOutputStream _toPC, Robot _myself, NXTMotion _rMotion, NXTInterface _rInterface  ) {
 		this.toPC = _toPC;
 		this.myself = _myself;
 		this.myself_old = new Robot( _myself );
+		this.robotMotion = _rMotion;
+		this.robotInterface = _rInterface;
 	}
 	
 	public void run() {
@@ -38,10 +44,10 @@ public class NXTSender extends Thread {
 				try { Thread.sleep( 100 ); }
 				catch( Exception _exception ) { /* I guess we dont care */ }
 				
-				this.toPC.writeUTF( "Distance:"/* + NXTMotion.getDistance(); */ );
+				this.toPC.writeUTF( "Distance:" + this.robotMotion.getDistance() );
 				
 				if( this.statusUpdated() ) { this.toPC.writeUTF( this.myself.status ); this.updateOldRobot(); }
-				if( this.positionUpdated() ) { /* NXTInterface.updatePosition( this.myself.x, this.myself.y ); */ this.updateOldRobot(); }
+				if( this.positionUpdated() ) { this.robotInterface.updatePosition( this.myself.x, this.myself.y ); this.updateOldRobot(); }
 				
 			}
 		}
