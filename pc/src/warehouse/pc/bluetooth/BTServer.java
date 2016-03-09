@@ -2,6 +2,7 @@ package warehouse.pc.bluetooth;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -73,6 +74,7 @@ public class BTServer {
 			}
 		} catch (NXTCommException e) {
 			e.printStackTrace();
+			return false;
 		}
 		
 		Connection connection = new Connection(nxt, fromRobot, toRobot);
@@ -108,12 +110,13 @@ public class BTServer {
 	 * 
 	 * @param robotName The name of the recipient robot.
 	 * @param message The message string to send.
+	 * @throws IOException
 	 */
-	public void sendToRobot(String robotName, String message) {
+	public void sendToRobot(String robotName, String message) throws IOException {
 		connections.get(robotName).send(message);
 	}
 	
-	public String listen(String robotName) {
+	public String listen(String robotName) throws IOException {
 		return connections.get(robotName).listen();
 	}
 

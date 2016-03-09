@@ -1,16 +1,14 @@
 package warehouse.pc.shared;
 
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
-import warehouse.pc.bluetooth.MessageListener;
 import warehouse.pc.job.Job;
 import warehouse.pc.job.JobSelector;
 import warehouse.pc.search.RoutePlanner;
@@ -54,16 +52,27 @@ public class RobotManager implements IRobotManager, RobotListener {
 					robotJobs.put(robot, new ArrayDeque<>());
 					robotCommands.put(robot, new CommandQueue());
 					robotMessages.put(robot, new LinkedBlockingQueue<>());
+					nextStepRecalculate = true;
 				}
 				robotsToAdd.clear();
 				for (Robot robot : robotsToRemove) {
 					robotJobs.remove(robot);
 					robotCommands.remove(robot);
 					robotMessages.remove(robot);
+					nextStepRecalculate = true;
 				}
+				robotsToRemove.clear();
 				
 				if (robotCommands.isEmpty())
 					sleep = true;
+				
+				// If any robot doesn't have a job, recalculate.
+				for (Entry<Robot, ArrayDeque<Job>> e : robotJobs.entrySet()) {
+					if (e.getValue().isEmpty()) {
+						nextStepRecalculate = true;
+						break;
+					}
+				}
 			}
 			
 			try {
@@ -73,7 +82,6 @@ public class RobotManager implements IRobotManager, RobotListener {
 				
 			}
 			
-			// TODO: Call doRecalculate if there are robots without jobs.
 			if (!robotCommands.isEmpty())
 				System.out.println("Robot Manager: Recalculating Paths...");
 			
@@ -129,16 +137,8 @@ public class RobotManager implements IRobotManager, RobotListener {
 	 */
 	private void step() {
 		// TODO: Update the position of the robots.
-		HashMap<String, LinkedBlockingDeque<String>> robotRecieved = new HashMap<>();
+		ArrayList<Robot> waitOnRobots = new ArrayList<>();
 		//HashMap<Robot, Direction> newRobotDirections = new HashMap<>();
-		
-		MessageListener listener = new MessageListener() {
-			@Override
-			public void newMessage(String robotName, String message) {
-				robotRecieved.get(robotName).add(message);
-			}
-		};
-		mi.getServer().addListener(listener);
 		
 		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
 			CommandQueue q = e.getValue();
@@ -147,26 +147,34 @@ public class RobotManager implements IRobotManager, RobotListener {
 				com = Command.WAIT;
 			} else {
 				q.getCommands().pop();
-				robotRecieved.put(e.getKey().getName(), new LinkedBlockingDeque<>());
+				if (com.replyReady())
+					waitOnRobots.add(e.getKey());
 			}
-			mi.getServer().sendToRobot(e.getKey().getName(), com.toString());
+			try {
+				mi.getServer().sendToRobot(e.getKey().getName(), com.toString());
+			} catch (IOException ex) {
+				System.out.println(e.getKey().getIdentity() + " disconnected.");
+				mi.removeRobot(e.getKey());
+				waitOnRobots.remove(e.getKey());
+				continue;
+			}
 		}
 		
 		if (!robotCommands.isEmpty())
 			System.out.println("Robot Manager: Waiting for robots to reply 'ready'...");
 		
-		for (Entry<String, LinkedBlockingDeque<String>> e : robotRecieved.entrySet()) {
+		for (Robot robot : waitOnRobots) {
 			String msg = null;
-			while (msg == null || !msg.equals("ready")) {
+			while (msg == null || !msg.equalsIgnoreCase("ready")) {
 				try {
-					msg = e.getValue().pollFirst(10, TimeUnit.SECONDS);
-				} catch (InterruptedException ex) {
-					
+					msg = mi.getServer().listen(robot.getName());
+				} catch (IOException ex) {
+					System.out.println(robot.getIdentity() + " disconnected.");
+					mi.removeRobot(robot);
+					continue;
 				}
 			}
 		}
-		
-		mi.getServer().removeListener(listener);
 	}
 	
 	@Override

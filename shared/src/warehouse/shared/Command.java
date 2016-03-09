@@ -46,5 +46,23 @@ public enum Command {
 		return Optional.empty();
 	}
 	
+	/**
+	 * Returns true if the robot will reply "ready" back to the server after it has completed the command.
+	 */
+	public boolean replyReady() {
+		switch (this) {
+		case LEFT:
+		case RIGHT:
+		case FORWARD:
+		case BACKWARD:
+			return true;
+		case PICK:
+		case DROP:
+		case WAIT:
+			return false; // For now the NXTs don't reply ready to these commands.
+		}
+		return false;
+	}
+	
 	
 }

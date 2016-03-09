@@ -3,6 +3,8 @@ package warehouse.pc.bluetooth.testing;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,9 +31,9 @@ public class SingleSendingTest {
 	}
 
 	@Test
-	public void test() {
+	public void test() throws IOException {
 		assertTrue(server.open(new NXTInfo(BTServer.btProtocol, name, address)));
-
+		
 		// Send a check to robot
 		server.sendToRobot(name, "check");
 		server.sendToRobot(name, "forward");

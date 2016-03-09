@@ -3,6 +3,7 @@ package warehouse.pc.bluetooth.testing;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -38,7 +39,7 @@ public class MultiSendingTest {
 	}
 
 	@Test
-	public void test() {
+	public void test() throws IOException {
 		// Connect to all robots
 		for (Entry<String, String> e : robots.entrySet()) {
 			assertTrue(server.open(new NXTInfo(BTServer.btProtocol, e.getKey(), e.getValue())));
