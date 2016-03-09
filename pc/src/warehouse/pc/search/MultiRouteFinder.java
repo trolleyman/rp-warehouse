@@ -14,9 +14,6 @@ import warehouse.pc.shared.Map;
 
 public class MultiRouteFinder {
 
-	private HashMap<Junction, Integer> reserveTable;		// Stores occupied nodes at a timestep
-	private int timeWindow;									//	The window of steps each iteration
-
 	private ArrayList<Junction> nodes; // Stores all junction data from current
 	// map
 	private ArrayList<Junction> searched; // Closed set, nodes already searched
@@ -34,7 +31,7 @@ public class MultiRouteFinder {
 	 *            the map
 	 */
 
-	public MultiRouteFinder(Map _map, int _window) {
+	public MultiRouteFinder(Map _map) {
 
 		// add the junctions from the map to an ArrayList of nodes to be checked
 		map = _map;
@@ -45,7 +42,6 @@ public class MultiRouteFinder {
 			}
 		}
 
-		this.timeWindow = _window;
 	}
 
 	/**
@@ -60,9 +56,7 @@ public class MultiRouteFinder {
 	 * @return the ArrayList of directions
 	 */
 
-	public LinkedList<Command> findRoute(Junction start, Junction goal, Direction direction) {
-
-		Integer timeStep;
+	public LinkedList<Command> findRoute(Junction start, Junction goal, Direction direction, ArrayList<Junction>[] reserveTable) {
 
 		start = map.getJunction(start.getX(), start.getY());
 		goal = map.getJunction(goal.getX(), goal.getY());
@@ -78,9 +72,10 @@ public class MultiRouteFinder {
 
 		frontier.put(start, 0); // Initializes search
 		Junction currentJunct = null;
+		
 
 		//	Work in progress
-		for(timeStep = 0; timeStep < timeWindow; timeStep++) {		//	New loop for WHCA*, removes while frontier is !empty
+		for(int timeStep = 0; timeStep < reserveTable.length; timeStep++) {		//	New loop for WHCA*, removes while frontier is !empty
 																	//	This finder should be run multiple times for each robot
 																	// until EVERY robot is at its destination, at which point they
 																	//	can drop off, pickup etc. That is, perhaps routeplanner.java
@@ -105,6 +100,8 @@ public class MultiRouteFinder {
 					currentJunct = entry.getKey();
 				}
 			}
+			
+			reserveTable[timeStep].add(currentJunct);
 
 			// if the current junction is the goal return the path
 
@@ -122,8 +119,11 @@ public class MultiRouteFinder {
 
 			for (Junction neighbour : currentJunct.getNeighbours()) {
 
-				if ((neighbour == null) || (searched.contains(neighbour)))
+				if ((neighbour == null) || (searched.contains(neighbour)) || ((reserveTable[timeStep].contains(neighbour)) && (reserveTable[timeStep + 1].contains(neighbour))))
 					continue;
+				
+				else if (reserveTable[timeStep].contains(neighbour) || reserveTable[timeStep + 1].contains(neighbour))
+					//	Add wait command
 
 				if (!frontier.containsKey(neighbour)) {
 					// For safety
@@ -138,8 +138,11 @@ public class MultiRouteFinder {
 				cameFrom.put(neighbour, currentJunct);
 			}
 		}
+		
 
-		return null;
+			ArrayList<Direction> directionList = makePath(start, currentJunct);
+			return getActualDirections(directionList, direction);
+
 	}
 
 	private ArrayList<Direction> makePath(Junction start, Junction current) {
