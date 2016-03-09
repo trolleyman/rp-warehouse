@@ -1,11 +1,13 @@
 package warehouse.pc.bluetooth.testing;
 
+import java.io.IOException;
+
 import lejos.pc.comm.NXTInfo;
 import warehouse.pc.bluetooth.BTServer;
 
 public class MultiTest {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		Debug.enableStream();
 		
 		BTServer server = new BTServer();

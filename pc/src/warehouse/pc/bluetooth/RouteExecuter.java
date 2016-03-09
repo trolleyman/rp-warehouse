@@ -1,5 +1,6 @@
 package warehouse.pc.bluetooth;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -41,21 +42,34 @@ public class RouteExecuter implements Runnable {
 				
 				if (!entry.getValue().isEmpty()) {
 					String command = entry.getValue().pop();
-					server.sendToRobot(robotName, command);
+					try {
+						server.sendToRobot(robotName, command);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 					
 				} else {
 					it.remove();
 					System.out.println("End of list for " + robotName);
-					server.sendToRobot(robotName, "end");
+					try {
+						server.sendToRobot(robotName, "end");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 
 			for (Entry<String, LinkedList<String>> entry : commands.entrySet()) {
 				String robotName = entry.getKey();
 				System.out.println("Waiting for reply from " + robotName);
-				String reply = server.listen(robotName);
-				if (!reply.equals("ready")) {
+				try {
+					String reply = server.listen(robotName);
+					if (!reply.equals("ready")) {
+						System.err.println("Robot not ready.");
+					}
+				} catch (IOException e) {
 					System.err.println("Robot not ready.");
+					e.printStackTrace();
 				}
 			}
 		}

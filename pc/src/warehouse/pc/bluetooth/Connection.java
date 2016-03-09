@@ -33,25 +33,17 @@ public class Connection {
 		return true;
 	}
 
-	public void send(String command) {
+	public void send(String command) throws IOException {
 		System.out.println("Sending " + command + " to " + nxt.name);
-		try {
-			toRobot.writeUTF(command);
-			toRobot.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		toRobot.writeUTF(command);
+		toRobot.flush();
 	}
 
-	public String listen() {
+	public String listen() throws IOException {
 		String reply = null;
 		System.out.println("Robot " + nxt.name + " is listening");
 
-		try {
-			reply = fromRobot.readUTF();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		reply = fromRobot.readUTF();
 
 		return reply;
 	}
