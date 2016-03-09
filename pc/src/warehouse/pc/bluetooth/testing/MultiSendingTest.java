@@ -29,7 +29,7 @@ public class MultiSendingTest {
 		robots.put("Dobot", "0016530FD7F4");
 		//robots.put("Jeff", "00165317BE35");
 		//robots.put("Vader", "0016531B5A19");
-		robots.put("Bot Lee", "001653155F9C");
+		//robots.put("Bot Lee", "001653155F9C");
 		
 		server = new BTServer();
 	}
@@ -57,6 +57,6 @@ public class MultiSendingTest {
 			assertEquals(reply, "ready");
 		}
 		
-		//Debug.waitForPress();
+		Debug.waitForPress();
 	}
 }
