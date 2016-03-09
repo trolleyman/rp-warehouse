@@ -8,7 +8,7 @@ import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTInfo;
 
-public class Connection implements Runnable {
+public class Connection {
 
 	private final DataInputStream fromRobot;
 	private final DataOutputStream toRobot;
@@ -54,11 +54,5 @@ public class Connection implements Runnable {
 		}
 
 		return reply;
-	}
-
-	@Override
-	public void run() {
-		//open(comm);
-		send("check");
 	}
 }

@@ -26,8 +26,9 @@ public class MultiSendingTest {
 		// Add robots to the test
 		robots = new HashMap<>();
 		robots.put("Dobot", "0016530FD7F4");
-		robots.put("Jeff", "00165317BE35");
+		//robots.put("Jeff", "00165317BE35");
 		//robots.put("Vader", "0016531B5A19");
+		robots.put("Bot Lee", "001653155F9C");
 		
 		server = new BTServer();
 	}
@@ -55,10 +56,6 @@ public class MultiSendingTest {
 			assertEquals(reply, "ready");
 		}
 		
-		try {
-			Thread.sleep(20000);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
+		//Debug.waitForPress();
 	}
 }

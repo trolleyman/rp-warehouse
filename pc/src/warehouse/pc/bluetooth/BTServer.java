@@ -76,8 +76,6 @@ public class BTServer {
 		}
 		
 		Connection connection = new Connection(nxt, fromRobot, toRobot);
-		Thread thread = new Thread(connection, "Connection - " + nxt.name);
-		thread.start();
 
 		// Create the connection
 		connections.put(nxt.name, connection);
