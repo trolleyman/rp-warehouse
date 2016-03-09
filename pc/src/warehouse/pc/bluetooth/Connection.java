@@ -8,14 +8,16 @@ import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTInfo;
 
-public class Connection {
+public class Connection implements Runnable {
 
-	private DataInputStream fromRobot;
-	private DataOutputStream toRobot;
+	private final DataInputStream fromRobot;
+	private final DataOutputStream toRobot;
 	private NXTInfo nxt;
 
-	public Connection(NXTInfo nxt) {
+	public Connection(NXTInfo nxt, DataInputStream fromRobot, DataOutputStream toRobot) {
 		this.nxt = nxt;
+		this.fromRobot = fromRobot;
+		this.toRobot = toRobot;
 	}
 
 	public boolean open(NXTComm comm) {
@@ -26,8 +28,8 @@ public class Connection {
 		}
 
 		// Make in and out streams
-		toRobot = new DataOutputStream(comm.getOutputStream());
-		fromRobot = new DataInputStream(comm.getInputStream());
+		//toRobot = new DataOutputStream(comm.getOutputStream());
+		//fromRobot = new DataInputStream(comm.getInputStream());
 		return true;
 	}
 
@@ -52,5 +54,11 @@ public class Connection {
 		}
 
 		return reply;
+	}
+
+	@Override
+	public void run() {
+		//open(comm);
+		send("check");
 	}
 }

@@ -1,5 +1,7 @@
 package warehouse.pc.bluetooth;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -67,8 +69,21 @@ public class BTServer {
 		String name = nxt.name + " (" + nxt.deviceAddress + ")";
 		System.out.println("Trying connect to " + name + ".");
 		
-		Connection connection = new Connection(nxt);
-		connection.open(comm);
+		DataOutputStream toRobot = null;
+		DataInputStream fromRobot = null;
+		
+		try {
+			if (comm.open(nxt)) {
+				toRobot = new DataOutputStream(comm.getOutputStream());
+				fromRobot = new DataInputStream(comm.getInputStream());
+			}
+		} catch (NXTCommException e) {
+			e.printStackTrace();
+		}
+		
+		Connection connection = new Connection(nxt, fromRobot, toRobot);
+		Thread thread = new Thread(connection, "Connection - " + nxt.name);
+		thread.start();
 
 		// Create the connection
 		connections.put(nxt.name, connection);
