@@ -113,6 +113,27 @@ public class RoutePlanner {
 	}
 	
 	/**
+	 * Update the hashmaps with a new set of robots and linked lists
+	 * @param _hash the new hashmap
+	 */
+	
+	public void update(HashMap<Robot, LinkedList<Job>> _hash){
+		
+		this.pairedJobs = _hash;
+		
+		for(Entry<Robot, LinkedList<Job>> entry : pairedJobs.entrySet()){
+			
+			pairedCommands.put(entry.getKey(), new CommandQueue());
+		}
+		
+		for (Entry<Robot, CommandQueue> entry : pairedCommands.entrySet()) {
+
+			weights.put(entry.getKey(), 0f);
+
+		}
+	}
+	
+	/**
 	 * Makes lists of commands for the robots
 	 */
 
@@ -130,6 +151,7 @@ public class RoutePlanner {
 			for (int j = 0; j < queue.size(); j++) {
 
 				Job job = queue.get(j); // get the next job from the job list
+				
 				ArrayList<ItemQuantity> items = job.getItems();				// get a list of items in the job
 				
 				for (int k = 0; k < items.size(); k++) {
@@ -155,9 +177,9 @@ public class RoutePlanner {
 						
 						
 						weights.put(robot, 0f);
-						System.out.println("base: " + start + " to " + goal);
+						/*System.out.println("base: " + start + " to " + goal);
 						System.out.println(directList);
-						System.out.println(list);
+						System.out.println(list);*/
 						pairedCommands.get(robot).addCommandList(list);
 						pairedCommands.get(robot).addCommand(Command.DROP);
 						
@@ -183,9 +205,9 @@ public class RoutePlanner {
 						
 					Float newWeight = weights.get(robot) + quantity * item.getWeight();
 					weights.put(robot, newWeight);
-					System.out.println("item: " + start + " to " + goal);
+					/*System.out.println("item: " + start + " to " + goal);
 					System.out.println(directList);
-					System.out.println(list);
+					System.out.println(list);*/
 					pairedCommands.get(robot).addCommandList(list);
 					pairedCommands.get(robot).addCommand(Command.PICK);
 					
@@ -213,9 +235,9 @@ public class RoutePlanner {
 			ArrayList<Direction> directList = finder.findRoute(start, goal, facing);
 			LinkedList<Command> list = finder.getActualDirections(directList, facing);
 			
-			System.out.println("home: " + start + " to " + goal);
+			/*System.out.println("home: " + start + " to " + goal);
 			System.out.println(directList);
-			System.out.println(list);
+			System.out.println(list);*/
 			pairedCommands.get(robot).addCommandList(list);
 			pairedCommands.get(robot).addCommand(Command.DROP);
 			
