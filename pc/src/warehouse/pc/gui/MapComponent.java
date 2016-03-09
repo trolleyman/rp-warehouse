@@ -12,7 +12,6 @@ import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.Rectangle2D.Double;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
@@ -82,12 +81,13 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 		g2.translate(xTrans, yTrans);
 		g2.transform(at);
 		
-		g2.setColor(Color.GREEN);
-		Rectangle.Double bounds = map.getBounds();
-		g2.drawRect((int) (bounds.getMinX() * xScale),
-				(int) (bounds.getMinY() * yScale),
-				(int) (bounds.getWidth() * xScale),
-				(int) (bounds.getHeight() * yScale));
+		// Debugging code for bounds checking
+		// g2.setColor(Color.GREEN);
+		// Rectangle.Double bounds = map.getBounds();
+		// g2.drawRect((int) (bounds.getMinX() * xScale),
+		// 		(int) (bounds.getMinY() * yScale),
+		// 		(int) (bounds.getWidth() * xScale),
+		// 		(int) (bounds.getHeight() * yScale));
 		
 		paintGrid(g2);
 		paintJunctions(g2);
