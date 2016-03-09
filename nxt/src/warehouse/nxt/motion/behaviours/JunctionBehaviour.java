@@ -59,5 +59,5 @@ public class JunctionBehaviour implements Behavior {
 
 	@Override
 	public void suppress() {  }
-	
+		
 }

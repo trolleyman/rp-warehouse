@@ -32,12 +32,13 @@ public class NXTMotion {
 
 		this.provider = new SetPath( this.moves );
 		
-		WheeledRobotConfiguration config = new WheeledRobotConfiguration( 0.056f, 0.111f, 0.111f, Motor.B, Motor.A );
+		WheeledRobotConfiguration config = new WheeledRobotConfiguration( 0.056f, 0.111f, 0.111f, Motor.B, Motor.C );
 		DifferentialDriveRobot robot = new DifferentialDriveRobot( config );
 		DifferentialPilot pilot = robot.getDifferentialPilot();
-		LightSensor left =  new LightSensor( SensorPort.S1 );
-		LightSensor right = new LightSensor( SensorPort.S2 );
-		LightSensorCalibration calibration = new LightSensorCalibration( left, right );
+		LightSensor left =  new LightSensor( SensorPort.S3 );
+		LightSensor right = new LightSensor( SensorPort.S1 );
+		LightSensor middle = new LightSensor( SensorPort.S2 );
+		LightSensorCalibration calibration = new LightSensorCalibration( left, right, middle );
 		
 		this.eyes = new UltrasonicSensor( SensorPort.S3 );
 		
