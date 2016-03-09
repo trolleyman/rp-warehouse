@@ -12,7 +12,7 @@ import warehouse.nxt.utils.Robot;
  * Type: Class
  * Name: NXTReceiver
  * Description: Class that handles the Robot Display, printing data coresponding to the robot.
- *              
+ * 
  * 
  **/
 
@@ -66,7 +66,7 @@ public class NXTInterface {
 	public void show() {
 		Sound.setVolume( Sound.VOL_MAX / 4 );
 		g = new Graphics();
-
+		
 		drawMainMenu();
 
 		while( Button.ESCAPE.isUp() ) {
@@ -228,6 +228,8 @@ public class NXTInterface {
 	//////////////////////// HELPER METHODS ////////////////////////////////
 	////////////////////////////////////////////////////////////////////////
 	private void drawMainMenu() {
+		if (true)
+			return;
 		// Draws the robot name on top of the screen
 		g.drawString( robotName, 49, 2, Graphics.HCENTER );
 
@@ -255,7 +257,7 @@ public class NXTInterface {
 		drawMainMenu();
 
 		int label = action % 5;
-		switch( label ) {		
+		switch( label ) {
 			case 0 : g.setFont( Font.getLargeFont() ); g.drawChar( 'I', 22, 28, 0 ); g.setFont( Font.getDefaultFont() ); break;
 			case 1 : g.drawLine( 25, 25, 15, 32 ); g.drawLine( 25, 25, 35, 32 ); g.drawLine( 25, 25, 25, 45 ); break;
 			case 2 : g.drawLine( 15, 35, 22, 28 ); g.drawLine( 15, 35, 22, 42 ); g.drawLine( 15, 35, 35, 35 ); break;
@@ -310,7 +312,7 @@ public class NXTInterface {
 			case "Left" 	: action = 2; break;
 			case "Right" 	: action = 3; break;
 			case "Backward" : action = 4; break;
-			default 		: action = 0; 
+			default 		: action = 0;
 		}
 				
 		drawMainMenuUpdate();

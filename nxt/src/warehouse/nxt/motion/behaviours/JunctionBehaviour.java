@@ -1,5 +1,6 @@
 package warehouse.nxt.motion.behaviours;
 
+import lejos.nxt.Sound;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.robotics.subsumption.Behavior;
 import warehouse.nxt.motion.LightSensorCalibration;
@@ -35,26 +36,28 @@ public class JunctionBehaviour implements Behavior {
 	public boolean takeControl() {
 		if( this.shouldTakeControl ) { return true; }
 		
-		if( this.leftOnLine() && this.rightOnLine() ) { this.shouldTakeControl = true; }
+		if( this.leftOnLine() && this.rightOnLine() ) {
+			Sound.beep();
+			this.shouldTakeControl = true;
+		}
 		
 		return this.shouldTakeControl;
 	}
 
 	@Override
 	public void action() {
-		try {
-			String direction = this.provider.getNextDirection();
-			if( direction == null ) { return; }
-			
-			switch( direction ) {
-				case "Backward" : pilot.rotate( 180 ); break;
-				case "Left"     : pilot.travel( TURNING_OFFSET ); pilot.rotate( 90 ); break;
-				case "Right"    : pilot.travel( TURNING_OFFSET ); pilot.rotate( -90 ); break;
-				case "Forward"  : pilot.travel( 0.05 ); break;
-				default         : pilot.travel( 0.05 ); break;
-			}
+		String direction = this.provider.getNextDirection();
+		System.out.println("Jct:" + direction);
+		
+		switch( direction ) {
+			case "Backward": pilot.rotate( 180 ); break;
+			case "Left"    : pilot.travel( TURNING_OFFSET ); pilot.rotate( 90 ); break;
+			case "Right"   : pilot.travel( TURNING_OFFSET ); pilot.rotate( -90 ); break;
+			case "Forward" : pilot.travel( 0.05 ); break;
+			default        : return;
 		}
-		finally { shouldTakeControl = false; }
+		
+		shouldTakeControl = false;
 	}
 
 	@Override

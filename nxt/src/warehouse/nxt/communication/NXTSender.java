@@ -1,7 +1,9 @@
 package warehouse.nxt.communication;
 
 import java.io.DataOutputStream;
+import java.io.IOException;
 
+import lejos.nxt.Button;
 import warehouse.nxt.display.NXTInterface;
 import warehouse.nxt.motion.NXTMotion;
 import warehouse.nxt.utils.Robot;
@@ -36,12 +38,13 @@ public class NXTSender extends Thread {
 		this.robotInterface = _rInterface;
 	}
 	
+	@Override
 	public void run() {
 		
 		try {
 			while( true ) {
 				
-				try { Thread.sleep( 100 ); }
+				try { Thread.sleep( 500 ); }
 				catch( Exception _exception ) { /* I guess we dont care */ }
 				
 				this.toPC.writeUTF( "Distance:" + this.robotMotion.getDistance() );
@@ -51,7 +54,7 @@ public class NXTSender extends Thread {
 				
 			}
 		}
-		catch( Exception _exception ) { this.throwError( "NXTSender: Stream: Sending Failure." ); }
+		catch( IOException _exception ) { this.throwError( "NXTSender:" + _exception.getMessage() ); }
 		
 	}
 	
@@ -72,6 +75,10 @@ public class NXTSender extends Thread {
 	
 	
 	// Helper Method to throw errors
-	private void throwError( String _message ) { System.err.print( "\n" + _message ); System.exit( 0 ); }
+	private void throwError( String _message ) {
+		System.err.print( "\n" + _message );
+		Button.waitForAnyPress();
+		System.exit( 0 );
+	}
 
 }

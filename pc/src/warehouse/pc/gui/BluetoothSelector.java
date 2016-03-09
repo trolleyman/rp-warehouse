@@ -39,6 +39,20 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 		//setMaximumSize(new Dimension(100, 10));
 		this.addItem(SEARCHING);
 		
+		// Debug
+		NXTInfo info = new NXTInfo(NXTCommFactory.BLUETOOTH, "Bot Lee", "001653155F9C");
+		{boolean result = MainInterface.get().getServer().open(info);
+		openingConnection = false;
+		if (!result) {
+			JOptionPane.showMessageDialog(null,
+				"Could not connect to " + info.name + " (" + info.deviceAddress + ").",
+				"Connection Error",
+				JOptionPane.WARNING_MESSAGE);
+		} else {
+			MainInterface.get().updateRobot(new Robot(info.name, info.deviceAddress, 0, 0, 0));
+		}}
+		
+		
 		Thread t = new Thread(this);
 		t.setDaemon(true);
 		t.start();

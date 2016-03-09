@@ -1,7 +1,10 @@
 package warehouse.nxt.communication;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
+import lejos.nxt.Button;
 import lejos.nxt.comm.BTConnection;
 import warehouse.nxt.display.NXTInterface;
 import warehouse.nxt.motion.NXTMotion;
@@ -16,12 +19,12 @@ import warehouse.nxt.utils.Robot;
  * Author: Denis Makula
  * Description: Class that is supposed to receive data from the PC, it will continuously try to get a String from the PC and
  *              every time that happens, we execute the action and we update things around
- *              
+ * 
  *              Possible Receives:
  *              	Do: Shut Down
  *              	Do: Pick < int: Quantity > < int: Weight >
  *              	Do: Drop Off
- *              
+ * 
  *              	Go: Forward
  *              	Go: Left
  *              	Go: Right
@@ -48,11 +51,18 @@ public class NXTReceiver extends Thread {
 		
 	}
 	
+	@Override
 	public void run() {
 		
-		try { while( true ) { this.find( this.fromPC.readUTF() ); } }
-		catch( Exception _exception ) { this.throwError( "NXTReceiver: Reading Failure." ); }
-		
+		try {
+			while( true ) {
+				String fromServer = this.fromPC.readUTF();
+				System.out.println(fromServer);
+				this.find( fromServer );
+			}
+		} catch( IOException _exception ) {
+			this.throwError( "Recieve: " + _exception.getMessage() );
+		}
 	}
 	
 	// Categorises commands into Go or Do
@@ -74,7 +84,7 @@ public class NXTReceiver extends Thread {
 	// Usage: "Cancel Job: Shut Down"
 	//    OR: "Cancel Job: <String: NextJobName>"
 	private void cancel( String[] _next ) {
-		if( _next[ 0 ].equals( "Shut Down" ) ) { this.connection.close(); System.exit( 0 ); }
+		if( _next[ 0 ].equals( "Shut Down" ) ) { this.connection.close(); throwError("Shut Down"); }
 		else {
 			this.robotInterface.setJobName( _next[ 0 ] );
 			this.myself.jobName = _next[ 0 ];
@@ -88,7 +98,7 @@ public class NXTReceiver extends Thread {
 	//        Do: Drop Off
 	private void action( String[] _action ) {
 		switch( _action[ 0 ] ) {
-			case "Shut Down"  : this.connection.close(); System.exit( 0 ); break;
+			case "Shut Down"  : this.connection.close(); throwError("Shut Down"); break;
 			case "Pick Up"	  : this.myself.status = "Picking Items"; this.robotInterface.pickUp( Integer.parseInt( _action[ 1 ] ), Integer.parseInt( _action[ 2 ] ) ); this.myself.status = "Picked " + Integer.parseInt( _action[ 1 ] ); break;
 			case "Drop Off"   : this.robotInterface.dropOff(); this.myself.status = "Finished"; break;
 			default           : this.throwError( "NXTReceiver: Unknown data format received after 'Do: '." ); break;
@@ -102,15 +112,35 @@ public class NXTReceiver extends Thread {
 	//        Go: Right, <int: x>, <int:y>
 	private void move( String[] _data ) {
 		switch( _data[0] ) {
-		case "Right" 	: this.robotInterface.directionUpdate( "Right" ); this.myself.status = "Moving Right"; this.robotMotion.go( "Right", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) ); break;
-		case "Left" 	: this.robotInterface.directionUpdate( "Left" ); this.myself.status = "Moving Left"; this.robotMotion.go( "Left", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) ); break;
-		case "Forward" 	: this.robotInterface.directionUpdate( "Forward" ); this.myself.status = "Moving Forward"; this.robotMotion.go( "Forward", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) ); break;
-		case "Backward" : this.robotInterface.directionUpdate( "Backward" ); this.myself.status = "Moving Backward"; this.robotMotion.go( "Backward", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) ); break;
+		case "Right" 	:
+			this.robotInterface.directionUpdate( "Right" );
+			this.myself.status = "Moving Right";
+			this.robotMotion.go( "Right", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) );
+			break;
+		case "Left" 	:
+			this.robotInterface.directionUpdate( "Left" );
+			this.myself.status = "Moving Left";
+			this.robotMotion.go( "Left", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) );
+			break;
+		case "Forward" 	:
+			this.robotInterface.directionUpdate( "Forward" );
+			this.myself.status = "Moving Forward";
+			this.robotMotion.go( "Forward", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) );
+			break;
+		case "Backward" :
+			this.robotInterface.directionUpdate( "Backward" );
+			this.myself.status = "Moving Backward";
+			this.robotMotion.go( "Backward", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) );
+			break;
 		default 		: this.throwError( "NXTReceiver: Unknown data format received after 'Go: '." ); break;
 		}
 	}
 	
 	// Helper method to throw errors
-	private void throwError( String _message ) { this.connection.close(); System.err.print( "\n" + _message ); System.exit( 0 ); }
+	private void throwError( String _message ) {
+		this.connection.close(); System.err.println( _message );
+		Button.waitForAnyPress();
+		System.exit( 0 );
+	}
 	
 }

@@ -30,9 +30,14 @@ public class NXTMotion {
 		this.myself = _myself;
 		this.moves = new ArrayList<String>();
 
-		this.provider = new SetPath( this.moves );
+		this.provider = new SetPath(new ArrayList<>(new String[] {
+			"Forward",
+			"Backward",
+			"Left",
+			"Right",
+		}));
 		
-		WheeledRobotConfiguration config = new WheeledRobotConfiguration( 0.056f, 0.111f, 0.111f, Motor.B, Motor.C );
+		WheeledRobotConfiguration config = new WheeledRobotConfiguration( 0.056f, 0.111f, 0.111f, Motor.C, Motor.B );
 		DifferentialDriveRobot robot = new DifferentialDriveRobot( config );
 		DifferentialPilot pilot = robot.getDifferentialPilot();
 		LightSensor left =  new LightSensor( SensorPort.S3 );
@@ -40,7 +45,7 @@ public class NXTMotion {
 		LightSensor middle = new LightSensor( SensorPort.S2 );
 		LightSensorCalibration calibration = new LightSensorCalibration( left, right, middle );
 		
-		this.eyes = new UltrasonicSensor( SensorPort.S3 );
+		this.eyes = new UltrasonicSensor( SensorPort.S4 );
 		
 		TrackingBehaviour tracking = new TrackingBehaviour( pilot, calibration, provider );
 		JunctionBehaviour junction = new JunctionBehaviour( pilot, calibration, provider );
@@ -50,7 +55,7 @@ public class NXTMotion {
 	}
 	
 	public void go( String _direction, int _x, int _y ) {
-	
+		System.out.println("Go:" + _direction);
 		this.moves.add( _direction );
 		this.arbitrator.start();
 		

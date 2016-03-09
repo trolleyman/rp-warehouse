@@ -20,6 +20,6 @@ public class SetPath implements PathProvider {
 	}
 
 	@Override
-	public boolean isFinished() { return this.path.isEmpty(); }
+	public boolean isFinished() { return path.isEmpty(); }
 
 }

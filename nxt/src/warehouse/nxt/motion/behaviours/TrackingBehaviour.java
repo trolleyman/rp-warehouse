@@ -37,10 +37,14 @@ public class TrackingBehaviour implements Behavior {
 		double calibrationError = ( this.calibration.rLight - this.calibration.lLight) / 2.0;
 		 
 		while( !stop ) {
+			
 			double left = this.calibration.leftSensor.readNormalizedValue() - calibrationError;
 			double right = this.calibration.rightSensor.readNormalizedValue() + calibrationError;
 			double error = right - left;
 			final double k = 5.0;
+			
+			System.out.println("e:" + error);
+			System.out.println("o:" + ( 1 / error ) * k);
 			
 			this.pilot.travelArc( ( 1 / error ) * k, 0.1, true );
 			

@@ -137,7 +137,6 @@ public class RobotManager implements IRobotManager, RobotListener {
 	 */
 	private void step() {
 		// TODO: Update the position of the robots.
-		ArrayList<Robot> waitOnRobots = new ArrayList<>();
 		//HashMap<Robot, Direction> newRobotDirections = new HashMap<>();
 		
 		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
@@ -147,32 +146,26 @@ public class RobotManager implements IRobotManager, RobotListener {
 				com = Command.WAIT;
 			} else {
 				q.getCommands().pop();
-				if (com.replyReady())
-					waitOnRobots.add(e.getKey());
 			}
 			try {
-				mi.getServer().sendToRobot(e.getKey().getName(), com.toString());
+				mi.getServer().sendCommand(e.getKey(), com);
 			} catch (IOException ex) {
 				System.out.println(e.getKey().getIdentity() + " disconnected.");
 				mi.removeRobot(e.getKey());
-				waitOnRobots.remove(e.getKey());
 				continue;
 			}
 		}
 		
 		if (!robotCommands.isEmpty())
-			System.out.println("Robot Manager: Waiting for robots to reply 'ready'...");
+			System.out.println("Robot Manager: Waiting for robots to reply 'Idle'...");
 		
-		for (Robot robot : waitOnRobots) {
-			String msg = null;
-			while (msg == null || !msg.equalsIgnoreCase("ready")) {
-				try {
-					msg = mi.getServer().listen(robot.getName());
-				} catch (IOException ex) {
-					System.out.println(robot.getIdentity() + " disconnected.");
-					mi.removeRobot(robot);
-					continue;
-				}
+		for (Robot robot : robotCommands.keySet()) {
+			try {
+				mi.getServer().waitForReady(robot.getName());
+			} catch (IOException ex) {
+				System.out.println(robot.getIdentity() + " disconnected.");
+				mi.removeRobot(robot);
+				continue;
 			}
 		}
 	}

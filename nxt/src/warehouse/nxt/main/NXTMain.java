@@ -3,7 +3,9 @@ package warehouse.nxt.main;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
 
+import lejos.nxt.Button;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
 import warehouse.nxt.communication.NXTReceiver;
@@ -41,8 +43,17 @@ public class NXTMain {
 	private NXTInterface robotInterface;
 	
 	public NXTMain() {
+		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+			@Override
+			public void uncaughtException(Thread _t, Throwable _e) {
+				System.err.println("Exception");
+				_e.printStackTrace();
+				Button.waitForAnyPress();
+				System.exit(1);
+			}
+		});
 		
-		this.say( "I'm Waiting for Connection!" );
+		this.say( "Waiting for connection." );
 		this.connect();
 
 	}
@@ -82,16 +93,17 @@ public class NXTMain {
 		
 		try {
 			input = this.fromPC.readUTF();
+			
 			String[] explosion = MyString.split( ":", input );
 			
-			if( !explosion[ 0 ].equals( "Robot" ) ) { System.err.print( "\nRobot needs to be initialized before sending data to it." ); System.exit( 0 ); }
+			if( !explosion[ 0 ].equals( "Robot" ) ) { System.err.print( "\nRobot needs to be initialized before sending data to it." ); Button.waitForAnyPress(); System.exit(1); }
 			else {
 				String[] data = MyString.split( "," , explosion[ 1 ] );
-				this.myself.name = data[ 0 ];
-				this.myself.x = Integer.parseInt( data[ 1 ] );
-				this.myself.y = Integer.parseInt( data[ 2 ] );
+				this.myself = new Robot(data[0], Integer.parseInt( data[ 1 ] ), Integer.parseInt( data[2] ));
 				this.myself.jobName = data[3];
 			}
+			
+			this.toPC.writeUTF("Idle");
 		}
 		catch( IOException _exception ) { _exception.printStackTrace(); }
 	}
@@ -107,7 +119,7 @@ public class NXTMain {
 	
 	
 	
-	private void say( String _message ) { System.out.print( _message ); }	// Helper method to print
+	private void say( String _message ) { System.out.println( _message ); }	// Helper method to print
 	public static void main( String[] _arguments ) { new NXTMain(); }
 	
 }

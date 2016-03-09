@@ -3,8 +3,7 @@ package warehouse.shared;
 import java.util.Optional;
 
 /**
- * Directions the robot can execute in the field
- *
+ * Commands the robot can execute in the field
  */
 
 public enum Command {
@@ -16,53 +15,39 @@ public enum Command {
 	DROP,
 	WAIT;
 	
-	@Override
-	public String toString() {
-		switch (this) {
-		case LEFT:     return "left";
-		case RIGHT:    return "right";
-		case FORWARD:  return "forward";
-		case BACKWARD: return "backward";
-		case PICK:     return "pick";
-		case DROP:     return "drop";
-		case WAIT:     return "wait";
-		}
-		
-		System.err.println("Unknown Command");
-		return null;
+	private Integer x;
+	private Integer y;
+	private Integer quantity;
+	private Float weight;
+	
+	public static Command pickUp(int _quantity, float _weight) {
+		Command com = Command.PICK;
+		com.quantity = _quantity;
+		com.weight = _weight;
+		return com;
 	}
 	
-	public Optional<Command> fromString(String msg) {
-		switch (msg.toLowerCase()) {
-		case "left":     return Optional.of(LEFT);
-		case "right":    return Optional.of(RIGHT);
-		case "forward":  return Optional.of(FORWARD);
-		case "backward": return Optional.of(BACKWARD);
-		case "pick":     return Optional.of(PICK);
-		case "drop":     return Optional.of(DROP);
-		case "wait":     return Optional.of(WAIT);
-		}
-		
-		return Optional.empty();
+	public void setX(int _x) {
+		this.x = _x;
 	}
 	
-	/**
-	 * Returns true if the robot will reply "ready" back to the server after it has completed the command.
-	 */
-	public boolean replyReady() {
-		switch (this) {
-		case LEFT:
-		case RIGHT:
-		case FORWARD:
-		case BACKWARD:
-			return true;
-		case PICK:
-		case DROP:
-		case WAIT:
-			return false; // For now the NXTs don't reply ready to these commands.
-		}
-		return false;
+	public void setY(int _y) {
+		this.y = _y;
 	}
 	
+	public Optional<Integer> getX() {
+		return Optional.ofNullable(x);
+	}
 	
+	public Optional<Integer> getY() {
+		return Optional.ofNullable(y);
+	}
+	
+	public Optional<Integer> getQuantity() {
+		return Optional.ofNullable(quantity);
+	}
+	
+	public Optional<Float> getWeight() {
+		return Optional.ofNullable(weight);
+	}
 }

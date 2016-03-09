@@ -10,6 +10,8 @@ import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
+import warehouse.pc.shared.Robot;
+import warehouse.shared.Command;
 
 /**
  * The BT communication "server". Can create new thread pairs for NXTs.
@@ -81,6 +83,13 @@ public class BTServer {
 
 		// Create the connection
 		connections.put(nxt.name, connection);
+		try {
+			sendToRobot(nxt.name, Format.robot(nxt.name, 0, 0, ""));
+			waitForReady(nxt.name);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 
 		// Update the robot in the MainInterface
 		// MainInterface.get().updateRobot(new Robot(nxt.name, nxt.deviceAddress, 0,
@@ -88,6 +97,32 @@ public class BTServer {
 
 		System.out.println("Connection made to " + name);
 		return true;
+	}
+	
+	public void sendCommand(Robot robot, Command com) throws IOException {
+		// TODO: com.getX().get()
+		switch (com) {
+		case LEFT:
+			sendToRobot(robot.getName(), Format.goLeft(0, 0));
+			break;
+		case RIGHT:
+			sendToRobot(robot.getName(), Format.goRight(0, 0));
+			break;
+		case FORWARD:
+			sendToRobot(robot.getName(), Format.goForward(0, 0));
+			break;
+		case BACKWARD:
+			sendToRobot(robot.getName(), Format.goBackward(0, 0));
+			break;
+		case PICK:
+			sendToRobot(robot.getName(), Format.pickUp(com.getQuantity().get(), com.getWeight().get()));
+			break;
+		case DROP:
+			sendToRobot(robot.getName(), Format.dropOff());
+			break;
+		case WAIT:
+			break;
+		}
 	}
 
 	/**
@@ -114,6 +149,14 @@ public class BTServer {
 	 */
 	public void sendToRobot(String robotName, String message) throws IOException {
 		connections.get(robotName).send(message);
+	}
+	
+	public void waitForReady(String robotName) throws IOException {
+		String msg = null;
+		while (msg == null || !msg.equalsIgnoreCase("Idle")) {
+			msg = listen(robotName);
+			System.out.println("Wanted 'Idle', recieved: " + msg);
+		}
 	}
 	
 	public String listen(String robotName) throws IOException {
