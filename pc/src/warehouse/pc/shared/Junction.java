@@ -32,5 +32,7 @@ public class Junction {
 	@Override
 	public String toString() {
 		return "[" + x + ", " + y + "]";
+
+
 	}
 }

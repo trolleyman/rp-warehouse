@@ -1,22 +1,29 @@
 package warehouse.pc.gui;
 
+import static org.junit.Assert.assertTrue;
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SpringLayout;
 
+import org.junit.Test;
+
 import warehouse.pc.shared.MainInterface;
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.Robot;
 
 @SuppressWarnings("serial")
 public class RobotEditor extends JPanel {
+	private static String DEGREE_SYMBOL = "\u00B0";
+	
 	private Robot selectedRobot = null;
 	
 	private JLabel selectedRobotLabel;
@@ -66,7 +73,7 @@ public class RobotEditor extends JPanel {
 		JLabel yLabel = new JLabel("y:");
 		
 		JLabel headingLabel = new JLabel("Heading:");
-		JLabel degrees = new JLabel("°");
+		JLabel degrees = new JLabel(DEGREE_SYMBOL);
 		headingSpinner = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 360.0, 10.0));
 		
 		headingButton = new JButton("Set Heading");
@@ -122,9 +129,9 @@ public class RobotEditor extends JPanel {
 		super.doLayout();
 		
 		setPreferredSize(new Dimension(200, (int)
-			(headingButton.getY() + 6 + headingButton.getPreferredSize().getHeight())));
+			(headingButton.getY() + headingButton.getPreferredSize().getHeight())));
+		setMinimumSize(getPreferredSize());
 	}
-	
 	
 	/**
 	 * Selects a new robot to be edited. Can be null.
@@ -132,6 +139,10 @@ public class RobotEditor extends JPanel {
 	public void selectRobot(Robot _selectedRobot) {
 		selectedRobot = _selectedRobot;
 		update();
+	}
+	
+	public Robot getSelectedRobot() {
+		return selectedRobot;
 	}
 	
 	private void update() {
@@ -160,7 +171,40 @@ public class RobotEditor extends JPanel {
 			ySpinner.setValue(selectedRobot.getY());
 			headingSpinner.setValue(selectedRobot.getFacing());
 		}
-		
 		repaint();
+	}
+	
+	@Test
+	public void testRobotEditor() {
+		JFrame frame = new JFrame();
+		frame.add(this);
+		Robot r = new Robot("Jeff", "ID", 1, 2, 10.0);
+		MainInterface.get().updateRobot(r);
+		
+		assertTrue(selectedRobot == null);
+		assertTrue(selectedRobotLabel.getText().equals("Selected Robot: None"));
+		assertTrue(robotIDLabel.getText().equals("ID: ?"));
+		assertTrue(xSpinner.getValue().equals(0.0));
+		assertTrue(!xSpinner.isEnabled());
+		assertTrue(ySpinner.getValue().equals(0.0));
+		assertTrue(!ySpinner.isEnabled());
+		assertTrue(!posButton.isEnabled());
+		assertTrue(headingSpinner.getValue().equals(0.0));
+		assertTrue(!headingSpinner.isEnabled());
+		assertTrue(!headingButton.isEnabled());
+		
+		selectRobot(r);
+		
+		assertTrue(selectedRobot == r);
+		assertTrue(selectedRobotLabel.getText().equals("Selected Robot: " + r.getName()));
+		assertTrue(robotIDLabel.getText().equals("ID: " + r.getID()));
+		assertTrue(xSpinner.getValue().equals(r.getX()));
+		assertTrue(xSpinner.isEnabled());
+		assertTrue(ySpinner.getValue().equals(r.getY()));
+		assertTrue(ySpinner.isEnabled());
+		assertTrue(posButton.isEnabled());
+		assertTrue(headingSpinner.getValue().equals(r.getFacing()));
+		assertTrue(headingSpinner.isEnabled());
+		assertTrue(headingButton.isEnabled());
 	}
 }

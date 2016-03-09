@@ -26,8 +26,10 @@ public class JobList implements FileList {
 	
 	/**
 	 * Takes a csv file and reads it into an ArrayList of jobs.
+	 * @throws ItemNotInListException 
 	 */
 	private void parseFile(String _fileLocation) {
+		//Initialise variables.
 		BufferedReader br = null;
 		FileReader fr;
 		String line;
@@ -36,22 +38,48 @@ public class JobList implements FileList {
 		jobList = new ArrayList<Job>();
 		
 		try {
+			//Start file readers.
 			fr = new FileReader(_fileLocation);
 			br = new BufferedReader(fr);
 			line = br.readLine();
 			
 			//Create a job object from each line and add to array.
 			while (line != null) {
+				//split line into array.
 				splitLine = line.split(",");
 				iqs = new ArrayList<ItemQuantity>();
 				
+				//For each pair of item and quantity, create new ItemQuantity.
 				for(int i = 1; i < splitLine.length; i += 2) {
 					String itemName = splitLine[i];
 					int quantity = Integer.valueOf(splitLine[i + 1]);
-					ItemQuantity iq = new ItemQuantity(itemName, quantity);
+					
+					//Find item from name in itemList.
+					boolean itemFound = false;
+					int count = 0;
+					Item item = null;
+					try {
+						while (!itemFound) {
+							if (itemList.get(count).getName().equals(itemName)) {
+								item = itemList.get(count);
+								itemFound = true;
+							} else {
+								count++;
+							}
+							
+							if (count > itemList.size()) {
+								throw new ItemNotInListException("Item not found in itemList.");
+							}
+						}
+					} catch (ItemNotInListException e) {
+						System.err.println(e);
+					}
+					
+					ItemQuantity iq = new ItemQuantity(item, quantity);
 					iqs.add(iq);
 				}
 				
+				//Create job and add to list.
 				Job job = new Job(Integer.valueOf(splitLine[0]), iqs, calculateTotalWeight(iqs), calculateTotalReward(iqs));
 				jobList.add(job);
 				
@@ -76,11 +104,13 @@ public class JobList implements FileList {
 	private float calculateTotalWeight(ArrayList<ItemQuantity> _iqs) {
 		float totalWeight = 0;
 		
+		//For each ItemQuantity in a job, add its weight to the total.
 		for (int i = 0; i < _iqs.size(); i++) {
-			 String name = _iqs.get(i).getName();
+			 String name = _iqs.get(i).getItem().getName();
 			 boolean itemFound = false;
 			 int count = 0;
 			 
+			 //Search the item list to find the item.
 			 while (!itemFound) {
 				 if (itemList.get(count).getName().equals(name)) {
 					 int quantity = _iqs.get(i).getQuantity();
@@ -102,11 +132,13 @@ public class JobList implements FileList {
 	private float calculateTotalReward(ArrayList<ItemQuantity> _iqs) {
 		float totalReward = 0;
 		
+		//For each ItemQuantity in a job, add its reward to the total.
 		for (int i = 0; i < _iqs.size(); i++) {
-			 String name = _iqs.get(i).getName();
+			 String name = _iqs.get(i).getItem().getName();
 			 boolean itemFound = false;
 			 int count = 0;
 			 
+			//Search the item list to find the item.
 			 while (!itemFound) {
 				 if (itemList.get(count).getName().equals(name)) {
 					 int quantity = _iqs.get(i).getQuantity();

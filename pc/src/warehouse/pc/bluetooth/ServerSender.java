@@ -29,10 +29,10 @@ public class ServerSender implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("Sender running");
-
-		try {
+		try {			
 			
+			System.out.println("Sender running");
+			running = true;
 			while (running) {
 				String message = toRobotQueue.take();
 				toRobot.writeUTF(message);

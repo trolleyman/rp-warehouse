@@ -2,6 +2,7 @@ package warehouse.pc.gui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
@@ -15,15 +16,19 @@ import java.util.ArrayList;
 
 import javax.swing.JComponent;
 
+import warehouse.pc.job.Location;
+import warehouse.pc.job.LocationList;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.MainInterface;
 import warehouse.pc.shared.RobotListener;
 import warehouse.pc.shared.State;
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.Robot;
 
 @SuppressWarnings("serial")
 public class MapComponent extends JComponent implements MouseListener, RobotListener {
 	private State state;
+	private LocationList locList;
+	
 	private double xScale = 1.0;
 	private double yScale = 1.0;
 	
@@ -37,6 +42,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 		this.gui = _gui;
 		addMouseListener(this);
 		state = MainInterface.get().getCurrentState();
+		locList = MainInterface.get().getLocationList();
 		MainInterface.get().addRobotListener(this);
 	}
 
@@ -51,6 +57,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 		int height = (int) (getHeight() - padding * 2.1);
 		
 		state = MainInterface.get().getCurrentState();
+		locList = MainInterface.get().getLocationList();
 		int mapWidth = state.getMap().getWidth() - 1;
 		int mapHeight = state.getMap().getHeight() - 1;
 		
@@ -109,7 +116,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 			fg.drawString(robot.getName(), 0, 0);
 			fg.dispose();
 			
-			g.rotate(Math.toRadians(robot.getFacing()));
+			g.rotate(-Math.toRadians(robot.getFacing()));
 			g.drawRect(-(int)(w / 2.0), -(int)(h / 2.0), (int)w, (int)h);
 			
 			double robotEndY = h / 2.0;
@@ -159,10 +166,43 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 				if (j == null)
 					continue;
 				
-				double w = 7.0;
-				double h = 7.0;
-				_g2.fillOval((int) (j.getX() * xScale - w / 2.0) + 0,
-							 (int) (j.getY() * yScale - h / 2.0) + 0,
+				for (Location loc : locList.getList()) {
+					if (loc.getJunction().getX() == x && loc.getJunction().getY() == y) {
+						Graphics2D fg = (Graphics2D) _g2.create();
+						if (loc.getItemName().equals(gui.selectedItemName)) {
+							Font f = fg.getFont();
+							f = f.deriveFont(Font.BOLD, (float) (f.getSize() * 1.5));
+							fg.setFont(f);
+						}
+						fg.setColor(Color.RED);
+						AffineTransform trans = new AffineTransform();
+						trans.scale(1.0, -1.0);
+						trans.scale(xScale * 0.015, yScale * 0.015);
+						
+						int nameW = (int) (fg.getFontMetrics().stringWidth(loc.getItemName()) * xScale * 0.015);
+						fg.translate(-nameW / 2.0, 14.0);
+						fg.translate(x * xScale, y * yScale);
+						fg.transform(trans);
+						fg.drawString(loc.getItemName(), 0, 0);
+						fg.dispose();
+					}
+				}
+				
+				double w = 5.0;
+				double h = 5.0;
+				
+				_g2.setColor(Color.BLACK);
+				for (Junction drop : MainInterface.get().getDropList().getList()) {
+					if (drop.getX() == x && drop.getY() == y) {
+						w *= 1.5;
+						h *= 1.5;
+						_g2.setColor(Color.RED);
+						break;
+					}
+				}
+				
+				_g2.fillOval((int) (x * xScale - w / 2.0) + 0,
+							 (int) (y * yScale - h / 2.0) + 0,
 							 (int) (w), (int) (h));
 			}
 		}
@@ -203,8 +243,8 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 			double cx = robot.getX() * xScale + xTrans;
 			double cy = -robot.getY() * yScale + yTrans;
 			
-			double s = Math.sin(Math.toRadians(robot.getFacing()));
-			double c = Math.cos(Math.toRadians(robot.getFacing()));
+			double s = Math.sin(-Math.toRadians(robot.getFacing()));
+			double c = Math.cos(-Math.toRadians(robot.getFacing()));
 			
 			// translate point back to origin:
 			x -= cx;
@@ -244,6 +284,19 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 
 	@Override
 	public void robotChanged(Robot _r) {
+		this.repaint();
+	}
+
+	@Override
+	public void robotAdded(Robot _r) {
+		this.repaint();
+	}
+
+	@Override
+	public void robotRemoved(Robot _r) {
+		if (selected == _r) {
+			selected = null;
+		}
 		this.repaint();
 	}
 }

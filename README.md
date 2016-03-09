@@ -39,6 +39,11 @@ git branch *Only local branches*
 git branch -a *Local and remote branches*
 git branch -r *Only remote branches*
 ```
+Get a remote branch from the repo. Do this when someone has created a branch you want to pull into your local repo.
+```
+git fetch *gets all changes from the remote repo*
+git checkout -b <branch-name> remotes/origin/<branch-name> *set up a local branch to track the remote*
+```
 Create a new branch
 ```
 git branch <branch-name>
@@ -74,8 +79,8 @@ Obviously you should comment wherever necessary, where what is happening could b
 # Extra commands
 I would also recommend running these commands at some point:
 ```
-alias.plog log --decorate --oneline
-alias.tree log --decorate --oneline --graph --all
+git config --global alias.plog log --decorate --oneline
+git config --global alias.tree log --decorate --oneline --graph --all
 ```
 This enables you to run `git tree` which gives you a good overview of the project. If I run git tree at the moment I get this:
 ```
