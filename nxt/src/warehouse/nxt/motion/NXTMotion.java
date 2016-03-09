@@ -30,15 +30,7 @@ public class NXTMotion {
 		this.myself = _myself;
 		this.moves = new ArrayList<String>();
 
-		this.provider = new SetPath(new ArrayList<>(new String[] {
-			"Forward",
-			"Backward",
-			"Left",
-			"Right",
-			"Right",
-			"Left",
-			"Backward",
-		}));
+		this.provider = new SetPath(moves);
 		
 		WheeledRobotConfiguration config = new WheeledRobotConfiguration( 0.056f, 0.111f, 0.111f, Motor.B, Motor.C );
 		DifferentialDriveRobot robot = new DifferentialDriveRobot( config );
@@ -59,12 +51,12 @@ public class NXTMotion {
 	public void go( String _direction, int _x, int _y ) {
 		System.out.println("Go:" + _direction);
 		this.moves.add( _direction );
+		// TODO: Throws IllegalStateException
 		this.arbitrator.start();
 		
 		this.myself.x = _x;
 		this.myself.y = _y;
 		this.myself.status = "Idle";
-		
 	}
 	
 	public int getDistance() {
