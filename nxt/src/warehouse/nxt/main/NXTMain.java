@@ -62,7 +62,7 @@ public class NXTMain {
 		
 	// Initialize Robot Interface
 	private void initRobotInterface() {
-		this.robotInterface = new NXTInterface( this.myself.name, this.myself.x, this.myself.y );
+		this.robotInterface = new NXTInterface( this.myself );
 	}
 	
 	private void initRobotMotion() {

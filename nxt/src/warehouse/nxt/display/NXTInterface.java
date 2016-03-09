@@ -6,6 +6,7 @@ import javax.microedition.lcdui.Graphics;
 import lejos.nxt.Button;
 import lejos.nxt.Sound;
 import lejos.util.Delay;
+import warehouse.nxt.utils.Robot;
 /**
  * 
  * Type: Class
@@ -32,7 +33,17 @@ public class NXTInterface {
 	private int x;
 
 	int action = 0;							// For Drawing
+	
+	private Robot robot;
 
+	public NXTInterface( Robot _robot ) {
+		this.robot = _robot;
+		this.robotName = this.robot.name;
+		this.jobName = "None";
+		this.x = this.robot.x;
+		this.y = this.robot.y;
+	}
+	
 	//For testing without client info (test values)
 	public NXTInterface( String _robotName, String _jobName, int _weight, int _quantity, int _x, int _y ) {
 		this.robotName = _robotName;
@@ -142,7 +153,7 @@ public class NXTInterface {
 				}
 				Thread.yield();
 			}
-
+			
 			// Robot will check if items are loaded properly, and replies
 			// accordingly.
 			if( counter < 0 ) { drawMainMenuUpdate(); }

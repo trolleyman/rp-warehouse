@@ -89,7 +89,7 @@ public class NXTReceiver extends Thread {
 	private void action( String[] _action ) {
 		switch( _action[ 0 ] ) {
 			case "Shut Down"  : this.connection.close(); System.exit( 0 ); break;
-			case "Pick Up"	  : this.robotInterface.pickUp( Integer.parseInt( _action[ 1 ] ), Integer.parseInt( _action[ 2 ] ) ); this.myself.status = "Picking Items"; break;
+			case "Pick Up"	  : this.myself.status = "Picking Items"; this.robotInterface.pickUp( Integer.parseInt( _action[ 1 ] ), Integer.parseInt( _action[ 2 ] ) ); this.myself.status = "Picked " + Integer.parseInt( _action[ 1 ] ); break;
 			case "Drop Off"   : this.robotInterface.dropOff(); this.myself.status = "Finished"; break;
 			default           : this.throwError( "NXTReceiver: Unknown data format received after 'Do: '." ); break;
 		}
