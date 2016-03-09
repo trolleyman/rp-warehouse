@@ -255,7 +255,10 @@ public class NXTInterface {
 
 	private void drawMainMenuUpdate() {
 		drawMainMenu();
-
+		
+		if (true)
+			return;
+		
 		int label = action % 5;
 		switch( label ) {
 			case 0 : g.setFont( Font.getLargeFont() ); g.drawChar( 'I', 22, 28, 0 ); g.setFont( Font.getDefaultFont() ); break;

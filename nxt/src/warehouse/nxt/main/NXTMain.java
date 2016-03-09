@@ -61,7 +61,7 @@ public class NXTMain {
 	// Waits for a Connection, when one is succeeded, calls .startStreams and .startThreads
 	private void connect() {
 		this.connection = Bluetooth.waitForConnection();
-
+		
 		this.startStreams();
 		this.getMyself();
 		this.initRobotInterface();
@@ -70,7 +70,7 @@ public class NXTMain {
 		
 		this.robotInterface.show();
 	}
-		
+	
 	// Initialize Robot Interface
 	private void initRobotInterface() {
 		this.robotInterface = new NXTInterface( this.myself );

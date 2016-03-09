@@ -42,12 +42,16 @@ public class NXTSender extends Thread {
 	public void run() {
 		
 		try {
+			long lastDistance = System.currentTimeMillis();
 			while( true ) {
 				
-				try { Thread.sleep( 500 ); }
+				try { Thread.sleep( 10 ); }
 				catch( Exception _exception ) { /* I guess we dont care */ }
 				
-				this.toPC.writeUTF( "Distance:" + this.robotMotion.getDistance() );
+				if (System.currentTimeMillis() - lastDistance > 200) {
+					this.toPC.writeUTF( "Distance:" + this.robotMotion.getDistance() );
+					lastDistance = System.currentTimeMillis();
+				}
 				
 				if( this.statusUpdated() ) { this.toPC.writeUTF( this.myself.status ); this.updateOldRobot(); }
 				if( this.positionUpdated() ) { this.robotInterface.updatePosition( this.myself.x, this.myself.y ); this.updateOldRobot(); }

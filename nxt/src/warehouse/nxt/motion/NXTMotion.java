@@ -22,7 +22,10 @@ public class NXTMotion {
 	private Robot myself;
 	private ArrayList<String> moves;
 	private PathProvider provider;
-	private Arbitrator arbitrator;
+	
+	private TrackingBehaviour trackingBehaviour;
+	private JunctionBehaviour junctionBehaviour;
+	
 	private final UltrasonicSensor eyes;
 
 	public NXTMotion( Robot _myself ) {
@@ -42,17 +45,16 @@ public class NXTMotion {
 		
 		this.eyes = new UltrasonicSensor( SensorPort.S2 );
 		
-		TrackingBehaviour tracking = new TrackingBehaviour( pilot, calibration, provider );
-		JunctionBehaviour junction = new JunctionBehaviour( pilot, calibration, provider );
-		
-		this.arbitrator = new Arbitrator( new Behavior[] { tracking, junction }, true );
+		trackingBehaviour = new TrackingBehaviour( pilot, calibration, provider );
+		junctionBehaviour = new JunctionBehaviour( pilot, calibration, provider );
 	}
 	
-	public void go( String _direction, int _x, int _y ) {
+	public void go(String _direction, int _x, int _y) {
 		System.out.println("Go:" + _direction);
-		this.moves.add( _direction );
-		// TODO: Throws IllegalStateException
-		this.arbitrator.start();
+		this.moves.add(_direction);
+		Arbitrator arby = new Arbitrator(new Behavior[] {trackingBehaviour, junctionBehaviour}, true);
+		arby.start();
+		System.out.println("After arb");
 		
 		this.myself.x = _x;
 		this.myself.y = _y;

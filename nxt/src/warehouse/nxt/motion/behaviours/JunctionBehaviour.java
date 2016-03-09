@@ -49,6 +49,9 @@ public class JunctionBehaviour implements Behavior {
 		String direction = this.provider.getNextDirection();
 		System.out.println("Jct:" + direction);
 		
+		if (direction == null)
+			return;
+		
 		switch( direction ) {
 			case "Backward": pilot.rotate( 180 ); break;
 			case "Left"    : pilot.travel( TURNING_OFFSET ); pilot.rotate( 90 ); break;

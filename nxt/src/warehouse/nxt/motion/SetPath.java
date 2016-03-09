@@ -4,19 +4,20 @@ import java.util.ArrayList;
 
 public class SetPath implements PathProvider {
 	
-	private ArrayList<String> path;
+	private volatile ArrayList<String> path;
 	
-	public SetPath( ArrayList<String> _path ) {
+	public SetPath(ArrayList<String> _path) {
 		this.path = _path;
 	}
 	
 	@Override
 	public String getNextDirection() {
-		
-		if( path.size() == 0 ) { return null; }
-		
-		String direction = this.path.get( 0 ); this.path.remove( 0 );
-		return direction;
+		synchronized (path) {
+			if( path.size() == 0 ) { return null; }
+			
+			String direction = this.path.get( 0 ); this.path.remove( 0 );
+			return direction;
+		}
 	}
 
 	@Override
