@@ -1,4 +1,3 @@
-package warehouse.nxt;
 
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
@@ -45,6 +44,7 @@ public class RobotDisplay implements DisplayInterface {
 	public RobotDisplay(String robotName, int xCo, int yCo) {
 		this.robotName = robotName;
 		this.jobName = "None";
+
 		this.xCo = xCo;
 		this.yCo = yCo;
 
@@ -58,8 +58,8 @@ public class RobotDisplay implements DisplayInterface {
 	 * = Integer.parseInt(data[5]); }
 	 */
 	public static void main(String[] args) {
-		//RobotDisplay display = new RobotDisplay("BOT1", "Job", 6, 5, 24, 40); //for testing
-		RobotDisplay display = new RobotDisplay("BOT1", 24, 40);
+		RobotDisplay display = new RobotDisplay("BOT1", "Job", 6, 5, 24, 40); //for testing
+		//RobotDisplay display = new RobotDisplay("BOT1", 24, 40);
 		display.show();
 	}
 
@@ -68,6 +68,7 @@ public class RobotDisplay implements DisplayInterface {
 	 */
 	public void show() {
 		Sound.setVolume(Sound.VOL_MAX / 4);
+		
 		g = new Graphics();
 
 		// draws the home screen
@@ -112,6 +113,19 @@ public class RobotDisplay implements DisplayInterface {
 		g.setFont(Font.getDefaultFont());
 		drawPickUpMenu(counter);
 
+		// None means that there is no job so set up the robot first.
+		if (jobName.equals("None")) {
+			g.clear();
+			g.drawString("Please set", 49, 20, Graphics.HCENTER);
+			g.drawString("me up", 49, 40, Graphics.HCENTER);
+			
+			while (!Button.ENTER.isDown()) {
+				Delay.msDelay(200);
+			}
+			action = 4;
+			return;
+		}
+		
 		this.inPickUp = true;
 		if (inPickUp) {
 			// just for testing now.. Press ENTER to submit item.
@@ -216,8 +230,8 @@ public class RobotDisplay implements DisplayInterface {
 		while (inDropOff) {
 			g.drawRect(15, 10, 70, 40);
 			g.drawString("Unload me!", 49, 25, Graphics.HCENTER);
-			Delay.msDelay(1000);
-			g.drawString("Press ENTER", 49, 40, Graphics.HCENTER);
+//			Delay.msDelay(1000);
+//			g.drawString("Press ENTER", 49, 40, Graphics.HCENTER);
 			// Press ENTER to unload items
 			if (Button.ENTER.isDown()) {
 				this.inDropOff = false;
@@ -340,7 +354,8 @@ public class RobotDisplay implements DisplayInterface {
 	}
 
 	public void setJobName(String value) {
-		jobName = value;
+			jobName = value;			
+			
 	}
 
 	public void setQuantity(int value) {
