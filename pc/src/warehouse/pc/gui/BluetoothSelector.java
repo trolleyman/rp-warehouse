@@ -11,6 +11,7 @@ import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
 import warehouse.pc.shared.MainInterface;
+import warehouse.pc.shared.Robot;
 
 @SuppressWarnings("serial")
 public class BluetoothSelector extends JComboBox<String> implements Runnable {
@@ -75,6 +76,8 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 						"Could not connect to " + info.name + " (" + info.deviceAddress + ").",
 						"Connection Error",
 						JOptionPane.WARNING_MESSAGE);
+				} else {
+					MainInterface.get().updateRobot(new Robot(info.name, info.deviceAddress, 0, 0, 0));
 				}
 			});
 			t.start();

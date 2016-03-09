@@ -1,6 +1,7 @@
 package warehouse.pc.shared;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
@@ -21,6 +22,9 @@ public class RobotManager implements IRobotManager, RobotListener {
 	HashMap<Robot, LinkedBlockingQueue<String>> robotMessages = new HashMap<>();
 	MainInterface mi;
 	
+	ArrayList<Robot> robotsToAdd = new ArrayList<>();
+	ArrayList<Robot> robotsToRemove = new ArrayList<>();
+	
 	boolean running;
 	private boolean nextStepRecalculate;
 	
@@ -35,11 +39,44 @@ public class RobotManager implements IRobotManager, RobotListener {
 		doRecalculate();
 		nextStepRecalculate = false;
 		running = true;
+		
 		while (running) {
-			System.out.println("Robot Manager: Stepping system.");
+			boolean sleep = false;
+			if (!robotJobs.isEmpty()) {
+				System.out.println("Robot Manager: Stepping system.");
+			} else {
+				//System.out.println("Robot Manager: No robots to manage.");
+			}
+			
 			step();
+			synchronized (this) {
+				for (Robot robot : robotsToAdd) {
+					robotJobs.put(robot, new ArrayDeque<>());
+					robotCommands.put(robot, new CommandQueue());
+					robotMessages.put(robot, new LinkedBlockingQueue<>());
+				}
+				robotsToAdd.clear();
+				for (Robot robot : robotsToRemove) {
+					robotJobs.remove(robot);
+					robotCommands.remove(robot);
+					robotMessages.remove(robot);
+				}
+				
+				if (robotCommands.isEmpty())
+					sleep = true;
+			}
+			
+			try {
+				if (sleep)
+					Thread.sleep(500);
+			} catch (InterruptedException e) {
+				
+			}
+			
 			// TODO: Call doRecalculate if there are robots without jobs.
-			System.out.println("Robot Manager: Recalculating Paths...");
+			if (!robotCommands.isEmpty())
+				System.out.println("Robot Manager: Recalculating Paths...");
+			
 			if (nextStepRecalculate)
 				doRecalculate();
 		}
@@ -64,14 +101,21 @@ public class RobotManager implements IRobotManager, RobotListener {
 		}
 		
 		// Calculate commands
-		// TODO: Sort out what happens to robots that already have commands. Probably just ignore them.
-		RoutePlanner planner = new RoutePlanner(mi.getMap(), Robot.MAX_WEIGHT, robotJobs, mi.getDropList().getList());
+		// Ignore robots that already have commands.
+		HashMap<Robot, LinkedList<Job>> robotEmptyCommandJobs = new HashMap<>();
+		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
+			if (e.getValue().getCommands().isEmpty()) {
+				robotEmptyCommandJobs.put(e.getKey(), new LinkedList<>(robotJobs.get(e.getKey())));
+			}
+		}
+		RoutePlanner planner = new RoutePlanner(mi.getMap(), Robot.MAX_WEIGHT, robotEmptyCommandJobs, mi.getDropList().getList());
 		for (Entry<Robot, CommandQueue> robotCommand : robotCommands.entrySet()) {
 			CommandQueue commands = planner.getCommands(robotCommand.getKey());
 			if (commands != null) {
 				robotCommand.setValue(commands);
 			}
 		}
+		nextStepRecalculate = false;
 	}
 
 	/**
@@ -81,6 +125,7 @@ public class RobotManager implements IRobotManager, RobotListener {
 	private void step() {
 		// TODO: Update the position of the robots.
 		HashMap<String, LinkedBlockingDeque<String>> robotRecieved = new HashMap<>();
+		//HashMap<Robot, Direction> newRobotDirections = new HashMap<>();
 		
 		MessageListener listener = new MessageListener() {
 			@Override
@@ -91,16 +136,20 @@ public class RobotManager implements IRobotManager, RobotListener {
 		mi.getServer().addListener(listener);
 		
 		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
-			robotRecieved.put(e.getKey().getName(), new LinkedBlockingDeque<>());
 			CommandQueue q = e.getValue();
-			Command com = q.getCommands().removeFirst();
+			Command com = q.getCommands().peekFirst();
 			if (com == null) {
 				com = Command.WAIT;
+			} else {
+				q.getCommands().pop();
+				robotRecieved.put(e.getKey().getName(), new LinkedBlockingDeque<>());
 			}
 			mi.getServer().sendToRobot(e.getKey().getName(), com.toString());
 		}
 		
-		System.out.println("RobotManager: Waiting for robots to reply 'ready'...");
+		if (!robotCommands.isEmpty())
+			System.out.println("Robot Manager: Waiting for robots to reply 'ready'...");
+		
 		for (Entry<String, LinkedBlockingDeque<String>> e : robotRecieved.entrySet()) {
 			String msg = null;
 			while (msg == null || !msg.equals("ready")) {
@@ -127,19 +176,19 @@ public class RobotManager implements IRobotManager, RobotListener {
 	
 	@Override
 	public void robotAdded(Robot _r) {
-		// TODO: synchronize these with the step() thing - add into a seperate robotToAdd queue?
-		robotJobs.put(_r, new ArrayDeque<>());
-		robotCommands.put(_r, new CommandQueue());
-		robotMessages.put(_r, new LinkedBlockingQueue<>());
-		recalculate();
+		synchronized (this) {
+			System.out.println(_r.getIdentity() + " added to Robot Manager queue.");
+			robotsToAdd.add(_r);
+			recalculate();
+		}
 	}
 	
 	@Override
 	public void robotRemoved(Robot _r) {
-		// TODO: Be more graceful in removing a robot - wait for step maybe?
-		robotJobs.remove(_r);
-		robotCommands.remove(_r);
-		robotMessages.remove(_r);
-		recalculate();
+		synchronized (this) {
+			System.out.println(_r.getIdentity() + " removed from Robot Manager queue.");
+			robotsToRemove.add(_r);
+			recalculate();
+		}
 	}
 }

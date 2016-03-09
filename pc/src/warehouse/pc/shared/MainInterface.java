@@ -74,6 +74,7 @@ public class MainInterface {
 		jobSelector = new JobSelector(locList, itemList, jobList, dropList);
 		
 		robotManager = new RobotManager();
+		this.addRobotListener(robotManager);
 	}
 	
 	/**
