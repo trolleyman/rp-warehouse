@@ -40,7 +40,9 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 		this.addItem(SEARCHING);
 		
 		// Debug
-		NXTInfo info = new NXTInfo(NXTCommFactory.BLUETOOTH, "Bot Lee", "001653155F9C");
+		// Bot Lee - 001653155F9C
+		// Obama - 0016531B550D
+		NXTInfo info = new NXTInfo(NXTCommFactory.BLUETOOTH, "Obama", "0016531B550D");
 		{boolean result = MainInterface.get().getServer().open(info);
 		openingConnection = false;
 		if (!result) {
@@ -51,7 +53,6 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 		} else {
 			MainInterface.get().updateRobot(new Robot(info.name, info.deviceAddress, 0, 0, 0));
 		}}
-		
 		
 		Thread t = new Thread(this);
 		t.setDaemon(true);

@@ -43,8 +43,8 @@ public class TrackingBehaviour implements Behavior {
 			double error = right - left;
 			final double k = 5.0;
 			
-			System.out.println("e:" + error);
-			System.out.println("o:" + ( 1 / error ) * k);
+			//System.out.println("e:" + error);
+			//System.out.println("o:" + ( 1 / error ) * k);
 			
 			this.pilot.travelArc( ( 1 / error ) * k, 0.1, true );
 			
