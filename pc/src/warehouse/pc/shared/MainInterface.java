@@ -8,7 +8,9 @@ import rp.robotics.mapping.MapUtils;
 import warehouse.pc.bluetooth.BTServer;
 import warehouse.pc.job.DropList;
 import warehouse.pc.job.ItemList;
+import warehouse.pc.job.JobHandler;
 import warehouse.pc.job.JobList;
+import warehouse.pc.job.JobSelector;
 import warehouse.pc.job.LocationList;
 import warehouse.pc.shared.Robot;
 
@@ -40,6 +42,7 @@ public class MainInterface {
 	private Map map;
 	private HashSet<Robot> robots;
 	private BTServer server;
+	private JobSelector jobSelector;
 	
 	private RobotManager robotManager;
 	
@@ -67,6 +70,8 @@ public class MainInterface {
 //		}
 		jobList = new JobList("jobs.csv", itemList);
 		dropList = new DropList("drops.csv");
+		
+		jobSelector = new JobSelector(locList, itemList, jobList, dropList);
 		
 		robotManager = new RobotManager();
 	}
@@ -97,6 +102,13 @@ public class MainInterface {
 	 */
 	public ItemList getItemList() {
 		return itemList;
+	}
+	
+	/**
+	 * Returns the singleton instance of the JobSelector
+	 */
+	public JobSelector getJobSelector() {
+		return jobSelector;
 	}
 	
 	/**

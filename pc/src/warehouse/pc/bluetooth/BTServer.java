@@ -174,7 +174,7 @@ public class BTServer {
 		System.out.println("Send " + message + " to " + robotName);
 		toRobotQueues.get(robotName).offer(message);
 	}
-
+	
 	/**
 	 * Add a listener to a specific robot.
 	 * 
@@ -184,7 +184,7 @@ public class BTServer {
 	public void addListener(String robotName, MessageListener listener) {
 		receivers.get(robotName).addMessageListener(listener);
 	}
-
+	
 	/**
 	 * Add a listener to all robots connected.
 	 * 
@@ -198,5 +198,11 @@ public class BTServer {
 
 	public static Object getLock() {
 		return btLock;
+	}
+
+	public void removeListener(MessageListener listener) {
+		for (Entry<String, ServerReceiver> entry : receivers.entrySet()) {
+			entry.getValue().removeMessageListener(listener);
+		}
 	}
 }

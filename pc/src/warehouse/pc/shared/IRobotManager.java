@@ -13,12 +13,6 @@ public interface IRobotManager extends Runnable, RobotListener {
 	public void run();
 	
 	/**
-	 * Run one step of the system.
-	 * i.e. Move robots and wait for their reply. Sort out localisation stuff as well.
-	 */
-	void step();
-	
-	/**
 	 * Causes the RobotManager to recalculate it's plans
 	 */
 	public void recalculate();

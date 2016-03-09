@@ -75,4 +75,8 @@ public class ServerReceiver implements Runnable {
 			l.newMessage(robotName, message);
 		}
 	}
+
+	public void removeMessageListener(MessageListener listener) {
+		listeners.remove(listener);
+	}
 }
