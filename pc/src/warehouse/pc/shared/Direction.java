@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import warehouse.shared.Command;
+
 /**
  * Directions relative to the x and y axes of the map
  */
@@ -74,9 +76,6 @@ public enum Direction {
 		for (Command b : bearings) {
 			int turn = 0;
 			switch (b) {
-			case FORWARD:
-				turn = 0;
-				break;
 			case RIGHT:
 				turn = 1;
 				break;
@@ -85,6 +84,13 @@ public enum Direction {
 				break;
 			case LEFT:
 				turn = 3;
+				break;
+			case WAIT:
+			case PICK:
+			case DROP:
+			case FORWARD:
+			default:
+				turn = 0;
 				break;
 			}
 			

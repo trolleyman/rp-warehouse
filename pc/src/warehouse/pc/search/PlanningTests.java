@@ -15,11 +15,11 @@ import org.junit.Test;
 import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
-import warehouse.pc.shared.Command;
 import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.TestMaps;
+import warehouse.shared.Command;
 import warehouse.pc.shared.Robot;
 
 /**

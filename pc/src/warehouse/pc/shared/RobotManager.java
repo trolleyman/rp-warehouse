@@ -12,9 +12,9 @@ import java.util.concurrent.TimeUnit;
 
 import warehouse.pc.bluetooth.MessageListener;
 import warehouse.pc.job.Job;
-import warehouse.pc.job.JobHandler;
 import warehouse.pc.job.JobSelector;
 import warehouse.pc.search.RoutePlanner;
+import warehouse.shared.Command;
 
 public class RobotManager implements IRobotManager, RobotListener {
 	HashMap<Robot, ArrayDeque<Job>> robotJobs = new HashMap<>();
@@ -88,6 +88,10 @@ public class RobotManager implements IRobotManager, RobotListener {
 	private void doRecalculate() {
 		JobSelector js = mi.getJobSelector();
 		
+		if (robotJobs.isEmpty()) {
+			return;
+		}
+		
 		// Calculate jobs
 		for (Entry<Robot, ArrayDeque<Job>> e : robotJobs.entrySet()) {
 			Robot robot = e.getKey();
@@ -109,6 +113,7 @@ public class RobotManager implements IRobotManager, RobotListener {
 			}
 		}
 		RoutePlanner planner = new RoutePlanner(mi.getMap(), Robot.MAX_WEIGHT, robotEmptyCommandJobs, mi.getDropList().getList());
+		planner.computeCommands();
 		for (Entry<Robot, CommandQueue> robotCommand : robotCommands.entrySet()) {
 			CommandQueue commands = planner.getCommands(robotCommand.getKey());
 			if (commands != null) {

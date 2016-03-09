@@ -3,12 +3,9 @@ package warehouse.pc.shared;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import rp.robotics.mapping.GridMap;
-import rp.robotics.mapping.MapUtils;
 import warehouse.pc.bluetooth.BTServer;
 import warehouse.pc.job.DropList;
 import warehouse.pc.job.ItemList;
-import warehouse.pc.job.JobHandler;
 import warehouse.pc.job.JobList;
 import warehouse.pc.job.JobSelector;
 import warehouse.pc.job.LocationList;

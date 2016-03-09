@@ -8,12 +8,12 @@ import java.util.Map.Entry;
 import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
-import warehouse.pc.shared.Command;
 import warehouse.pc.shared.CommandQueue;
 import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.Robot;
+import warehouse.shared.Command;
 
 /**
  * Class to create lists of bearings for individual robots to take
