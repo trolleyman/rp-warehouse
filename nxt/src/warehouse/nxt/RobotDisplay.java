@@ -23,15 +23,15 @@ public class RobotDisplay implements DisplayInterface {
 
 	// Information passed though about the robot's job and location
 	private String robotName;
-	private int quantity;
 	private String jobName;
+	private int quantity;
 	private int weight;
 	private int yCo;
 	private int xCo;
 
 	// for drawing
 	int action = 0;
-//For testing without client info (test values)
+	//For testing without client info (test values)
 	public RobotDisplay(String robotName, String jobName, int weight, int quantity, int xCo, int yCo) {
 		this.robotName = robotName;
 		this.jobName = jobName;
@@ -107,19 +107,21 @@ public class RobotDisplay implements DisplayInterface {
 		this.quantity = quantity;
 		this.weight = weight;
 		Sound.beepSequenceUp();
-		this.inPickUp = true;
-		g.setFont(Font.getDefaultFont());
+
 		// draws the screen during loading phase
+		g.setFont(Font.getDefaultFont());
 		drawPickUpMenu(counter);
 
+		this.inPickUp = true;
 		if (inPickUp) {
-			// just for testing now.. Press ENTER to load item.
+			// just for testing now.. Press ENTER to submit item.
 			while (!Button.ENTER.isDown()) {
 
+				// override escape button that exits the pick up phase
 				if (Button.ESCAPE.isDown()) {
 					g.clear();
 					g.setFont(Font.getLargeFont());
-					this.inPickUp = false;
+					this.inPickUp = false; 
 					g.drawString("At", 49, 6, Graphics.HCENTER);
 					g.drawString("Wrong", 49, 23, Graphics.HCENTER);
 					g.drawString("Location!", 49, 39, Graphics.HCENTER);
@@ -129,33 +131,36 @@ public class RobotDisplay implements DisplayInterface {
 					g.clear();
 					counter = -1;
 					break;
-
 				}
+				// increases the load
 				if (Button.RIGHT.isDown()) {
 					g.clear();
 					g.drawRect(5, 5, 90, 45);
 					Sound.playTone(1000, 200);
-					; // Added beeping sound
+					// Added beeping sound
 					if (counter < (50 / weight)) {
 						counter++;
 						drawPickUpUpdate(counter);
 						Delay.msDelay(250);
 					} else {
+						// can't load above the limit
 						Sound.buzz();
 						drawPickUpUpdate(counter);
 						Delay.msDelay(250);
 					}
 				}
+				// decreases the load
 				if (Button.LEFT.isDown()) {
 					g.clear();
 					g.drawRect(5, 5, 90, 45);
 					Sound.playTone(500, 200);
-					; // Added beeping sound
+					// Added beeping sound
 					if (counter > 0) {
 						counter--;
 						drawPickUpUpdate(counter);
 						Delay.msDelay(250);
 					} else {
+						// can't load below zero items
 						Sound.buzz();
 						drawPickUpUpdate(counter);
 						Delay.msDelay(250);
@@ -167,16 +172,14 @@ public class RobotDisplay implements DisplayInterface {
 			// Robot will check if items are loaded properly, and replies
 			// accordingly.
 			if (counter < 0) {
-
 				drawMainMenuUpdate();
 			} else {
-
 				g.setFont(Font.getLargeFont());
 				if (counter == quantity) {
+					this.inPickUp = false;
 					g.clear();
 					g.drawString("Thank", 49, 15, Graphics.HCENTER);
 					g.drawString("You!", 49, 31, Graphics.HCENTER);
-					this.inPickUp = false;
 					Sound.beepSequenceUp();
 					Delay.msDelay(2000);
 					g.clear();
@@ -199,8 +202,6 @@ public class RobotDisplay implements DisplayInterface {
 					pickUp(quantity, weight);
 				}
 			}
-
-			// counter = 0;
 		}
 	}
 
@@ -214,19 +215,20 @@ public class RobotDisplay implements DisplayInterface {
 
 		while (inDropOff) {
 			g.drawRect(15, 10, 70, 40);
-			g.drawString("Unload me!", 20, 25, 0);
-
-			// just for testing now.. Press ENTER to unload items
+			g.drawString("Unload me!", 49, 25, Graphics.HCENTER);
+			Delay.msDelay(1000);
+			g.drawString("Press ENTER", 49, 40, Graphics.HCENTER);
+			// Press ENTER to unload items
 			if (Button.ENTER.isDown()) {
 				this.inDropOff = false;
 				g.clear();
 				g.setFont(Font.getLargeFont());
 				g.drawString("You're", 49, 15, Graphics.HCENTER);
 				g.drawString("Welcome!", 49, 31, Graphics.HCENTER);
-				g.setFont(Font.getDefaultFont());
-				completedJobs++;
 				Sound.beepSequenceUp();
 				Delay.msDelay(2000);
+				g.setFont(Font.getDefaultFont());
+				completedJobs++;
 				g.clear();
 			}
 			Thread.yield();
@@ -317,12 +319,11 @@ public class RobotDisplay implements DisplayInterface {
 	}
 
 	private void drawPickUpUpdate(int counter) {
-		// How many items are needed to be loaded
 		g.drawString("Required : " + String.valueOf(quantity), 10, 10, 0);
-		//
 		g.drawString("Loaded   : " + String.valueOf(counter), 10, 20, 0);
 		g.drawString("W / item : " + String.valueOf(weight), 10, 30, 0);
 		g.drawString("MaxLoad  : " + String.valueOf(50 / weight), 10, 40, 0);
+		// Some arrows to indicate increase or decrease load
 		g.drawString("+", 75, 54, 0);
 		g.drawString("-", 20, 54, 0);
 		g.drawString(" ->", 80, 54, 0);
