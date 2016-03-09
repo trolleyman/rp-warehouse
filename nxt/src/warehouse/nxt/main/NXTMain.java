@@ -17,7 +17,7 @@ import warehouse.nxt.utils.Robot;
  * Type: Class
  * Name: NXTMain
  * Author: Denis Makula
- * Description: What will be runned on the Robot, this class is supposed to connect with the PC trigger 2 threads, 
+ * Description: What will be runned on the Robot, this class is supposed to connect with the PC trigger 2 threads,
  *              one sends data to the PC one receives data from the PC. Both either check for changes inside Robot,
  *              or produce changes inside Robot so that the one which checks will be notified.
  * 
@@ -29,9 +29,9 @@ public class NXTMain {
 
 	private BTConnection connection;		// Bluetooth connection wrapper
 	private DataInputStream fromPC;			// Input Stream from PC
-	private DataOutputStream toPC;			// Output Stream to PC 
+	private DataOutputStream toPC;			// Output Stream to PC
 	private Robot myself;					// Robot Object Instance for this robot
-		
+	
 	private NXTReceiver receiver;			// Receiver thread
 	private NXTSender sender;				// Sender thread
 	
