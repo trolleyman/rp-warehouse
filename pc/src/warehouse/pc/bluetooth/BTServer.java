@@ -19,7 +19,6 @@ import lejos.pc.comm.NXTInfo;
 public class BTServer {
 
 	public static int btProtocol;
-	private NXTComm comm;
 
 	private static final long TIMEOUT_MILLIS = 5000;
 	private Boolean openSuccess = false;
@@ -39,15 +38,7 @@ public class BTServer {
 	 * the maps of queues.
 	 */
 	public BTServer() {
-		// Create the comms system for this OS and driver
 		btProtocol = NXTCommFactory.BLUETOOTH;
-
-		try {
-			comm = NXTCommFactory.createNXTComm(btProtocol);
-		} catch (NXTCommException e) {
-			e.printStackTrace();
-			System.err.println("Could not open the btCommunication");
-		}
 
 		commandMap = new HashMap<>();
 		executer = new RouteExecuter(this, commandMap);
@@ -72,7 +63,10 @@ public class BTServer {
 		DataOutputStream toRobot = null;
 		DataInputStream fromRobot = null;
 		
+		NXTComm comm = null;
+		
 		try {
+			comm = NXTCommFactory.createNXTComm(btProtocol);
 			if (comm.open(nxt)) {
 				toRobot = new DataOutputStream(comm.getOutputStream());
 				fromRobot = new DataInputStream(comm.getInputStream());
