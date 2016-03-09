@@ -5,13 +5,13 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.Rectangle2D.Double;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
@@ -53,15 +53,15 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 	public void paintComponent(Graphics _g) {
 		Toolkit.getDefaultToolkit().sync();
 		Graphics2D g2 = (Graphics2D) _g.create();
-		double sf = Math.min((double) getWidth() / map.getWidth(),
-						     (double) getHeight() / map.getHeight());
+		double sf = Math.min((double) getWidth() / map.getBounds().getWidth(),
+						     (double) getHeight() / map.getBounds().getHeight());
 		int padding = (int) (20.0 * (sf * 0.025));
-		int width = (int) (getWidth() - padding * 2.5);
-		int height = (int) (getHeight() - padding * 2.1);
+		int width = (int) (getWidth() - padding * 2);
+		int height = (int) (getHeight() - padding * 2);
 		
 		locList = mi.getLocationList();
-		int mapWidth = map.getWidth() - 1;
-		int mapHeight = map.getHeight() - 1;
+		double mapWidth = map.getBounds().getWidth();
+		double mapHeight = map.getBounds().getHeight();
 		
 		xScale = width / mapWidth;
 		yScale = height / mapHeight;
@@ -76,11 +76,18 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 		AffineTransform at = new AffineTransform();
 		at.setToScale(1.0, -1.0);
 		
-		xTrans = padding * 1.75;
-		yTrans = padding * 0.5 + yScale * mapHeight;
-		g2.translate(padding * 1.75, padding * 0.5);
-		g2.translate(0.0, yScale * mapHeight);
+		xTrans = padding * 2;
+		yTrans = padding * 0 + yScale * mapHeight;
+		g2.translate(xTrans, yTrans);
 		g2.transform(at);
+		
+		// Debugging code for bounds checking
+		// g2.setColor(Color.GREEN);
+		// Rectangle.Double bounds = map.getBounds();
+		// g2.drawRect((int) (bounds.getMinX() * xScale),
+		// 		(int) (bounds.getMinY() * yScale),
+		// 		(int) (bounds.getWidth() * xScale),
+		// 		(int) (bounds.getHeight() * yScale));
 		
 		paintGrid(g2);
 		paintJunctions(g2);
@@ -214,7 +221,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 		Rectangle2D.Double[] walls = map.getWalls();
 		_g2.setColor(Color.RED);
 		
-		for (Double wall : walls) {
+		for (Rectangle.Double wall : walls) {
 			double minX = wall.getMinX();
 			double minY = wall.getMinY();
 			double maxX = wall.getMaxX();
