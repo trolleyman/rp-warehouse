@@ -64,7 +64,10 @@ public class NXTMotion {
 		int distance_one = this.eyes.getDistance();
 		int distance_two = this.eyes.getDistance();
 		
-		while( ( distance_one - distance_two ) > THRESHOLD ) { distance_one = distance_two; distance_two = this.eyes.getDistance(); }
+		while( ( distance_one - distance_two ) > THRESHOLD ) {
+			distance_one = distance_two;
+			distance_two = this.eyes.getDistance();
+		}
 		
 		return ( int ) Math.ceil( ( distance_one + distance_two ) / 2 );
 	}

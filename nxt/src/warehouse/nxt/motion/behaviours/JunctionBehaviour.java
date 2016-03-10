@@ -9,7 +9,7 @@ import warehouse.nxt.motion.PathProvider;
 
 
 public class JunctionBehaviour implements Behavior {
-	private static final double THRESHOLD = 70.0;
+	private static final double THRESHOLD = 65.0;
 	private static final double TURNING_OFFSET = 0.07;
 	
 	private LightSensorCalibration calibration;

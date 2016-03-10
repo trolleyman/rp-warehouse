@@ -97,10 +97,22 @@ public class NXTReceiver extends Thread {
 	//        Do: Drop Off
 	private void action( String[] _action ) {
 		switch( _action[ 0 ] ) {
-			case "Shut Down"  : this.connection.close(); throwError("Shut Down"); break;
-			case "Pick Up"	  : this.myself.status = "Picking Items"; this.robotInterface.pickUp( Integer.parseInt( _action[ 1 ] ), Float.parseFloat( _action[ 2 ] ) ); this.myself.status = "Picked " + Integer.parseInt( _action[ 1 ] ); break;
-			case "Drop Off"   : this.robotInterface.dropOff(); this.myself.status = "Finished"; break;
-			default           : this.throwError( "NXTReceiver: Unknown data format received after 'Do: '." ); break;
+			case "Shut Down"  :
+				this.connection.close();
+				throwError("Shut Down");
+				break;
+			case "Pick Up"	  :
+				this.myself.status = "Picking Items";
+				this.robotInterface.pickUp( Integer.parseInt( _action[ 1 ] ), Float.parseFloat( _action[ 2 ] ) );
+				this.myself.status = "Picked " + Integer.parseInt( _action[ 1 ] );
+				break;
+			case "Drop Off"   :
+				this.robotInterface.dropOff();
+				this.myself.status = "Finished";
+				break;
+			default           :
+				this.throwError( "NXTReceiver: Unknown data format received after 'Do: '." );
+				break;
 		}
 	}
 	
@@ -131,7 +143,9 @@ public class NXTReceiver extends Thread {
 			this.myself.status = "Moving Backward";
 			this.robotMotion.go( "Backward", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) );
 			break;
-		default 		: this.throwError( "NXTReceiver: Unknown data format received after 'Go: '." ); break;
+		default 		:
+			this.throwError( "NXTReceiver: Unknown data format received after 'Go: '." );
+			break;
 		}
 	}
 	
