@@ -202,14 +202,14 @@ public class RoutePlanner {
 					goal = item.getJunction();
 					directList = finder.findRoute(start, goal, facing);
 					list = finder.getActualDirections(directList, facing);
-						
+					
 					Float newWeight = weights.get(robot) + quantity * item.getWeight();
 					weights.put(robot, newWeight);
 					/*System.out.println("item: " + start + " to " + goal);
 					System.out.println(directList);
 					System.out.println(list);*/
 					pairedCommands.get(robot).addCommandList(list);
-					pairedCommands.get(robot).addCommand(Command.PICK);
+					pairedCommands.get(robot).addCommand(Command.pickUp(quantity, item.getWeight()));
 					
 					// this should be updated by the robot, here for testing purposes
 					
@@ -217,7 +217,7 @@ public class RoutePlanner {
 					robot.setY(goal.getY());
 					
 					if(directList.size() != 0){
-					robot.setDirection(directList.get(directList.size() - 1));
+						robot.setDirection(directList.get(directList.size() - 1));
 					}
 					
 					

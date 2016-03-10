@@ -9,7 +9,7 @@ import warehouse.nxt.motion.PathProvider;
 
 
 public class JunctionBehaviour implements Behavior {
-	private static final double THRESHOLD = 90.0;
+	private static final double THRESHOLD = 70.0;
 	private static final double TURNING_OFFSET = 0.07;
 	
 	private LightSensorCalibration calibration;
@@ -25,11 +25,11 @@ public class JunctionBehaviour implements Behavior {
 	}
 	
 	private boolean leftOnLine() {
-		return ( Math.abs( this.calibration.leftSensor .readNormalizedValue() - this.calibration.lDark ) < THRESHOLD );
+		return this.calibration.leftSensor .readValue() < THRESHOLD;
 	}
 	
 	private boolean rightOnLine() {
-		return ( Math.abs( this.calibration.rightSensor.readNormalizedValue() - this.calibration.rDark ) < THRESHOLD );
+		return this.calibration.rightSensor.readValue() < THRESHOLD;
 	}
 	
 	@Override

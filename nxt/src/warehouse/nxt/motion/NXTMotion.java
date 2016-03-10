@@ -35,7 +35,7 @@ public class NXTMotion {
 
 		this.provider = new SetPath(moves);
 		
-		WheeledRobotConfiguration config = new WheeledRobotConfiguration( 0.056f, 0.111f, 0.111f, Motor.B, Motor.A );
+		WheeledRobotConfiguration config = new WheeledRobotConfiguration( 0.056f, 0.111f, 0.111f, Motor.C, Motor.B );
 		DifferentialDriveRobot robot = new DifferentialDriveRobot( config );
 		DifferentialPilot pilot = robot.getDifferentialPilot();
 		LightSensor left =  new LightSensor( SensorPort.S3 );

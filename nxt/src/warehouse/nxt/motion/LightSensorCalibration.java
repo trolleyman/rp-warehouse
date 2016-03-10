@@ -25,11 +25,17 @@ public class LightSensorCalibration {
 		this.lLight = this.leftSensor.readNormalizedValue();
 		this.rLight = this.rightSensor.readNormalizedValue();
 		this.mLight = this.middleSensor.readNormalizedValue();
+		this.leftSensor.calibrateHigh();
+		this.rightSensor.calibrateHigh();
+		this.middleSensor.calibrateHigh();
 		
 		System.out.println( "ENTER in dark area" );
 		Button.waitForAnyPress();
 		this.lDark = this.leftSensor.readNormalizedValue();
 		this.rDark = this.rightSensor.readNormalizedValue();
 		this.mDark = this.middleSensor.readNormalizedValue();
+		this.leftSensor.calibrateLow();
+		this.rightSensor.calibrateLow();
+		this.middleSensor.calibrateLow();
 	}
 }

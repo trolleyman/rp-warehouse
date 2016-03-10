@@ -33,13 +33,10 @@ public class TrackingBehaviour implements Behavior {
 		this.pilot.setTravelSpeed( 0.1 );
 		
 		Sound.setVolume( 100 );
-		
-		double calibrationError = ( this.calibration.rLight - this.calibration.lLight) / 2.0;
-		 
+				 
 		while( !stop ) {
-			
-			double left = this.calibration.leftSensor.readNormalizedValue() - calibrationError;
-			double right = this.calibration.rightSensor.readNormalizedValue() + calibrationError;
+			double left = this.calibration.leftSensor.getLightValue();
+			double right = this.calibration.rightSensor.getLightValue();
 			double error = right - left;
 			final double k = 5.0;
 			

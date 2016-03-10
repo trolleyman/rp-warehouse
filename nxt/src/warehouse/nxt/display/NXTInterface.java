@@ -28,7 +28,7 @@ public class NXTInterface {
 	private String robotName;				// Information passed though about the robot's job and location
 	private int quantity;
 	private String jobName;
-	private int weight;
+	private float weight;
 	private int y;
 	private int x;
 
@@ -86,7 +86,7 @@ public class NXTInterface {
 	}
 
 	// displays Pick Up Interface
-	public void pickUp( int _quantity, int _weight ) {
+	public void pickUp( int _quantity, float _weight ) {
 		
 		this.inPickUp = true;
 		
