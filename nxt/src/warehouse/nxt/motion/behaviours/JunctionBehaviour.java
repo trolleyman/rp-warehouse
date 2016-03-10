@@ -47,6 +47,7 @@ public class JunctionBehaviour implements Behavior {
 	@Override
 	public void action() {
 		String direction = this.provider.getNextDirection();
+		pilot.setRotateSpeed(70.0);
 		//System.out.println("Jct:" + direction);
 		
 		if (direction == null)
