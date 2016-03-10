@@ -10,6 +10,14 @@ import java.util.ArrayList;
  * Some junctions can be disabled by being blocked by walls, that are calculated in the constructor.
  */
 public class Map {
+	//sensorOffset is the displacement between the center 
+	//of the robot and the sensor, measured as positive in the forward direction of the robot
+	private final int sensorOffset;
+
+	//allowedError is the threshold for deciding if a robot is in a certain position. used when
+	//comparing the raw distanced recieved by the robot sensors and the expected distance.
+	private final int allowedError;
+
 	private Junction[][] js;
 	private ArrayList<Line2D> grid;
 	private Rectangle.Double[] walls;
@@ -225,4 +233,39 @@ public class Map {
 		
 		return new Point2D.Double(toX, toY);
 	}
+
+	/**
+	 *Gets a list of the possible positions the robot could be in based on it's current position and facing direction
+	 *Returns an arraylist of integer arrays of size 3. [x_coord,y_coord,angle(degrees)]
+	 */
+	public ArrayList<Integer[]> possiblePositions(int distanceRecieved)
+	{
+		ArrayList<Integer[]> positions = new ArrayList<Integer[]>();
+		for (int i = 0;i < width;i++)
+		{
+			for (int j = 0; j < height; j++)
+			{
+				for (int k = 0; k < 361;k+=90)
+				{
+					if (Math.abs((distanceRecieved + sensorOffset) - getRangeAt(width,height,k)) < allowedError)
+					{
+						int[] pos = new Int[3];
+						pos[0] = i;
+						pos[1] = j;
+						pos[2] = k;
+						positions.add(pos);
+					}
+				}
+			}	
+		}
+		return positions;
+	}
+
+
+
+
+
+
+
+
 }
