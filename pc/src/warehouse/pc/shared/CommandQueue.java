@@ -3,8 +3,6 @@ package warehouse.pc.shared;
 import java.util.LinkedList;
 import java.util.List;
 
-import warehouse.shared.Command;
-
 /**
  * A queue of Bearings for the robot to follow
  * @author George

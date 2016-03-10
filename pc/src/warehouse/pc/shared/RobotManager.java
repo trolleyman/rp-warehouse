@@ -12,7 +12,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import warehouse.pc.job.Job;
 import warehouse.pc.job.JobSelector;
 import warehouse.pc.search.RoutePlanner;
-import warehouse.shared.Command;
 
 public class RobotManager implements IRobotManager, RobotListener {
 	HashMap<Robot, ArrayDeque<Job>> robotJobs = new HashMap<>();
@@ -154,7 +153,7 @@ public class RobotManager implements IRobotManager, RobotListener {
 				mi.removeRobot(e.getKey());
 				continue;
 			}
-			new RobotUpdater(e.getKey(), com).run();
+			new RobotUpdater(e.getKey(), com).start();
 		}
 		
 		if (!robotCommands.isEmpty())

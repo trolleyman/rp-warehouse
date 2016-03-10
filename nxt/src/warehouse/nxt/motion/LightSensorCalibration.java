@@ -19,7 +19,7 @@ public class LightSensorCalibration {
 		this.leftSensor.setFloodlight( true );
 		this.rightSensor.setFloodlight( true );
 		this.middleSensor.setFloodlight( true );
-		
+		 
 		System.out.println( "ENTER in light area" );
 		Button.waitForAnyPress();
 		this.lLight = this.leftSensor.readNormalizedValue();
@@ -28,6 +28,7 @@ public class LightSensorCalibration {
 		this.leftSensor.calibrateHigh();
 		this.rightSensor.calibrateHigh();
 		this.middleSensor.calibrateHigh();
+		System.out.println(this.lLight + ":" + this.rLight);
 		
 		System.out.println( "ENTER in dark area" );
 		Button.waitForAnyPress();
@@ -37,5 +38,7 @@ public class LightSensorCalibration {
 		this.leftSensor.calibrateLow();
 		this.rightSensor.calibrateLow();
 		this.middleSensor.calibrateLow();
+		System.out.println(this.lDark + ":" + this.rDark);
+		Button.waitForAnyPress();
 	}
 }

@@ -6,8 +6,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import warehouse.shared.Command;
-
 /**
  * Directions relative to the x and y axes of the map
  */

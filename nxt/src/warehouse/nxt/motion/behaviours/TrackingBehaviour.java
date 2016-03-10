@@ -5,6 +5,7 @@ import lejos.robotics.navigation.DifferentialPilot;
 import lejos.robotics.subsumption.Behavior;
 import warehouse.nxt.motion.LightSensorCalibration;
 import warehouse.nxt.motion.PathProvider;
+import warehouse.shared.Constants;
 
 public class TrackingBehaviour implements Behavior {
 
@@ -30,10 +31,11 @@ public class TrackingBehaviour implements Behavior {
 	public void action() {
 		this.thread = Thread.currentThread();
 		this.stop = false;
-		this.pilot.setTravelSpeed( 0.1 );
+		this.pilot.setTravelSpeed(Constants.ROBOT_SPEED);
+		this.pilot.setRotateSpeed(Constants.ROBOT_ROTATION_SPEED);
 		
 		Sound.setVolume( 100 );
-				 
+		
 		while( !stop ) {
 			double left = this.calibration.leftSensor.getLightValue();
 			double right = this.calibration.rightSensor.getLightValue();

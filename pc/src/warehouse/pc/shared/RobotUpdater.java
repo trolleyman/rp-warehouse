@@ -1,7 +1,6 @@
 package warehouse.pc.shared;
 
-import rp.robotics.DifferentialDriveRobot;
-import warehouse.shared.Command;
+import warehouse.shared.Constants;
 
 public class RobotUpdater extends Thread {
 	private Robot robot;
@@ -19,7 +18,9 @@ public class RobotUpdater extends Thread {
 		double travelY = travel * Math.cos(robot.getFacing());
 		
 		double totalDist = Math.sqrt(travelX*travelX + travelY*travelY);
-		long finishedTime = System.nanoTime() + (long) (totalDist / speed) * 1_000_000_000L;
+		long finishedTime = System.nanoTime() + (long) ((totalDist / speed) * 1_000_000_000L);
+		System.out.println("Now     : " + System.nanoTime());
+		System.out.println("Finished: " + finishedTime);
 		
 		double startX = robot.getX();
 		double startY = robot.getY();
@@ -27,36 +28,39 @@ public class RobotUpdater extends Thread {
 		double percentDone = 0.0;
 		long start = System.nanoTime();
 		long now = System.nanoTime();
-		while ((now = System.nanoTime()) < finishedTime) {
+		while (now < finishedTime) {
 			percentDone = (start - now) / (start - finishedTime);
+			System.out.println("Precent Done: " +  percentDone);
 			
 			double dx = mi.getMap().getGridX(travelX * percentDone);
 			double dy = mi.getMap().getGridY(travelY * percentDone);
 			
 			robot.setX(startX + dx);
-			robot.setX(startY + dy);
+			robot.setY(startY + dy);
 			
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				
 			}
+			now = System.nanoTime();
 		}
 		
 		robot.setX(startX + travelX);
-		robot.setX(startY + travelY);
+		robot.setY(startY + travelY);
 	}
 	
-	public void interpolateRotate(double rotate, double rotationSpeed) {
-		long finishedTime = System.nanoTime() + (long) (rotate / rotationSpeed) * 1_000_000_000L;
+	private void interpolateRotate(double rotate, double rotationSpeed) {
+		long finishedTime = System.nanoTime() + (long) ((rotate / rotationSpeed) * 1_000_000_000L);
 		
 		double startRotate = robot.getFacing();
 		
 		double percentDone = 0.0;
 		long start = System.nanoTime();
 		long now = System.nanoTime();
-		while ((now = System.nanoTime()) < finishedTime) {
+		while (now < finishedTime) {
 			percentDone = (start - now) / (start - finishedTime);
+			System.out.println("Precent Done: " +  percentDone);
 			
 			double dr = rotate * percentDone;
 			
@@ -67,14 +71,15 @@ public class RobotUpdater extends Thread {
 			} catch (InterruptedException e) {
 				
 			}
+			now = System.nanoTime();
 		}
 		robot.setFacing(startRotate + rotate);
 	}
 	
 	@Override
 	public void run() {
-		double speed = 0.1;
-		double rotationSpeed = 70.0;
+		double speed = Constants.ROBOT_SPEED;
+		double rotationSpeed = Constants.ROBOT_ROTATION_SPEED;
 		
 		double travelBefore = 0.0;
 		double travelAfter = 0.0;

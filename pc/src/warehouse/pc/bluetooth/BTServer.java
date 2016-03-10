@@ -10,8 +10,8 @@ import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
+import warehouse.pc.shared.Command;
 import warehouse.pc.shared.Robot;
-import warehouse.shared.Command;
 
 /**
  * The BT communication "server". Can create new thread pairs for NXTs.

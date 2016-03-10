@@ -5,11 +5,12 @@ import lejos.robotics.navigation.DifferentialPilot;
 import lejos.robotics.subsumption.Behavior;
 import warehouse.nxt.motion.LightSensorCalibration;
 import warehouse.nxt.motion.PathProvider;
+import warehouse.shared.Constants;
 
 
 
 public class JunctionBehaviour implements Behavior {
-	private static final double THRESHOLD = 65.0;
+	private static final double THRESHOLD = 62.0;
 	private static final double TURNING_OFFSET = 0.07;
 	
 	private LightSensorCalibration calibration;
@@ -47,7 +48,8 @@ public class JunctionBehaviour implements Behavior {
 	@Override
 	public void action() {
 		String direction = this.provider.getNextDirection();
-		pilot.setRotateSpeed(70.0);
+		pilot.setTravelSpeed(Constants.ROBOT_SPEED);
+		pilot.setRotateSpeed(Constants.ROBOT_ROTATION_SPEED);
 		//System.out.println("Jct:" + direction);
 		
 		if (direction == null)

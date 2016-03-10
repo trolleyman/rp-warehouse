@@ -3,10 +3,10 @@ package warehouse.pc.search;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import warehouse.pc.shared.Command;
 import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.TestMaps;
-import warehouse.shared.Command;
 
 /**
  * Test class for route planning
