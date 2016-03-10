@@ -23,7 +23,6 @@ public class Robot implements Comparable<Robot> {
 		this.facing = _facing;
 		this.direction = Direction.fromFacing(facing);
 	}
-	
 	/**
 	 * Gets the robot's name
 	 */
@@ -123,5 +122,13 @@ public class Robot implements Comparable<Robot> {
 
 	public NXTInfo getNXTInfo() {
 		return new NXTInfo(NXTCommFactory.BLUETOOTH, getName(), getID());
+	}
+	
+	/**
+	 * Clones the robot
+	 */
+	@Override
+	public Robot clone() {
+		return new Robot(identity.name, identity.id, xPos, yPos, facing);
 	}
 }

@@ -117,7 +117,7 @@ public class RobotManager implements IRobotManager, RobotListener {
 		HashMap<Robot, LinkedList<Job>> robotEmptyCommandJobs = new HashMap<>();
 		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
 			if (e.getValue().getCommands().isEmpty()) {
-				robotEmptyCommandJobs.put(e.getKey(), new LinkedList<>(robotJobs.get(e.getKey())));
+				robotEmptyCommandJobs.put(e.getKey().clone(), new LinkedList<>(robotJobs.get(e.getKey())));
 			}
 		}
 		RoutePlanner planner = new RoutePlanner(mi.getMap(), Robot.MAX_WEIGHT, robotEmptyCommandJobs, mi.getDropList().getList());
@@ -140,6 +140,8 @@ public class RobotManager implements IRobotManager, RobotListener {
 		ArrayList<Robot> waitOnRobots = new ArrayList<>();
 		//HashMap<Robot, Direction> newRobotDirections = new HashMap<>();
 		
+		
+		
 		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
 			CommandQueue q = e.getValue();
 			Command com = q.getCommands().peekFirst();
@@ -150,6 +152,7 @@ public class RobotManager implements IRobotManager, RobotListener {
 				if (com.replyReady())
 					waitOnRobots.add(e.getKey());
 			}
+			new RobotUpdater(e.getKey(), com).run();
 			try {
 				mi.getServer().sendToRobot(e.getKey().getName(), com.toString());
 			} catch (IOException ex) {
