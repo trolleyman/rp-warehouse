@@ -26,8 +26,8 @@ public class TSPDistance {
 		ArrayList<ItemQuantity> res = new ArrayList<ItemQuantity>();
 		
 		int first = 0;
-		int firstValue = Integer.MAX_VALUE;
-		for(int i=0; i<items.size(); i++){
+		int firstValue = dToItem[0];
+		for(int i=1; i<items.size(); i++){
 			if(dToItem[i] < firstValue){
 				first = i;
 				firstValue = dToItem[i];
@@ -36,8 +36,6 @@ public class TSPDistance {
 		ItemQuantity firstSelected = items.get(first);
 		int totalDistance = firstValue;
 		res.add(firstSelected);
-		items.remove(firstSelected);
-
 		Object[] itemArray = items.toArray();
 		int[][] itemToItem = new int[items.size()][items.size()];
 		for(int i=0; i<items.size(); i++){
@@ -49,12 +47,13 @@ public class TSPDistance {
 		for(int i=0; i<items.size(); i++){
 			int temp = Integer.MAX_VALUE;
 			for(int j=0; j<dropLocations.size(); j++){
-				if(routeFinder.findRoute(items.get(i).getItem().getJunction(), dropLocations.get(j).getJunction(Direction.X_POS), Direction.X_POS).size() < temp){
-					temp = routeFinder.findRoute(items.get(i).getItem().getJunction(), dropLocations.get(j).getJunction(Direction.X_POS), Direction.X_POS).size();
+				if(routeFinder.findRoute(items.get(i).getItem().getJunction(), dropLocations.get(j), Direction.X_POS).size() < temp){
+					temp = routeFinder.findRoute(items.get(i).getItem().getJunction(), dropLocations.get(j), Direction.X_POS).size();
 				}
 			}
 			itemToDrop[i] = temp;
 		}
+		items.remove(firstSelected);
 		
 		while(!items.isEmpty()){
 			int next = Integer.MAX_VALUE;
@@ -104,8 +103,15 @@ public class TSPDistance {
 		
 		int lastValue = Integer.MAX_VALUE;
 		for(int i=0; i<res.size(); i++){
-			if(itemToDrop[i] < lastValue) {
-				lastValue = itemToDrop[i];
+			int current = 0;
+			for(int j=0; j<itemArray.length; j++){
+				if(itemArray[j].equals(res.get(i))){
+					current = j;
+					break;
+				}
+			}
+			if(itemToDrop[current] < lastValue) {
+				lastValue = itemToDrop[current];
 			}
 		}
 		
