@@ -50,11 +50,10 @@ public class NXTMotion {
 	}
 	
 	public void go(String _direction, int _x, int _y) {
-		System.out.println("Go:" + _direction);
+		//System.out.println("Go:" + _direction);
 		this.moves.add(_direction);
 		Arbitrator arby = new Arbitrator(new Behavior[] {trackingBehaviour, junctionBehaviour}, true);
 		arby.start();
-		System.out.println("After arb");
 		
 		this.myself.x = _x;
 		this.myself.y = _y;

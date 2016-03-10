@@ -23,9 +23,6 @@ public class BTServer {
 
 	public static int btProtocol;
 
-	private static final long TIMEOUT_MILLIS = 5000;
-	private Boolean openSuccess = false;
-
 	// The RouteExecuter and a HashMap of robot names to list of commands
 	private RouteExecuter executer;
 	private HashMap<String, LinkedList<String>> commandMap;

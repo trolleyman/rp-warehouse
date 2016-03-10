@@ -1,7 +1,6 @@
 package warehouse.nxt.communication;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import lejos.nxt.Button;
@@ -57,7 +56,7 @@ public class NXTReceiver extends Thread {
 		try {
 			while( true ) {
 				String fromServer = this.fromPC.readUTF();
-				System.out.println(fromServer);
+				//System.out.println(fromServer);
 				this.find( fromServer );
 			}
 		} catch( IOException _exception ) {

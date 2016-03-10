@@ -228,8 +228,6 @@ public class NXTInterface {
 	//////////////////////// HELPER METHODS ////////////////////////////////
 	////////////////////////////////////////////////////////////////////////
 	private void drawMainMenu() {
-		if (true)
-			return;
 		// Draws the robot name on top of the screen
 		g.drawString( robotName, 49, 2, Graphics.HCENTER );
 
@@ -255,9 +253,6 @@ public class NXTInterface {
 
 	private void drawMainMenuUpdate() {
 		drawMainMenu();
-		
-		if (true)
-			return;
 		
 		int label = action % 5;
 		switch( label ) {

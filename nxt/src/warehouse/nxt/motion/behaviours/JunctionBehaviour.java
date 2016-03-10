@@ -47,7 +47,7 @@ public class JunctionBehaviour implements Behavior {
 	@Override
 	public void action() {
 		String direction = this.provider.getNextDirection();
-		System.out.println("Jct:" + direction);
+		//System.out.println("Jct:" + direction);
 		
 		if (direction == null)
 			return;

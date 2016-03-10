@@ -52,8 +52,6 @@ public enum Heading {
 			_heading += 360;
 		}
 
-		// System.out.println(_heading);
-
 		Heading heading = null;
 		if (_heading == 0) {
 			heading = Heading.PLUS_X;

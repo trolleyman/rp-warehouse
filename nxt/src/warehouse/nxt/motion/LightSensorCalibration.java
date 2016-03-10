@@ -20,13 +20,13 @@ public class LightSensorCalibration {
 		this.rightSensor.setFloodlight( true );
 		this.middleSensor.setFloodlight( true );
 		
-		System.out.println( "Place me on a light area" );
+		System.out.println( "ENTER in light area" );
 		Button.waitForAnyPress();
 		this.lLight = this.leftSensor.readNormalizedValue();
 		this.rLight = this.rightSensor.readNormalizedValue();
 		this.mLight = this.middleSensor.readNormalizedValue();
 		
-		System.out.println( "Place me on a dark area" );
+		System.out.println( "ENTER in dark area" );
 		Button.waitForAnyPress();
 		this.lDark = this.leftSensor.readNormalizedValue();
 		this.rDark = this.rightSensor.readNormalizedValue();
