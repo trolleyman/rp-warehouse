@@ -2,6 +2,8 @@ package warehouse.pc.shared;
 
 import java.awt.geom.Rectangle2D;
 
+import rp.robotics.mapping.MapUtils;
+
 public class TestMaps {
 	static {
 		TEST_MAP1 = new Map(8, 4, new Rectangle2D.Double[] {
@@ -29,6 +31,7 @@ public class TestMaps {
 			new Rectangle2D.Double(6.5, 0.5, 1.0, 5.0),
 			new Rectangle2D.Double(9.5, 0.5, 1.0, 5.0),
 		}, 0.25f);
+		REAL_WAREHOUSE = new Map(MapUtils.createRealWarehouse());
 	}
 	
 	/**
@@ -96,4 +99,9 @@ public class TestMaps {
 	 * </pre>
 	 */
 	public final static Map TEST_MAP4;
+	
+	/**
+	 * Like TEST_MAP4. But real!
+	 */
+	public final static Map REAL_WAREHOUSE;
 }

@@ -3,12 +3,11 @@ package warehouse.pc.shared;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import rp.robotics.mapping.GridMap;
-import rp.robotics.mapping.MapUtils;
 import warehouse.pc.bluetooth.BTServer;
 import warehouse.pc.job.DropList;
 import warehouse.pc.job.ItemList;
 import warehouse.pc.job.JobList;
+import warehouse.pc.job.JobSelector;
 import warehouse.pc.job.LocationList;
 import warehouse.pc.shared.Robot;
 
@@ -37,8 +36,10 @@ public class MainInterface {
 	private ArrayList<RobotListener> robotListeners;
 	private ArrayList<DistanceListener> distanceListeners;
 	
-	private State currentState;
+	private Map map;
+	private HashSet<Robot> robots;
 	private BTServer server;
+	private JobSelector jobSelector;
 	
 	private RobotManager robotManager;
 	
@@ -50,14 +51,12 @@ public class MainInterface {
 	private MainInterface() {
 		server = new BTServer();
 		
-		robotManager = null; // For now
-		
 		robotListeners = new ArrayList<>();
 		distanceListeners = new ArrayList<>();
 		
-		// currentState = new State(new Map(new GridMap(10, 7, 14, 31, 30, MapUtils.create2014Map2())));
-		// currentState = new State(new Map(MapUtils.createRealWarehouse()));
-		currentState = new State(new Map(MapUtils.createRealWarehouse()));
+		// map = new Map(new GridMap(10, 7, 14, 31, 30, MapUtils.create2014Map2()));
+		map = TestMaps.TEST_MAP4;
+		robots = new HashSet<>();
 		
 		locList = new LocationList("locations.csv");
 		itemList = new ItemList("items.csv", locList);
@@ -67,13 +66,18 @@ public class MainInterface {
 //		}
 		jobList = new JobList("jobs.csv", itemList);
 		dropList = new DropList("drops.csv");
+		
+		jobSelector = new JobSelector(locList, itemList, jobList, dropList);
+		
+		robotManager = new RobotManager();
+		this.addRobotListener(robotManager);
 	}
 	
 	/**
 	 * Returns the robot manager that is in control of all the robots.
 	 */
-	public RobotManager getRobotManager() {
-		throw new AssertionError("RobotManager unimplemented.");
+	public IRobotManager getRobotManager() {
+		return robotManager;
 	}
 	
 	/**
@@ -95,6 +99,13 @@ public class MainInterface {
 	 */
 	public ItemList getItemList() {
 		return itemList;
+	}
+	
+	/**
+	 * Returns the singleton instance of the JobSelector
+	 */
+	public JobSelector getJobSelector() {
+		return jobSelector;
 	}
 	
 	/**
@@ -138,7 +149,7 @@ public class MainInterface {
 	 * Gets the current map
 	 */
 	public synchronized Map getMap() {
-		return currentState.getMap();
+		return map;
 	}
 	
 	/**
@@ -146,7 +157,7 @@ public class MainInterface {
 	 * ***Don't modify this directly*** - Use MainInterface.updateRobot / MainInterface.removeRobot.
 	 */
 	public synchronized HashSet<Robot> getRobots() {
-		return currentState.getRobots();
+		return robots;
 	}
 	
 	/**
@@ -155,7 +166,8 @@ public class MainInterface {
 	 */
 	public synchronized void updateRobot(Robot _r) {
 		boolean added = false;
-		if (currentState.getRobots().contains(_r)) {
+		if (!robots.contains(_r)) {
+			robots.add(_r);
 			added = true;
 		}
 		if (added) {
@@ -174,19 +186,11 @@ public class MainInterface {
 	 * @param _r the robot
 	 */
 	public synchronized void removeRobot(Robot _r) {
-		if (getRobots().contains(_r)) {
-			currentState.removeRobot(_r);
+		if (robots.remove(_r)) {
 			for (RobotListener l : robotListeners) {
 				l.robotRemoved(_r);
 			}
 		}
-	}
-	
-	/**
-	 * Gets the current state of the system.
-	 */
-	public synchronized State getCurrentState() {
-		return currentState;
 	}
 	
 	/**

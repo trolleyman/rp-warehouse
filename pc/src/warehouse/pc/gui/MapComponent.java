@@ -5,13 +5,13 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.Rectangle2D.Double;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
@@ -20,13 +20,16 @@ import warehouse.pc.job.Location;
 import warehouse.pc.job.LocationList;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.MainInterface;
+import warehouse.pc.shared.Map;
 import warehouse.pc.shared.RobotListener;
-import warehouse.pc.shared.State;
 import warehouse.pc.shared.Robot;
 
 @SuppressWarnings("serial")
 public class MapComponent extends JComponent implements MouseListener, RobotListener {
-	private State state;
+	private final MainInterface mi = MainInterface.get();
+	
+	private Map map;
+	
 	private LocationList locList;
 	
 	private double xScale = 1.0;
@@ -41,25 +44,24 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 		super();
 		this.gui = _gui;
 		addMouseListener(this);
-		state = MainInterface.get().getCurrentState();
-		locList = MainInterface.get().getLocationList();
-		MainInterface.get().addRobotListener(this);
+		map = mi.getMap();
+		locList = mi.getLocationList();
+		mi.addRobotListener(this);
 	}
 
 	@Override
 	public void paintComponent(Graphics _g) {
 		Toolkit.getDefaultToolkit().sync();
 		Graphics2D g2 = (Graphics2D) _g.create();
-		double sf = Math.min((double) getWidth() / state.getMap().getWidth(),
-						     (double) getHeight() / state.getMap().getHeight());
+		double sf = Math.min((double) getWidth() / map.getBounds().getWidth(),
+						     (double) getHeight() / map.getBounds().getHeight());
 		int padding = (int) (20.0 * (sf * 0.025));
-		int width = (int) (getWidth() - padding * 2.5);
-		int height = (int) (getHeight() - padding * 2.1);
+		int width = (int) (getWidth() - padding * 2);
+		int height = (int) (getHeight() - padding * 2);
 		
-		state = MainInterface.get().getCurrentState();
-		locList = MainInterface.get().getLocationList();
-		int mapWidth = state.getMap().getWidth() - 1;
-		int mapHeight = state.getMap().getHeight() - 1;
+		locList = mi.getLocationList();
+		double mapWidth = map.getBounds().getWidth();
+		double mapHeight = map.getBounds().getHeight();
 		
 		xScale = width / mapWidth;
 		yScale = height / mapHeight;
@@ -74,11 +76,18 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 		AffineTransform at = new AffineTransform();
 		at.setToScale(1.0, -1.0);
 		
-		xTrans = padding * 1.75;
-		yTrans = padding * 0.5 + yScale * mapHeight;
-		g2.translate(padding * 1.75, padding * 0.5);
-		g2.translate(0.0, yScale * mapHeight);
+		xTrans = padding * 2;
+		yTrans = padding * 0 + yScale * mapHeight;
+		g2.translate(xTrans, yTrans);
 		g2.transform(at);
+		
+		// Debugging code for bounds checking
+		// g2.setColor(Color.GREEN);
+		// Rectangle.Double bounds = map.getBounds();
+		// g2.drawRect((int) (bounds.getMinX() * xScale),
+		// 		(int) (bounds.getMinY() * yScale),
+		// 		(int) (bounds.getWidth() * xScale),
+		// 		(int) (bounds.getHeight() * yScale));
 		
 		paintGrid(g2);
 		paintJunctions(g2);
@@ -92,7 +101,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 	
 	private void paintRobots(Graphics2D _g2) {
 		_g2.setColor(Color.BLUE);
-		for (Robot robot : state.getRobots()) {
+		for (Robot robot : mi.getRobots()) {
 			Graphics2D g = (Graphics2D) _g2.create();
 			if (robot == selected) {
 				g.setStroke(new BasicStroke(2));
@@ -140,7 +149,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 	}
 
 	private void paintGrid(Graphics2D _g2) {
-		ArrayList<Line2D> lines = state.getMap().getGrid();
+		ArrayList<Line2D> lines = map.getGrid();
 		_g2.setColor(Color.BLACK);
 		for (Line2D line : lines) {
 			_g2.drawLine((int) (line.getX1() * xScale), (int) (line.getY1() * yScale),
@@ -150,19 +159,19 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 		Graphics2D fg = (Graphics2D) _g2.create();
 		fg.scale(xScale * 0.015, yScale * 0.015);
 		fg.scale(1.0, -1.0);
-		for (int x = 0; x < state.getMap().getWidth(); x++) {
+		for (int x = 0; x < map.getWidth(); x++) {
 			fg.drawString(Integer.toString(x), (int)(x * 66.666666666666667 - 3.0), (int)(50.0));
 		}
-		for (int y = 0; y < state.getMap().getHeight(); y++) {
+		for (int y = 0; y < map.getHeight(); y++) {
 			fg.drawString(Integer.toString(y), (int)(-50.0), (int)(-y * 66.666666666666667 + 4.0));
 		}
 		fg.dispose();
 	}
 	
 	private void paintJunctions(Graphics2D _g2) {
-		for (int y = 0; y < state.getMap().getHeight(); y++) {
-			for (int x = 0; x < state.getMap().getWidth(); x++) {
-				Junction j = state.getMap().getJunction(x, y);
+		for (int y = 0; y < map.getHeight(); y++) {
+			for (int x = 0; x < map.getWidth(); x++) {
+				Junction j = map.getJunction(x, y);
 				if (j == null)
 					continue;
 				
@@ -192,7 +201,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 				double h = 5.0;
 				
 				_g2.setColor(Color.BLACK);
-				for (Junction drop : MainInterface.get().getDropList().getList()) {
+				for (Junction drop : mi.getDropList().getList()) {
 					if (drop.getX() == x && drop.getY() == y) {
 						w *= 1.5;
 						h *= 1.5;
@@ -209,10 +218,10 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 	}
 	
 	private void paintWalls(Graphics2D _g2) {
-		Rectangle2D.Double[] walls = state.getMap().getWalls();
+		Rectangle2D.Double[] walls = map.getWalls();
 		_g2.setColor(Color.RED);
 		
-		for (Double wall : walls) {
+		for (Rectangle.Double wall : walls) {
 			double minX = wall.getMinX();
 			double minY = wall.getMinY();
 			double maxX = wall.getMaxX();
@@ -236,7 +245,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 	public void mouseClicked(MouseEvent e) {
 		// Get if a robot was clicked on.
 		selected = null;
-		for (Robot robot : MainInterface.get().getCurrentState().getRobots()) {
+		for (Robot robot : mi.getRobots()) {
 			double x = e.getX();
 			double y = e.getY();
 			

@@ -1,6 +1,11 @@
 package warehouse.pc.shared;
 
+import lejos.pc.comm.NXTCommFactory;
+import lejos.pc.comm.NXTInfo;
+
 public class Robot implements Comparable<Robot> {
+	public static final float MAX_WEIGHT = 50.0f;
+	
 	private RobotIdentity identity;
 	// Current X Position of the Robot (horizontal axis)
 	private double xPos;
@@ -18,7 +23,6 @@ public class Robot implements Comparable<Robot> {
 		this.facing = _facing;
 		this.direction = Direction.fromFacing(facing);
 	}
-	
 	/**
 	 * Gets the robot's name
 	 */
@@ -114,5 +118,17 @@ public class Robot implements Comparable<Robot> {
 	@Override
 	public int compareTo(Robot other) {
 		return this.getIdentity().toString().compareTo(other.getIdentity().toString());
+	}
+
+	public NXTInfo getNXTInfo() {
+		return new NXTInfo(NXTCommFactory.BLUETOOTH, getName(), getID());
+	}
+	
+	/**
+	 * Clones the robot
+	 */
+	@Override
+	public Robot clone() {
+		return new Robot(identity.name, identity.id, xPos, yPos, facing);
 	}
 }

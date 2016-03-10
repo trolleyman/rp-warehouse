@@ -1,6 +1,6 @@
 package warehouse.pc.bluetooth.testing;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -11,27 +11,24 @@ import org.junit.Test;
 
 import lejos.pc.comm.NXTInfo;
 import warehouse.pc.bluetooth.BTServer;
-import warehouse.pc.bluetooth.MessageListener;
 
-public class MultiConnectionTest implements MessageListener {
+public class MultiConnectionTest {
 
 	private HashMap<String, String> robots;
 	private BTServer server;
-	private int replies;
-	
+
 	@Before
 	public void setUp() throws Exception {
 		// Enable custom print stream
-		DebugPrintStream.enable();
-		
+		Debug.enableStream();
+
 		// Add robots to the test
 		robots = new HashMap<>();
-		robots.put("Dobot", "0016530FD7F4");
-		//robots.put("Vader", "0016531B5A19");
 		robots.put("Jeff", "00165317BE35");
-		
+		robots.put("Dobot", "0016530FD7F4");
+		// robots.put("Vader", "0016531B5A19");
+
 		server = new BTServer();
-		replies = 0; 
 	}
 
 	@After
@@ -40,28 +37,9 @@ public class MultiConnectionTest implements MessageListener {
 
 	@Test
 	public void test() {
+		// Connect to all robots
 		for (Entry<String, String> e : robots.entrySet()) {
 			assertTrue(server.open(new NXTInfo(BTServer.btProtocol, e.getKey(), e.getValue())));
 		}
-		
-		server.addListener(this);
-		
-		for (Entry<String, String> e : robots.entrySet()) {
-			server.sendToRobot(e.getKey(), "check");
-		}
-		
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
-		
-		assertEquals(replies, robots.size());
 	}
-
-	@Override
-	public void newMessage(String robotName, String message) {
-		replies++;
-	}
-
 }

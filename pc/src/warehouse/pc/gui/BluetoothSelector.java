@@ -11,6 +11,7 @@ import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
 import warehouse.pc.shared.MainInterface;
+import warehouse.pc.shared.Robot;
 
 @SuppressWarnings("serial")
 public class BluetoothSelector extends JComboBox<String> implements Runnable {
@@ -37,6 +38,23 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 		
 		//setMaximumSize(new Dimension(100, 10));
 		this.addItem(SEARCHING);
+		
+		// Debugging stuff so I don't
+		// Bot Lee - 001653155F9C
+		// Obama - 0016531B550D
+		//*
+		NXTInfo info = new NXTInfo(NXTCommFactory.BLUETOOTH, "Bot Lee", "001653155F9C");
+		{boolean result = MainInterface.get().getServer().open(info);
+		openingConnection = false;
+		if (!result) {
+			JOptionPane.showMessageDialog(null,
+				"Could not connect to " + info.name + " (" + info.deviceAddress + ").",
+				"Connection Error",
+				JOptionPane.WARNING_MESSAGE);
+		} else {
+			MainInterface.get().updateRobot(new Robot(info.name, info.deviceAddress, 0, 0, 0));
+		}}
+		//*/
 		
 		Thread t = new Thread(this);
 		t.setDaemon(true);
@@ -75,6 +93,8 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 						"Could not connect to " + info.name + " (" + info.deviceAddress + ").",
 						"Connection Error",
 						JOptionPane.WARNING_MESSAGE);
+				} else {
+					MainInterface.get().updateRobot(new Robot(info.name, info.deviceAddress, 0, 0, 0));
 				}
 			});
 			t.start();

@@ -1,6 +1,10 @@
 package warehouse.pc.shared;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
+
+import org.junit.Test;
 
 /**
  * Directions relative to the x and y axes of the map
@@ -13,11 +17,16 @@ public enum Direction {
 	X_NEG;
 	
 	static {
+		test();
+	}
+	
+	@Test
+	public static void test() {
 		// applyCommands relies on these assertions.
-		assert((Direction.Y_POS.ordinal() + 1) % 4 == Direction.X_POS.ordinal());
-		assert((Direction.X_POS.ordinal() + 1) % 4 == Direction.Y_NEG.ordinal());
-		assert((Direction.Y_NEG.ordinal() + 1) % 4 == Direction.X_NEG.ordinal());
-		assert((Direction.X_NEG.ordinal() + 1) % 4 == Direction.Y_POS.ordinal());
+		assertTrue((Direction.Y_POS.ordinal() + 1) % 4 == Direction.X_POS.ordinal());
+		assertTrue((Direction.X_POS.ordinal() + 1) % 4 == Direction.Y_NEG.ordinal());
+		assertTrue((Direction.Y_NEG.ordinal() + 1) % 4 == Direction.X_NEG.ordinal());
+		assertTrue((Direction.X_NEG.ordinal() + 1) % 4 == Direction.Y_POS.ordinal());
 	}
 	
 	/**
@@ -65,9 +74,6 @@ public enum Direction {
 		for (Command b : bearings) {
 			int turn = 0;
 			switch (b) {
-			case FORWARD:
-				turn = 0;
-				break;
 			case RIGHT:
 				turn = 1;
 				break;
@@ -76,6 +82,13 @@ public enum Direction {
 				break;
 			case LEFT:
 				turn = 3;
+				break;
+			case WAIT:
+			case PICK:
+			case DROP:
+			case FORWARD:
+			default:
+				turn = 0;
 				break;
 			}
 			
