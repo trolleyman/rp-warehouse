@@ -85,8 +85,8 @@ public class SearchTests {
 		Junction start = map.getJunction(startx, starty);
 		Junction goal = map.getJunction(goalx, goaly);
 		
-		ArrayList<Direction> route = finder.findRoute(start, goal, direction);
-		return finder.getActualDirections(route, direction);			
+		RoutePackage routes = finder.findRoute(start, goal, direction);
+		return routes.getCommandList();			
 		
 		
 	}
