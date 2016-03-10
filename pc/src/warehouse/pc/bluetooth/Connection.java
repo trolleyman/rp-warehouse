@@ -41,10 +41,9 @@ public class Connection {
 
 	public String listen() throws IOException {
 		String reply = null;
-		//System.out.println("Listening to " + nxt.name + ".");
-		
+		System.out.println("Robot " + nxt.name + " is listening");
+
 		reply = fromRobot.readUTF();
-		
 		return reply;
 	}
 }

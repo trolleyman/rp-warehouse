@@ -117,7 +117,7 @@ public class RobotManager implements IRobotManager, RobotListener {
 		HashMap<Robot, LinkedList<Job>> robotEmptyCommandJobs = new HashMap<>();
 		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
 			if (e.getValue().getCommands().isEmpty()) {
-				robotEmptyCommandJobs.put(e.getKey(), new LinkedList<>(robotJobs.get(e.getKey())));
+				robotEmptyCommandJobs.put(e.getKey().clone(), new LinkedList<>(robotJobs.get(e.getKey())));
 			}
 		}
 		RoutePlanner planner = new RoutePlanner(mi.getMap(), Robot.MAX_WEIGHT, robotEmptyCommandJobs, mi.getDropList().getList());
@@ -138,7 +138,7 @@ public class RobotManager implements IRobotManager, RobotListener {
 	private void step() {
 		// TODO: Update the position of the robots.
 		//HashMap<Robot, Direction> newRobotDirections = new HashMap<>();
-		
+
 		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
 			CommandQueue q = e.getValue();
 			Command com = q.getCommands().peekFirst();
@@ -154,6 +154,7 @@ public class RobotManager implements IRobotManager, RobotListener {
 				mi.removeRobot(e.getKey());
 				continue;
 			}
+			new RobotUpdater(e.getKey(), com).run();
 		}
 		
 		if (!robotCommands.isEmpty())

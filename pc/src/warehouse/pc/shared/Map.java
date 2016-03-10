@@ -227,4 +227,16 @@ public class Map {
 	public Rectangle.Double getBounds() {
 		return bounds;
 	}
+
+	public double getCellSize() {
+		return cellSize;
+	}
+
+	public double getGridX(double realX) {
+		return realX / cellSize;
+	}
+	
+	public double getGridY(double realY) {
+		return realY / cellSize;
+	}
 }
