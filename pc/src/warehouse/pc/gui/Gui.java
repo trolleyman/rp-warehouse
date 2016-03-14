@@ -53,6 +53,8 @@ public class Gui implements Runnable, RobotListener {
 		//displayMap(MapUtils.create2014Map2(), 2.0f);
 		//displayMap(MapUtils.createRealWarehouse(), 200.0f);
 		
+		// Robot Manager starts off paused.
+		MainInterface.get().getRobotManager().pause();
 		Thread t = new Thread(MainInterface.get().getRobotManager(), "RobotManager");
 		t.start();
 		Gui g = new Gui();

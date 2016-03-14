@@ -14,16 +14,17 @@ import warehouse.pc.job.JobSelector;
 import warehouse.pc.search.RoutePlanner;
 
 public class RobotManager implements IRobotManager, RobotListener {
-	HashMap<Robot, ArrayDeque<Job>> robotJobs = new HashMap<>();
-	HashMap<Robot, CommandQueue> robotCommands = new HashMap<>();
-	HashMap<Robot, LinkedBlockingQueue<String>> robotMessages = new HashMap<>();
-	MainInterface mi;
+	private HashMap<Robot, ArrayDeque<Job>> robotJobs = new HashMap<>();
+	private HashMap<Robot, CommandQueue> robotCommands = new HashMap<>();
+	private HashMap<Robot, LinkedBlockingQueue<String>> robotMessages = new HashMap<>();
+	private MainInterface mi;
 	
-	ArrayList<Robot> robotsToAdd = new ArrayList<>();
-	ArrayList<Robot> robotsToRemove = new ArrayList<>();
+	private ArrayList<Robot> robotsToAdd = new ArrayList<>();
+	private ArrayList<Robot> robotsToRemove = new ArrayList<>();
 	
 	boolean running;
 	private boolean nextStepRecalculate;
+	private boolean paused;
 	
 	public RobotManager() {
 		
@@ -45,7 +46,9 @@ public class RobotManager implements IRobotManager, RobotListener {
 				//System.out.println("Robot Manager: No robots to manage.");
 			}
 			
-			step();
+			if (!paused)
+				step();
+			
 			synchronized (this) {
 				for (Robot robot : robotsToAdd) {
 					robotJobs.put(robot, new ArrayDeque<>());
@@ -129,10 +132,10 @@ public class RobotManager implements IRobotManager, RobotListener {
 		}
 		nextStepRecalculate = false;
 	}
-
+	
 	/**
 	 * Run one step of the system.
-	 * i.e. Move robots and wait for their reply. Sort out localisation stuff as well.
+	 * i.e. Move robots and wait for their reply. TODO: Sort out localisation stuff as well.
 	 */
 	private void step() {
 		// TODO: Update the position of the robots.
@@ -168,6 +171,16 @@ public class RobotManager implements IRobotManager, RobotListener {
 				continue;
 			}
 		}
+	}
+	
+	@Override
+	public void pause() {
+		paused = true;
+	}
+	
+	@Override
+	public void resume() {
+		paused = false;
 	}
 	
 	@Override

@@ -40,7 +40,7 @@ public class NXTMotion {
 		DifferentialPilot pilot = robot.getDifferentialPilot();
 		LightSensor left =  new LightSensor( SensorPort.S3 );
 		LightSensor right = new LightSensor( SensorPort.S1 );
-		LightSensor middle = new LightSensor( SensorPort.S2 );
+		LightSensor middle = new LightSensor( SensorPort.S1 );
 		LightSensorCalibration calibration = new LightSensorCalibration( left, right, middle );
 		
 		this.eyes = new UltrasonicSensor( SensorPort.S4 );

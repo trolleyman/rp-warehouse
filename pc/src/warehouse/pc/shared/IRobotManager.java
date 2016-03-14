@@ -16,4 +16,14 @@ public interface IRobotManager extends Runnable, RobotListener {
 	 * Causes the RobotManager to recalculate it's plans
 	 */
 	public void recalculate();
+	
+	/**
+	 * Pauses the RobotManager: It will stop the robots gracefully.
+	 */
+	public void pause();
+	
+	/**
+	 * Resumes the RobotManager: It will start to move the robots.
+	 */
+	public void resume();
 }
