@@ -1,0 +1,8 @@
+name = "Dobot"
+address = "0016530FD7F4"
+
+name = "Vader"
+address = "0016531B5A19"
+
+name = "Jeff"
+address = "00165317BE35"

@@ -4,50 +4,115 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 
 import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
 import warehouse.pc.shared.MainInterface;
+import warehouse.pc.shared.Robot;
 
 @SuppressWarnings("serial")
 public class BluetoothSelector extends JComboBox<String> implements Runnable {
+	private final String SEARCHING = "Searching...";
 	private final String NO_ROBOTS_DETECTED = "No robots detected.";
+	
+	private volatile boolean openingConnection;
 	
 	private NXTInfo[] oldInfos;
 	private NXTInfo[] infos;
-
+	private String errorMessage;
+	private boolean error;
+	private boolean running;
+	
 	public BluetoothSelector() {
 		super();
 		
-		oldInfos = new NXTInfo[] {null};
+		openingConnection = false;
+		running = true;
+		errorMessage = "";
+		error = false;
+		oldInfos = new NXTInfo[0];
 		infos = new NXTInfo[0];
 		
 		//setMaximumSize(new Dimension(100, 10));
-		this.addItem(NO_ROBOTS_DETECTED);
+		this.addItem(SEARCHING);
+		
+		// Debugging stuff so I don't
+		// Bot Lee - 001653155F9C
+		// Obama - 0016531B550D
+		/*
+		NXTInfo info = new NXTInfo(NXTCommFactory.BLUETOOTH, "Bot Lee", "001653155F9C");
+		{boolean result = MainInterface.get().getServer().open(info);
+		openingConnection = false;
+		if (!result) {
+			JOptionPane.showMessageDialog(null,
+				"Could not connect to " + info.name + " (" + info.deviceAddress + ").",
+				"Connection Error",
+				JOptionPane.WARNING_MESSAGE);
+		} else {
+			MainInterface.get().updateRobot(new Robot(info.name, info.deviceAddress, 0, 0, 0));
+		}}
+		//*/
 		
 		Thread t = new Thread(this);
 		t.setDaemon(true);
 		t.start();
 	}
 	
+	/**
+	 * Returns the currently selected robot, or null if no robot is eelected.
+	 */
+	public NXTInfo getSelectedRobot() {
+		int i = this.getSelectedIndex();
+		if (i == -1 || infos.length == 0 || i >= infos.length)
+			return null;
+		
+		return infos[i];
+	}
+	
+	/**
+	 * Connects to the currently selected robot
+	 */
 	public void connect() {
 		synchronized (this) {
+			openingConnection = true;
 			int i = this.getSelectedIndex();
 			if (i == -1 || infos.length == 0 || i >= infos.length)
 				return;
 			
 			NXTInfo info = infos[i];
-			// Call connect() in communication module to connect to a new robot.
-			MainInterface.get().getServer().open(info);
+			
+			// Call open() in communication module to connect to a new robot.
+			Thread t = new Thread(() -> {
+				boolean result = MainInterface.get().getServer().open(info);
+				openingConnection = false;
+				if (!result) {
+					JOptionPane.showMessageDialog(null,
+						"Could not connect to " + info.name + " (" + info.deviceAddress + ").",
+						"Connection Error",
+						JOptionPane.WARNING_MESSAGE);
+				} else {
+					MainInterface.get().updateRobot(new Robot(info.name, info.deviceAddress, 0, 0, 0));
+				}
+			});
+			t.start();
 		}
 	}
 	
+	/**
+	 * Updates the options list with the new robots.
+	 */
 	private void updateOptions() {
 		synchronized (this) {
+			if (openingConnection && infos.length == 0) {
+				// This is to preotect against a case where whenever a connection is being opened on one thread
+				// comm.search(null) is interrupted and returns a zero-length array on the other.
+				return;
+			}
 			// If infos hasn't changed, return.
-			if (oldInfos.length == infos.length) {
+			if (infos.length != 0 && oldInfos.length == infos.length) {
 				boolean equal = true;
 				for (int i = 0; i < infos.length; i++) {
 					if (!infos[i].name.equals(oldInfos[i].name)) {
@@ -86,7 +151,9 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 				}
 			}
 			
-			if (infos.length == 0) {
+			if (error) {
+				this.addItem("Error: " + errorMessage);
+			} else if (infos.length == 0) {
 				this.addItem(NO_ROBOTS_DETECTED);
 			}
 			
@@ -95,26 +162,52 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 			oldInfos = infos;
 		}
 	}
-
+	
+	/**
+	 * Continually search for robots, then update the options list with the new robots.
+	 */
 	@Override
 	public void run() {
-		while (true) {
+		while (running) {
 			int protocol = NXTCommFactory.BLUETOOTH;
+			error = false;
 			NXTComm comm;
 			try {
 				comm = NXTCommFactory.createNXTComm(protocol);
 				
+				System.out.println("Searching for robots...");
 				infos = comm.search(null);
+				Arrays.sort(infos, (NXTInfo i1, NXTInfo i2) -> {
+					return i1.name.compareTo(i2.name);
+				});
+				if (infos.length == 0) {
+					System.out.println("Finished searching for robots.");
+				} else {
+					System.out.print("Finished searching for robots; found ");
+					for (int i = 0; i < infos.length; i++) {
+						System.out.print(infos[i].name);
+						if (i == infos.length - 2)
+							System.out.print(" and ");
+						else if (i != infos.length - 1)
+							System.out.print(", ");
+					}
+					System.out.println(".");
+				}
 				
 				updateOptions();
-			} catch (NXTCommException e1) {
+			} catch (NXTCommException e) {
 				infos = new NXTInfo[0];
-				
+				System.err.println("Error searching for robots: " + e.getMessage());
+				errorMessage = e.getMessage();
+				error = true;
 				updateOptions();
+				if (errorMessage.equals("Bluetooth stack not detected")) {
+					running = false;
+				}
 			}
 			
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				
 			}

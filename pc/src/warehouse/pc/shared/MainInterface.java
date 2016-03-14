@@ -1,9 +1,15 @@
 package warehouse.pc.shared;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import warehouse.pc.bluetooth.BTServer;
-import warehouse.shared.robot.Robot;
+import warehouse.pc.job.DropList;
+import warehouse.pc.job.ItemList;
+import warehouse.pc.job.JobList;
+import warehouse.pc.job.JobSelector;
+import warehouse.pc.job.LocationList;
+import warehouse.pc.shared.Robot;
 
 /**
  * The main interface for the whole project. Get the server using Server::get().
@@ -28,20 +34,108 @@ public class MainInterface {
 	}
 	
 	private ArrayList<RobotListener> robotListeners;
-	private State currentState;
+	private ArrayList<DistanceListener> distanceListeners;
+	
+	private Map map;
+	private HashSet<Robot> robots;
 	private BTServer server;
+	private JobSelector jobSelector;
+	
+	private RobotManager robotManager;
+	
+	private LocationList locList;
+	private ItemList itemList;
+	private JobList jobList;
+	private DropList dropList;
 	
 	private MainInterface() {
 		server = new BTServer();
+		
 		robotListeners = new ArrayList<>();
-		currentState = TestStates.TEST_STATE3;//new State(TestMaps.TEST_MAP4, new Robot[0]);
+		distanceListeners = new ArrayList<>();
+		
+		// map = new Map(new GridMap(10, 7, 14, 31, 30, MapUtils.create2014Map2()));
+		map = TestMaps.TEST_MAP4;
+		robots = new HashSet<>();
+		
+		locList = new LocationList("locations.csv");
+		itemList = new ItemList("items.csv", locList);
+//		for (Item i : itemList.getList()) {
+//			System.out.println(i.getName() + ": reward:" + i.getReward()
+//			+ ", weight:" + i.getWeight() + ", [" + i.getX() + "," + i.getY() + "]");
+//		}
+		jobList = new JobList("jobs.csv", itemList);
+		dropList = new DropList("drops.csv");
+		
+		jobSelector = new JobSelector(locList, itemList, jobList, dropList);
+		
+		robotManager = new RobotManager();
+		this.addRobotListener(robotManager);
 	}
 	
 	/**
-	 * Gets the current server that has been initialized.
+	 * Returns the robot manager that is in control of all the robots.
+	 */
+	public IRobotManager getRobotManager() {
+		return robotManager;
+	}
+	
+	/**
+	 * Returns the drop list. This contains the list of every drop location.
+	 */
+	public DropList getDropList() {
+		return dropList;
+	}
+	
+	/**
+	 * Returns the job list. This contains the list of every job currently being tracked.
+	 */
+	public JobList getJobList() {
+		return jobList;
+	}
+	
+	/**
+	 * Returns the item list that records what the reward and weight is for each item.
+	 */
+	public ItemList getItemList() {
+		return itemList;
+	}
+	
+	/**
+	 * Returns the singleton instance of the JobSelector
+	 */
+	public JobSelector getJobSelector() {
+		return jobSelector;
+	}
+	
+	/**
+	 * Returns the location list that records where the items are located in the map.
+	 */
+	public LocationList getLocationList() {
+		return locList;
+	}
+	
+	/**
+	 * Gets the current bluetooth server that has been initialized.
 	 */
 	public BTServer getServer() {
 		return server;
+	}
+	
+	/**
+	 * Adds a robot distance listener to the program that will be notified whenever a distance is recieved.
+	 */
+	public synchronized void addDistanceListener(DistanceListener _l) {
+		distanceListeners.add(_l);
+	}
+	
+	/**
+	 * Notifies all distance listeners that a distance has been recieved from a robot.
+	 */
+	public synchronized void distanceRecieved(Robot _robot, int _dist) {
+		for (DistanceListener l : distanceListeners) {
+			l.distanceRecieved(_robot, _dist);
+		}
 	}
 	
 	/**
@@ -52,21 +146,51 @@ public class MainInterface {
 	}
 	
 	/**
+	 * Gets the current map
+	 */
+	public synchronized Map getMap() {
+		return map;
+	}
+	
+	/**
+	 * Gets all the current robots and their statuses.
+	 * ***Don't modify this directly*** - Use MainInterface.updateRobot / MainInterface.removeRobot.
+	 */
+	public synchronized HashSet<Robot> getRobots() {
+		return robots;
+	}
+	
+	/**
 	 * Updated a robot {@code _r} with new information. If the robot is not recognized, a new robot is
 	 * inserted into the array.
 	 */
 	public synchronized void updateRobot(Robot _r) {
-		currentState.updateRobot(_r);
-		for (RobotListener l : robotListeners) {
-			l.robotChanged(_r);
+		boolean added = false;
+		if (!robots.contains(_r)) {
+			robots.add(_r);
+			added = true;
+		}
+		if (added) {
+			for (RobotListener l : robotListeners) {
+				l.robotAdded(_r);
+			}
+		} else {
+			for (RobotListener l : robotListeners) {
+				l.robotChanged(_r);
+			}
 		}
 	}
 	
 	/**
-	 * Gets the current state of the system.
+	 * Removes a robot if it exists
+	 * @param _r the robot
 	 */
-	public synchronized State getCurrentState() {
-		return currentState;
+	public synchronized void removeRobot(Robot _r) {
+		if (robots.remove(_r)) {
+			for (RobotListener l : robotListeners) {
+				l.robotRemoved(_r);
+			}
+		}
 	}
 	
 	/**
@@ -77,6 +201,7 @@ public class MainInterface {
 		synchronized (interfaceInitLock) {
 			synchronized (this) {
 				mainInterface = null;
+				System.exit(0);
 			}
 		}
 	}
