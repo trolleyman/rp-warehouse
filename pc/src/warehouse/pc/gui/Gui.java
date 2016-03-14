@@ -128,8 +128,9 @@ public class Gui implements Runnable, RobotListener {
 		map.add(mapComponent, BorderLayout.CENTER);
 		map.setBorder(BorderFactory.createTitledBorder("Map View"));
 		panel.setLayout(new BorderLayout());
-		panel.add(createToolbar(), BorderLayout.LINE_START);
+		panel.add(createLeftToolbar(), BorderLayout.LINE_START);
 		panel.add(map, BorderLayout.CENTER);
+		panel.add(createRightToolbar(), BorderLayout.LINE_END);
 		panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		frame.add(panel);
 		frame.pack();
@@ -229,7 +230,18 @@ public class Gui implements Runnable, RobotListener {
 		return info;
 	}
 	
-	private JPanel createToolbar() {
+	private JPanel createLeftToolbar() {
+		JPanel res = new JPanel();
+		res.setLayout(new SpringLayout());
+		res.add(createConnect());
+		res.add(createRobotEditor());
+		res.add(createItemInfo());
+		//res.add(Box.createVerticalGlue());
+		SpringUtilities.makeCompactGrid(res, res.getComponentCount(), 1, 6, 6, 6, 6);
+		return res;
+	}
+	
+	private JPanel createRightToolbar() {
 		JPanel res = new JPanel();
 		res.setLayout(new SpringLayout());
 		res.add(createConnect());
