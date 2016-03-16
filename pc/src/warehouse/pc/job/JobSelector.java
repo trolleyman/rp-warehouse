@@ -18,7 +18,6 @@ public class JobSelector {
 	
 	//Currently: "locations.csv", "items.csv", "jobs.csv", "drops.csv"
 	public JobSelector(String locationsLocation, String itemsLocation, String jobsLocation, String dropsLocation, Map map){
-		
 		LocationList locList = new LocationList(locationsLocation);
 		ItemList itemList = new ItemList(itemsLocation, locList);
 		JobList jobList = new JobList(jobsLocation, itemList);
@@ -27,6 +26,11 @@ public class JobSelector {
 		tsp = new TSPDistance(map, dropLocations);
 		this.map = map;
 		
+		jobs = jobList.getList();
+		jobs.sort(new RewardComparator()); //This sorts the jobs into reward order
+	}
+	
+	public JobSelector(LocationList locList, ItemList itemList, JobList jobList, DropList dropList){
 		jobs = jobList.getList();
 		jobs.sort(new RewardComparator()); //This sorts the jobs into reward order
 	}

@@ -3,9 +3,8 @@ package warehouse.pc.job;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-
 import warehouse.pc.shared.Map;
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.Robot;
 
 /**
  * Assigns jobs to robot that request them

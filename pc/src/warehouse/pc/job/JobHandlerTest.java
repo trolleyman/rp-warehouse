@@ -9,7 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.Robot;
 
 public class JobHandlerTest {
 
@@ -17,7 +17,7 @@ public class JobHandlerTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		handler = new JobHandler("locations.csv", "items.csv", "jobs.csv", "drops.csv");
+		//handler = new JobHandler("locations.csv", "items.csv", "jobs.csv", "drops.csv");
 	}
 
 	@After

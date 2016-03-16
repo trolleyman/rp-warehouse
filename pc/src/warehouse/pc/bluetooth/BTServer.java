@@ -2,17 +2,16 @@ package warehouse.pc.bluetooth;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map.Entry;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
-import warehouse.pc.shared.MainInterface;
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.Command;
+import warehouse.pc.shared.Robot;
 
 /**
  * The BT communication "server". Can create new thread pairs for NXTs.
@@ -21,116 +20,106 @@ import warehouse.shared.robot.Robot;
  *
  */
 public class BTServer {
-	private static final long TIMEOUT_MILLIS = 5000;
+
 	public static int btProtocol;
-	private NXTComm comm;
-
-	// Maps of robot name against in/out queue
-	private HashMap<String, LinkedBlockingQueue<String>> toRobotQueues;
-	private HashMap<String, LinkedBlockingQueue<String>> fromRobotQueues;
-
-	// Maps of sender and receiver threads
-	private HashMap<String, ServerReceiver> receivers;
-	private HashMap<String, ServerSender> senders;
 
 	// The RouteExecuter and a HashMap of robot names to list of commands
 	private RouteExecuter executer;
 	private HashMap<String, LinkedList<String>> commandMap;
+	
+	// HashMap of robot names to connection class
+	private HashMap<String, Connection> connections;
+	
+	// The lock for Bluetooth communications
+	private final static Object btLock = new Object();
 
 	/**
 	 * Setup the communication "server" for the current OS and driver. Initialise
 	 * the maps of queues.
 	 */
 	public BTServer() {
-		// Create the comms system for this OS and driver
 		btProtocol = NXTCommFactory.BLUETOOTH;
-
-		try {
-			comm = NXTCommFactory.createNXTComm(btProtocol);
-		} catch (NXTCommException e) {
-			e.printStackTrace();
-			System.err.println("Could not open the btCommunication");
-		}
-
-		toRobotQueues = new HashMap<>();
-		fromRobotQueues = new HashMap<>();
-
-		receivers = new HashMap<>();
-		senders = new HashMap<>();
 
 		commandMap = new HashMap<>();
 		executer = new RouteExecuter(this, commandMap);
+		new Thread(executer, "RouteExecuter").start();
+		connections = new HashMap<>();
 	}
-	
-	private Boolean openSuccess = false;
-	
+
 	/**
 	 * Try to open a connection and threads to a NXT. First the in and output
 	 * streams are made, then passed to the sender and receiver which are started
 	 * in new threads.
 	 * 
+	 * Times out after TIMEOUT_MILIS
+	 * 
 	 * @param nxt The protocol type, name and id of the NXT.
-	 * @return true if the connection was opened and false if not.
+	 * @return True if the connection was opened and False if not.
 	 */
 	public synchronized boolean open(NXTInfo nxt) {
 		String name = nxt.name + " (" + nxt.deviceAddress + ")";
 		System.out.println("Trying connect to " + name + ".");
-		openSuccess = false;
-		Thread t = new Thread(() -> {
-			try {
-				openSuccess = comm.open(nxt);
-			} catch (NXTCommException e) {
-				openSuccess = false;
-				return;
-			}
-		});
-		t.setDaemon(true);
-		t.start();
+		
+		DataOutputStream toRobot = null;
+		DataInputStream fromRobot = null;
+		
+		NXTComm comm = null;
+		
 		try {
-			t.join(TIMEOUT_MILLIS);
-		} catch (InterruptedException e) {
-			
-		}
-		if (t.isAlive()) {
-			System.out.println("Connection to " + name + " failed. (Timed out)");
-			return false;
-		} else if (!openSuccess) {
-			System.out.println("Connection to " + name + " failed.");
+			comm = NXTCommFactory.createNXTComm(btProtocol);
+			if (comm.open(nxt)) {
+				toRobot = new DataOutputStream(comm.getOutputStream());
+				fromRobot = new DataInputStream(comm.getInputStream());
+			}
+		} catch (NXTCommException e) {
+			e.printStackTrace();
 			return false;
 		}
 		
-		// Make in and out streams
-		DataOutputStream toRobot = new DataOutputStream(comm.getOutputStream());
-		DataInputStream fromRobot = new DataInputStream(comm.getInputStream());
+		Connection connection = new Connection(nxt, fromRobot, toRobot);
 
-		// Create message queues
-		LinkedBlockingQueue<String> toRobotQueue = new LinkedBlockingQueue<>();
-		LinkedBlockingQueue<String> fromRobotQueue = new LinkedBlockingQueue<>();
-		toRobotQueues.put(nxt.name, toRobotQueue);
-		fromRobotQueues.put(nxt.name, fromRobotQueue);
+		// Create the connection
+		connections.put(nxt.name, connection);
+		try {
+			sendToRobot(nxt.name, Format.robot(nxt.name, 0, 0, ""));
+			waitForReady(nxt.name);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 
-		// Create sender and receiver
-		ServerSender sender = new ServerSender(toRobot, toRobotQueue);
-		ServerReceiver receiver = new ServerReceiver(fromRobot, fromRobotQueue, nxt.name);
-		senders.put(nxt.name, sender);
-		receivers.put(nxt.name, receiver);
-
-		// Start threads
-		Thread senderThread = new Thread(sender);
-		Thread receiverThread = new Thread(receiver);
-		senderThread.start();
-		senderThread.setName(nxt.name + " - Sender");
-		receiverThread.start();
-		receiverThread.setName(nxt.name + " - Receiver");
-		
-		// Update the listener for the executer
-		addListener(executer);
-		
 		// Update the robot in the MainInterface
-		//MainInterface.get().updateRobot(new Robot(nxt.name, nxt.deviceAddress, 0, 0, 0.0));
+		// MainInterface.get().updateRobot(new Robot(nxt.name, nxt.deviceAddress, 0,
+		// 0, 0.0));
 
-		System.out.println("Connection made to " + nxt.name);
+		System.out.println("Connection made to " + name);
 		return true;
+	}
+	
+	public void sendCommand(Robot robot, Command com) throws IOException {
+		// TODO: com.getX().get()
+		switch (com) {
+		case LEFT:
+			sendToRobot(robot.getName(), Format.goLeft(0, 0));
+			break;
+		case RIGHT:
+			sendToRobot(robot.getName(), Format.goRight(0, 0));
+			break;
+		case FORWARD:
+			sendToRobot(robot.getName(), Format.goForward(0, 0));
+			break;
+		case BACKWARD:
+			sendToRobot(robot.getName(), Format.goBackward(0, 0));
+			break;
+		case PICK:
+			sendToRobot(robot.getName(), Format.pickUp(com.getQuantity().get(), com.getWeight().get()));
+			break;
+		case DROP:
+			sendToRobot(robot.getName(), Format.dropOff());
+			break;
+		case WAIT:
+			break;
+		}
 	}
 
 	/**
@@ -141,9 +130,7 @@ public class BTServer {
 	 * @param commands The LinkedList of String commands.
 	 */
 	public void sendCommands(String robotName, LinkedList<String> commands) {
-		System.out.println("Send commands for " + robotName + " to executer");
-		executer.changeNumRobots(1);
-		sendToRobot(robotName, "check");
+		System.out.println("Send commands for " + robotName);
 		commandMap.put(robotName, commands);
 	}
 
@@ -155,30 +142,25 @@ public class BTServer {
 	 * 
 	 * @param robotName The name of the recipient robot.
 	 * @param message The message string to send.
+	 * @throws IOException
 	 */
-	public void sendToRobot(String robotName, String message) {
-		System.out.println("Send " + message + " to " + robotName);
-		toRobotQueues.get(robotName).offer(message);
+	public void sendToRobot(String robotName, String message) throws IOException {
+		connections.get(robotName).send(message);
 	}
-
-	/**
-	 * Add a listener to a specific robot.
-	 * 
-	 * @param robotName The string name of the robot to listen to.
-	 * @param listener The listener class which will be called.
-	 */
-	public void addListener(String robotName, MessageListener listener) {
-		receivers.get(robotName).addMessageListener(listener);
-	}
-
-	/**
-	 * Add a listener to all robots connected.
-	 * 
-	 * @param listener The listener class which will be called.
-	 */
-	public void addListener(MessageListener listener) {
-		for (Entry<String, ServerReceiver> entry : receivers.entrySet()) {
-			entry.getValue().addMessageListener(listener);
+	
+	public void waitForReady(String robotName) throws IOException {
+		String msg = null;
+		while (msg == null || !msg.equalsIgnoreCase("Idle")) {
+			msg = listen(robotName);
+			System.out.println("Wanted 'Idle', recieved: " + msg);
 		}
+	}
+	
+	public String listen(String robotName) throws IOException {
+		return connections.get(robotName).listen();
+	}
+
+	public static Object getLock() {
+		return btLock;
 	}
 }

@@ -11,14 +11,14 @@ import java.util.List;
 
 public class CommandQueue{
 
-	private LinkedList<Bearing> commands;
+	private LinkedList<Command> commands;
 	
 	/**
 	 * Create a new CommandQueue
 	 */
 	
 	public CommandQueue(){
-		commands = new LinkedList<Bearing>();
+		commands = new LinkedList<Command>();
 	}
 	
 	/**
@@ -26,7 +26,7 @@ public class CommandQueue{
 	 * @param bearing the bearing
 	 */
 	
-	public void addCommand(Bearing bearing){
+	public void addCommand(Command bearing){
 		commands.add(bearing);
 	}
 	
@@ -35,7 +35,7 @@ public class CommandQueue{
 	 * @param bearing the bearing
 	 */
 	
-	public void addCommandList(List<Bearing> bearing){
+	public void addCommandList(List<Command> bearing){
 		
 		for(int i = 0; i < bearing.size(); i++){
 			addCommand(bearing.get(i));
@@ -47,7 +47,7 @@ public class CommandQueue{
 	 * @return the next command
 	 */
 	
-	public Bearing getNextCommand(){
+	public Command getNextCommand(){
 		
 		return commands.pop();
 	}
@@ -57,7 +57,7 @@ public class CommandQueue{
 	 * @return the list of commands
 	 */
 	
-	public LinkedList<Bearing> getCommands(){
+	public LinkedList<Command> getCommands(){
 		return commands;
 	}
 	

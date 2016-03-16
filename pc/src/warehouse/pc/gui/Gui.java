@@ -23,13 +23,18 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
-import org.junit.Test;
+import rp.robotics.mapping.GridMap;
+import rp.robotics.mapping.LineMap;
+import rp.robotics.simulation.MapBasedSimulation;
+import rp.robotics.visualisation.ExampleGridMapVisualisation;
+import rp.robotics.visualisation.GridMapVisualisation;
+import rp.robotics.visualisation.MapVisualisationComponent;
 
 import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemList;
 import warehouse.pc.shared.MainInterface;
 import warehouse.pc.shared.RobotListener;
-import warehouse.shared.robot.Robot;
+import warehouse.pc.shared.Robot;
 
 public class Gui implements Runnable, RobotListener {
 	public static void main(String[] args) {
@@ -45,8 +50,42 @@ public class Gui implements Runnable, RobotListener {
 			}
 		}
 		
+		//displayMap(MapUtils.create2014Map2(), 2.0f);
+		//displayMap(MapUtils.createRealWarehouse(), 200.0f);
+		
+		Thread t = new Thread(MainInterface.get().getRobotManager(), "RobotManager");
+		t.start();
 		Gui g = new Gui();
 		g.run();
+	}
+	
+	// Used for testing - Displays a LineMap
+	@SuppressWarnings("unused")
+	private static void displayMap(LineMap lineMap, float scale) {
+		// Grid map configuration
+
+		// Grid junction numbers
+		int xJunctions = 10;
+		int yJunctions = 7;
+
+		float junctionSeparation = 30;
+
+		int xInset = 14;
+		int yInset = 31;
+
+		displayMap(new GridMap(xJunctions, yJunctions, xInset, yInset,
+				junctionSeparation, lineMap), scale);
+	}
+	
+	private static void displayMap(GridMap gridMap, float scale) {
+		GridMapVisualisation mapVis = new GridMapVisualisation(gridMap,
+				(LineMap) gridMap, scale);
+		
+		MapBasedSimulation sim = new MapBasedSimulation((LineMap) gridMap);
+		
+		MapVisualisationComponent.populateVisualisation(mapVis, sim);
+		
+		ExampleGridMapVisualisation.displayVisualisation(mapVis);
 	}
 	
 	public String selectedItemName;
@@ -92,7 +131,8 @@ public class Gui implements Runnable, RobotListener {
 		panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		frame.add(panel);
 		frame.pack();
-		frame.setSize(1000, 600);
+		frame.setSize(1300, 800);
+		frame.setLocationRelativeTo(null);
 	}
 	
 	private JPanel createConnect() {
@@ -210,6 +250,19 @@ public class Gui implements Runnable, RobotListener {
 	}
 	@Override
 	public void robotChanged(Robot _r) {
+		update();
+	}
+	
+	@Override
+	public void robotAdded(Robot _r) {
+		update();
+	}
+
+	@Override
+	public void robotRemoved(Robot _r) {
+		if (_r == editor.getSelectedRobot()) {
+			editor.selectRobot(null);
+		}
 		update();
 	}
 
