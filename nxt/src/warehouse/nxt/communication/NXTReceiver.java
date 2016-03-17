@@ -84,7 +84,7 @@ public class NXTReceiver extends Thread {
 				sender.sendReady();
 				break;
 			case "Cancel Job" : this.cancel( data );
-			default : NXTMain.error( "NXTReceiver: Unknown data format received." ); break;
+			default : NXTMain.error( "Protocol Error." ); break;
 		}
 	}
 	
@@ -108,7 +108,7 @@ public class NXTReceiver extends Thread {
 		switch( _action[ 0 ] ) {
 			case "Shut Down"  :
 				this.connection.close();
-				NXTMain.error("Shut Down");
+				NXTMain.error("Shut Down.");
 				break;
 			case "Pick Up"	  :
 				this.myself.status = "Picking Items";
@@ -153,7 +153,7 @@ public class NXTReceiver extends Thread {
 			this.robotMotion.go( "Backward", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) );
 			break;
 		default 		:
-			NXTMain.error( "NXTReceiver: Unknown data format received after 'Go: '." );
+			NXTMain.error( "Protocol Error." );
 			break;
 		}
 	}
