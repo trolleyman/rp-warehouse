@@ -236,25 +236,21 @@ public class Map {
 
 	/**
 	 *Gets a list of the possible positions the robot could be in based on it's current position and facing direction
-	 *Returns an arraylist of integer arrays of size 3. [x_coord,y_coord,angle(degrees)]
+	 *Returns an arraylist of integer arrays of size 2. [x_coord,y_coord]
 	 */
-	public ArrayList<Integer[]> possiblePositions(int distanceRecieved)
+	public ArrayList<Integer[]> possiblePositions(int distanceRecieved,Direction facing)
 	{
 		ArrayList<Integer[]> positions = new ArrayList<Integer[]>();
 		for (int i = 0;i < width;i++)
 		{
 			for (int j = 0; j < height; j++)
 			{
-				for (int k = 0; k < 361;k+=90)
+				if (Math.abs((distanceRecieved + sensorOffset) - getRangeAt(width,height,facing)) < allowedError)
 				{
-					if (Math.abs((distanceRecieved + sensorOffset) - getRangeAt(width,height,k)) < allowedError)
-					{
-						int[] pos = new Int[3];
-						pos[0] = i;
-						pos[1] = j;
-						pos[2] = k;
-						positions.add(pos);
-					}
+					int[] pos = new Int[2];
+					pos[0] = i;
+					pos[1] = j;
+					positions.add(pos);
 				}
 			}	
 		}

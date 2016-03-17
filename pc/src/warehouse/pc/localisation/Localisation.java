@@ -10,6 +10,8 @@ public class Localisation {
 	private int numValidLocations;
 	
 	// We don't know the starting location
+	// Assume we know starting orientation (direction)
+
 	public Localisation(Map _map) {
 		this.map = _map;
 		this.probabilities = new Float[map.getHeight()][map.getWidth()];
@@ -58,7 +60,7 @@ public class Localisation {
 	}
 	
 	public int getLikelyX() {
-		// Get maximum probability x-coordinate
+		// Get maximum probability x-coordinate we have stored
 		double max = 0.0;
 		int likelyX = -1; //convention for unknown yet.
 		for (int y = 0;y < map.getHeight();y++)
@@ -75,7 +77,7 @@ public class Localisation {
 		return likelyX;
 	}
 	public int getLikelyY() {
-		// Get maximum probability y-coordinate
+		// Get maximum probability y-coordinate we have stored
 		double max = 0.0;
 		int likelyY = -1; //convention for unknown yet.
 		for (int y = 0;y < map.getHeight();y++)
