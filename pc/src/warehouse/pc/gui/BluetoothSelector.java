@@ -1,7 +1,15 @@
 package warehouse.pc.gui;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -15,35 +23,73 @@ import warehouse.pc.shared.Robot;
 
 @SuppressWarnings("serial")
 public class BluetoothSelector extends JComboBox<String> implements Runnable {
-	private final String SEARCHING = "Searching...";
-	private final String NO_ROBOTS_DETECTED = "No robots detected.";
+	private static final String SEARCHING = "Searching...";
+	private static final String NO_ROBOTS_DETECTED = "No robots detected.";
 	
 	private volatile boolean openingConnection;
 	
-	private NXTInfo[] oldInfos;
 	private NXTInfo[] infos;
 	private String errorMessage;
 	private boolean error;
 	private boolean running;
 	
+	private ArrayList<NXTInfo> defaultRobots;
+	
+	private static ArrayList<NXTInfo> readDefaultRobots() {
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new FileReader("robots.csv"));
+			
+			ArrayList<NXTInfo> robots = new ArrayList<>();
+			
+			String line = br.readLine();
+			while (line != null) {
+				String[] split = line.split(",");
+				if (split.length != 2) {
+					continue;
+				}
+				String name = split[0];
+				String address = split[1];
+				robots.add(new NXTInfo(NXTCommFactory.BLUETOOTH, name, address));
+				
+				line = br.readLine();
+			}
+			
+			return robots;
+		} catch (IOException e) {
+			return new ArrayList<>();
+		} finally {
+			try {
+				if (br != null)
+					br.close();
+			} catch (IOException e) {
+				
+			}
+		}
+	}
+	
 	public BluetoothSelector() {
 		super();
+		
+		defaultRobots = readDefaultRobots();
 		
 		openingConnection = false;
 		running = true;
 		errorMessage = "";
 		error = false;
-		oldInfos = new NXTInfo[0];
 		infos = new NXTInfo[0];
 		
 		//setMaximumSize(new Dimension(100, 10));
-		this.addItem(SEARCHING);
+		if (defaultRobots.size() == 0) {
+			this.addItem(SEARCHING);
+		} else {
+			for (NXTInfo info : defaultRobots) {
+				this.addItem(info.name);
+			}
+		}
 		
 		// Debugging stuff
-		// Bot Lee - 001653155F9C
-		// Obama - 0016531B550D
-		// Daniel - 0016530FD7F4
-		//*
+		/*
 		NXTInfo info = new NXTInfo(NXTCommFactory.BLUETOOTH, "Dobot", "0016530FD7F4");
 		{boolean result = MainInterface.get().getServer().open(info);
 		openingConnection = false;
@@ -66,11 +112,19 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	 * Returns the currently selected robot, or null if no robot is eelected.
 	 */
 	public NXTInfo getSelectedRobot() {
-		int i = this.getSelectedIndex();
-		if (i == -1 || infos.length == 0 || i >= infos.length)
-			return null;
-		
-		return infos[i];
+		String name = this.getSelectedItem().toString();
+		// Check defaults first.
+		for (NXTInfo info : defaultRobots) {
+			if (info.name.equals(name)) {
+				return info;
+			}
+		}
+		for (int i = 0; i < infos.length; i++) {
+			if (infos[i].name.equals(name)) {
+				return infos[i];
+			}
+		}
+		return null;
 	}
 	
 	/**
@@ -113,54 +167,36 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 				return;
 			}
 			// If infos hasn't changed, return.
-			if (infos.length != 0 && oldInfos.length == infos.length) {
-				boolean equal = true;
-				for (int i = 0; i < infos.length; i++) {
-					if (!infos[i].name.equals(oldInfos[i].name)) {
-						equal = false;
-						break;
-					}
+			ArrayList<NXTInfo> combined = new ArrayList<>();
+			combined.addAll(defaultRobots);
+			for (int i = 0; i < infos.length; i++) {
+				if (!defaultRobots.contains(infos[i])) {
+					combined.add(infos[i]);
 				}
-				if (equal)
-					return;
 			}
 			
-			Arrays.sort(infos, new Comparator<NXTInfo>() {
+			combined.sort(new Comparator<NXTInfo>() {
 				@Override
 				public int compare(NXTInfo o1, NXTInfo o2) {
 					return o1.name.compareToIgnoreCase(o2.name);
 				}
 			});
 			
-			// Calculate new selection
-			String selectedName = null;
-			if (this.getSelectedIndex() != -1) {
-				selectedName = (String) this.getSelectedItem();
-			}
-			
 			// Add to combo box
 			this.removeAllItems();
-			for (NXTInfo i : infos)
+			for (NXTInfo i : combined)
 				this.addItem(i.name);
 			
-			if (selectedName != null) {
-				for (int i = 0; i < infos.length; i++) {
-					if (selectedName.equals(infos[i].name)) {
-						this.setSelectedIndex(i);
-						break;
-					}
-				}
-			}
+			// TODO: Keep same selected item across updates
+			this.setSelectedIndex(-1);
 			
 			if (error) {
 				this.addItem("Error: " + errorMessage);
-			} else if (infos.length == 0) {
+			} else if (combined.size() == 0) {
 				this.addItem(NO_ROBOTS_DETECTED);
 			}
 			
 			repaint();
-			
-			oldInfos = infos;
 		}
 	}
 	
