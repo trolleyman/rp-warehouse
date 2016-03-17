@@ -76,7 +76,7 @@ public class MainInterface {
 	/**
 	 * Returns the robot manager that is in control of all the robots.
 	 */
-	public IRobotManager getRobotManager() {
+	public RobotManager getRobotManager() {
 		return robotManager;
 	}
 	

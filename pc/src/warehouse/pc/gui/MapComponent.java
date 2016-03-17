@@ -92,12 +92,20 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 		paintGrid(g2);
 		paintJunctions(g2);
 		paintWalls(g2);
+		paintRobotTrails(g2);
 		paintRobots(g2);
 	}
-	
+
 	private final double ROBOT_W = 0.4;
 	private final double ROBOT_H = 0.6;
 	private Robot selected;
+	
+	private void paintRobotTrails(Graphics2D _g2) {
+		_g2.setColor(Color.GREEN);
+		for (Robot robot : mi.getRobots()) {
+			mi.getRobotManager().getCommands(robot);
+		}
+	}
 	
 	private void paintRobots(Graphics2D _g2) {
 		_g2.setColor(Color.BLUE);

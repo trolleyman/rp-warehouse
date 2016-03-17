@@ -13,17 +13,18 @@ import warehouse.pc.job.Job;
 import warehouse.pc.job.JobSelector;
 import warehouse.pc.search.RoutePlanner;
 
-public class RobotManager implements IRobotManager, RobotListener {
-	HashMap<Robot, ArrayDeque<Job>> robotJobs = new HashMap<>();
-	HashMap<Robot, CommandQueue> robotCommands = new HashMap<>();
-	HashMap<Robot, LinkedBlockingQueue<String>> robotMessages = new HashMap<>();
-	MainInterface mi;
+public class RobotManager implements Runnable, RobotListener {
+	private HashMap<Robot, ArrayDeque<Job>> robotJobs = new HashMap<>();
+	private HashMap<Robot, CommandQueue> robotCommands = new HashMap<>();
+	private HashMap<Robot, LinkedBlockingQueue<String>> robotMessages = new HashMap<>();
+	private volatile MainInterface mi;
 	
-	ArrayList<Robot> robotsToAdd = new ArrayList<>();
-	ArrayList<Robot> robotsToRemove = new ArrayList<>();
+	private volatile ArrayList<Robot> robotsToAdd = new ArrayList<>();
+	private volatile ArrayList<Robot> robotsToRemove = new ArrayList<>();
 	
-	boolean running;
-	private boolean nextStepRecalculate;
+	private volatile boolean running;
+	private volatile boolean nextStepRecalculate;
+	private volatile boolean paused;
 	
 	public RobotManager() {
 		
@@ -36,6 +37,7 @@ public class RobotManager implements IRobotManager, RobotListener {
 		doRecalculate();
 		nextStepRecalculate = false;
 		running = true;
+		paused = true;
 		
 		while (running) {
 			boolean sleep = false;
@@ -45,7 +47,9 @@ public class RobotManager implements IRobotManager, RobotListener {
 				//System.out.println("Robot Manager: No robots to manage.");
 			}
 			
-			step();
+			if (!paused)
+				step();
+			
 			synchronized (this) {
 				for (Robot robot : robotsToAdd) {
 					robotJobs.put(robot, new ArrayDeque<>());
@@ -129,10 +133,10 @@ public class RobotManager implements IRobotManager, RobotListener {
 		}
 		nextStepRecalculate = false;
 	}
-
+	
 	/**
 	 * Run one step of the system.
-	 * i.e. Move robots and wait for their reply. Sort out localisation stuff as well.
+	 * i.e. Move robots and wait for their reply. TODO: Sort out localisation stuff as well.
 	 */
 	private void step() {
 		// TODO: Update the position of the robots.
@@ -170,7 +174,24 @@ public class RobotManager implements IRobotManager, RobotListener {
 		}
 	}
 	
-	@Override
+	/**
+	 * Gets the commands for a robot.
+	 * @param robot
+	 */
+	public CommandQueue getCommands(Robot robot) {
+		return robotCommands.get(robot);
+	}
+	
+	public void pause() {
+		System.out.println("Robot Manager: Pausing.");
+		paused = true;
+	}
+	
+	public void resume() {
+		System.out.println("Robot Manager: Resuming.");
+		paused = false;
+	}
+	
 	public void recalculate() {
 		nextStepRecalculate = true;
 	}
@@ -183,7 +204,7 @@ public class RobotManager implements IRobotManager, RobotListener {
 	@Override
 	public void robotAdded(Robot _r) {
 		synchronized (this) {
-			System.out.println(_r.getIdentity() + " added to Robot Manager queue.");
+			System.out.println("Robot Manager: " + _r.getIdentity() + " added.");
 			robotsToAdd.add(_r);
 			recalculate();
 		}

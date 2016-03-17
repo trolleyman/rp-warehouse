@@ -34,6 +34,7 @@ import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemList;
 import warehouse.pc.shared.MainInterface;
 import warehouse.pc.shared.RobotListener;
+import warehouse.pc.shared.RobotManager;
 import warehouse.pc.shared.Robot;
 
 public class Gui implements Runnable, RobotListener {
@@ -53,6 +54,8 @@ public class Gui implements Runnable, RobotListener {
 		//displayMap(MapUtils.create2014Map2(), 2.0f);
 		//displayMap(MapUtils.createRealWarehouse(), 200.0f);
 		
+		// Robot Manager starts off paused.
+		MainInterface.get().getRobotManager().pause();
 		Thread t = new Thread(MainInterface.get().getRobotManager(), "RobotManager");
 		t.start();
 		Gui g = new Gui();
@@ -126,8 +129,9 @@ public class Gui implements Runnable, RobotListener {
 		map.add(mapComponent, BorderLayout.CENTER);
 		map.setBorder(BorderFactory.createTitledBorder("Map View"));
 		panel.setLayout(new BorderLayout());
-		panel.add(createToolbar(), BorderLayout.LINE_START);
+		panel.add(createLeftToolbar(), BorderLayout.LINE_START);
 		panel.add(map, BorderLayout.CENTER);
+		panel.add(createRightToolbar(), BorderLayout.LINE_END);
 		panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		frame.add(panel);
 		frame.pack();
@@ -227,12 +231,55 @@ public class Gui implements Runnable, RobotListener {
 		return info;
 	}
 	
-	private JPanel createToolbar() {
+	private JPanel createLeftToolbar() {
 		JPanel res = new JPanel();
 		res.setLayout(new SpringLayout());
 		res.add(createConnect());
 		res.add(createRobotEditor());
 		res.add(createItemInfo());
+		//res.add(Box.createVerticalGlue());
+		SpringUtilities.makeCompactGrid(res, res.getComponentCount(), 1, 6, 6, 6, 6);
+		return res;
+	}
+	
+	private JPanel createManagerControls() {
+		JPanel res = new JPanel();
+		res.setBorder(BorderFactory.createTitledBorder("Robot Manager"));
+		JButton pause = new JButton("Pause");
+		JButton resume = new JButton("Resume");
+		pause.setEnabled(false);
+		
+		pause.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent _e) {
+				RobotManager man = MainInterface.get().getRobotManager();
+				man.pause();
+				pause.setEnabled(false);
+				resume.setEnabled(true);
+			}
+		});
+		resume.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent _e) {
+				RobotManager man = MainInterface.get().getRobotManager();
+				man.resume();
+				pause.setEnabled(true);
+				resume.setEnabled(false);
+			}
+		});
+		res.add(pause);
+		res.add(resume);
+		
+		SpringLayout layout = new SpringLayout();
+		res.setLayout(layout);
+		SpringUtilities.makeCompactGrid(res, 1, 2, 6, 6, 6, 6);
+		return res;
+	}
+	
+	private JPanel createRightToolbar() {
+		JPanel res = new JPanel();
+		res.setLayout(new SpringLayout());
+		res.add(createManagerControls());
 		//res.add(Box.createVerticalGlue());
 		SpringUtilities.makeCompactGrid(res, res.getComponentCount(), 1, 6, 6, 6, 6);
 		return res;
