@@ -32,9 +32,9 @@ import rp.robotics.visualisation.MapVisualisationComponent;
 
 import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemList;
-import warehouse.pc.shared.IRobotManager;
 import warehouse.pc.shared.MainInterface;
 import warehouse.pc.shared.RobotListener;
+import warehouse.pc.shared.RobotManager;
 import warehouse.pc.shared.Robot;
 
 public class Gui implements Runnable, RobotListener {
@@ -252,7 +252,7 @@ public class Gui implements Runnable, RobotListener {
 		pause.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent _e) {
-				IRobotManager man = MainInterface.get().getRobotManager();
+				RobotManager man = MainInterface.get().getRobotManager();
 				man.pause();
 				pause.setEnabled(false);
 				resume.setEnabled(true);
@@ -261,7 +261,7 @@ public class Gui implements Runnable, RobotListener {
 		resume.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent _e) {
-				IRobotManager man = MainInterface.get().getRobotManager();
+				RobotManager man = MainInterface.get().getRobotManager();
 				man.resume();
 				pause.setEnabled(true);
 				resume.setEnabled(false);
