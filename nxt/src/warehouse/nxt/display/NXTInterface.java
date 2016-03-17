@@ -44,10 +44,10 @@ public class NXTInterface {
 	 * this.robot.y; }
 	 */
 	// For testing without client info (test values)
-	public static void main(String[] args) {
-		new NXTInterface("DOBOT", "Jobs", 4, 4, 1,0).show();
-	}
-	
+	//public static void main(String[] args) {
+	//	new NXTInterface("DOBOT", "Jobs", 4, 4, 1,0).show();
+	//}
+	/*
 	public NXTInterface(String _robotName, String _jobName, float _weight, int _quantity, int _x, int _y) {
 		this.robotName = _robotName;
 		this.jobName = _jobName;
@@ -57,7 +57,7 @@ public class NXTInterface {
 		this.y = _y;
 		this.g = new Graphics();
 	}
-
+	 */
 	// For testing with client info (like the final design)
 	public NXTInterface(String _robotName, int _x, int _y) {
 		this.robotName = _robotName;
@@ -71,23 +71,24 @@ public class NXTInterface {
 	public void show() {
 		Sound.setVolume(Sound.VOL_MAX / 4);
 
-		drawWaitForConnection(false);
-		drawCalibrationPhase(true, true);
+		//drawWaitForConnection(false);
+		//drawCalibrationPhase(true, true);
 		drawMainMenu();
 
 		while (Button.ESCAPE.isUp()) {
+			/*
 			if (Button.ENTER.isDown()) {
 				g.clear();
 				Delay.msDelay(500);
 				action++;
 				drawMainMenuUpdate();
 			}
-
-			if (inPickUp || Button.RIGHT.isDown()) {
+			*/
+			if (inPickUp) {
 				pickUp(this.quantity, this.weight);
 			}
 
-			if (inDropOff || Button.LEFT.isDown()) {
+			if (inDropOff) {
 				dropOff();
 			}
 
