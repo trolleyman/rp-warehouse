@@ -1,4 +1,7 @@
-package warehouse.pc.shared;
+package warehouse.pc.localisation;
+
+import warehouse.pc.shared.Direction;
+import warehouse.pc.shared.Map;
 
 public class Localisation {
 	private Map map;
@@ -19,5 +22,14 @@ public class Localisation {
 		
 	}
 	
+	public boolean isFinished() {
+		
+	}
 	
+	public int getLikelyX() {
+		// Get maximum probability x-coordinate
+	}
+	public int getLikelyY() {
+		// Get maximum probability y-coordinate
+	}
 }
