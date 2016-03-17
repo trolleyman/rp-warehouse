@@ -257,10 +257,24 @@ public class Map {
 		return positions;
 	}
 
-
-
-
-
+	/**
+	 *Gets the probability of being at position x,y,facing...given the distance the sensor is reading.
+	 *Currently ignores previous probabilities and sets all possible locations to equal probabilities.
+	 *e.g - if there are 5 positions the robot can be in based on the distance it recieves and the direction it is facing,
+	 *this will return 0.2 if we call it with any of these positions, or 0 for a position that isn't possible.
+	 */
+	public double getProbability(int x,int y,Direction facing,int dist)
+	{
+		ArrayList<Integer[]> possPositions = possiblePositions(dist,facing);
+		for (int i = 0;i < possPositions.size();i++)
+		{
+			if (possPositions.get(i)[0] == x && possPositions.get(i)[1] == y)
+			{
+				return (1/possPositions.size());
+			}
+		}
+		return 0;
+	}
 
 
 
