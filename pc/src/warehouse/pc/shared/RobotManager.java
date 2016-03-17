@@ -76,6 +76,8 @@ public class RobotManager implements Runnable, RobotListener {
 						break;
 					}
 				}
+				
+				// TODO: If any robot doesn't have a command, recalculate.
 			}
 			
 			try {
@@ -142,6 +144,7 @@ public class RobotManager implements Runnable, RobotListener {
 		// TODO: Update the position of the robots.
 		//HashMap<Robot, Direction> newRobotDirections = new HashMap<>();
 
+		ArrayList<Robot> readyRobots = new ArrayList<>();
 		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
 			CommandQueue q = e.getValue();
 			Command com = q.getCommands().peekFirst();
@@ -149,21 +152,23 @@ public class RobotManager implements Runnable, RobotListener {
 				com = Command.WAIT;
 			} else {
 				q.getCommands().pop();
+				readyRobots.add(e.getKey());
 			}
 			try {
+				System.out.println("Sending to " + e.getKey().getIdentity() + ": " + com);
 				mi.getServer().sendCommand(e.getKey(), com);
+				new RobotUpdater(e.getKey(), com).start();
 			} catch (IOException ex) {
 				System.out.println(e.getKey().getIdentity() + " disconnected.");
 				mi.removeRobot(e.getKey());
 				continue;
 			}
-			new RobotUpdater(e.getKey(), com).start();
 		}
 		
-		if (!robotCommands.isEmpty())
-			System.out.println("Robot Manager: Waiting for robots to reply 'Idle'...");
+		if (!readyRobots.isEmpty())
+			System.out.println("Robot Manager: Waiting for robots to reply 'ready'...");
 		
-		for (Robot robot : robotCommands.keySet()) {
+		for (Robot robot : readyRobots) {
 			try {
 				mi.getServer().waitForReady(robot.getName());
 			} catch (IOException ex) {
