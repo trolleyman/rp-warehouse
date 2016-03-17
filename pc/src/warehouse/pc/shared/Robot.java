@@ -1,6 +1,11 @@
 package warehouse.pc.shared;
 
+import lejos.pc.comm.NXTCommFactory;
+import lejos.pc.comm.NXTInfo;
+
 public class Robot implements Comparable<Robot> {
+	public static final float MAX_WEIGHT = 50.0f;
+	
 	private RobotIdentity identity;
 	// Current X Position of the Robot (horizontal axis)
 	private double xPos;
@@ -8,14 +13,16 @@ public class Robot implements Comparable<Robot> {
 	private double yPos;
 	// Which Direction the robot is facing clockwise in degrees relative to Y+
 	private double facing;
+	// Direction the robot is facing in a Direction
+	private Direction direction;
 	
 	public Robot(String _name, String _id, double _xPos, double _yPos, double _facing) {
 		this.identity = new RobotIdentity( _name, _id);
 		this.xPos = _xPos;
 		this.yPos = _yPos;
 		this.facing = _facing;
+		this.direction = Direction.fromFacing(facing);
 	}
-	
 	/**
 	 * Gets the robot's name
 	 */
@@ -53,6 +60,13 @@ public class Robot implements Comparable<Robot> {
 	}
 	
 	/**
+	 * Gets the direction the robot is facing (one of the four Directions)
+	 * @return the direction
+	 */
+	
+	public Direction getDirection(){ return this.direction;}
+	
+	/**
 	 * Gets the current direction the robot is facing in in degrees clockwise from the Y+ vector.
 	 */
 	public double getFacing() { return this.facing; }
@@ -66,6 +80,15 @@ public class Robot implements Comparable<Robot> {
 		facing = facing % 360.0;
 		if (facing < 0.0)
 			facing = facing + 360.0;
+		
+		direction = Direction.fromFacing(facing);
+		
+		update();
+	}
+	
+	public void setDirection(Direction _direction){
+		this.direction = _direction;
+		this.facing = direction.toFacing();
 		
 		update();
 	}
@@ -99,5 +122,17 @@ public class Robot implements Comparable<Robot> {
 	@Override
 	public int compareTo(Robot other) {
 		return this.getIdentity().toString().compareTo(other.getIdentity().toString());
+	}
+
+	public NXTInfo getNXTInfo() {
+		return new NXTInfo(NXTCommFactory.BLUETOOTH, getName(), getID());
+	}
+	
+	/**
+	 * Clones the robot
+	 */
+	@Override
+	public Robot clone() {
+		return new Robot(identity.name, identity.id, xPos, yPos, facing);
 	}
 }

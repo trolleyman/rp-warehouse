@@ -1,6 +1,6 @@
 package warehouse.pc.gui;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -18,10 +18,13 @@ import javax.swing.SpringLayout;
 import org.junit.Test;
 
 import warehouse.pc.shared.MainInterface;
+import warehouse.pc.shared.Map;
 import warehouse.pc.shared.Robot;
 
 @SuppressWarnings("serial")
 public class RobotEditor extends JPanel {
+	private Map map;
+	
 	private static String DEGREE_SYMBOL = "\u00B0";
 	
 	private Robot selectedRobot = null;
@@ -41,6 +44,8 @@ public class RobotEditor extends JPanel {
 	public RobotEditor() {
 		super();
 		
+		map = MainInterface.get().getMap();
+		
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		selectedRobotLabel = new JLabel("", JLabel.LEADING);
 		robotIDLabel = new JLabel("", JLabel.LEADING);
@@ -51,10 +56,10 @@ public class RobotEditor extends JPanel {
 		
 		this.setLayout(layout);
 		
-		xSpinner = new JSpinner(new SpinnerNumberModel(0.0, 0.0, MainInterface.get().getCurrentState().getMap().getWidth() - 1, 1.0));
+		xSpinner = new JSpinner(new SpinnerNumberModel(0.0, 0.0, map.getWidth() - 1, 1.0));
 		xSpinner.setPreferredSize(new Dimension(50, (int) xSpinner.getPreferredSize().getHeight()));
 		
-		ySpinner = new JSpinner(new SpinnerNumberModel(0.0, 0.0, MainInterface.get().getCurrentState().getMap().getHeight() - 1, 1.0));
+		ySpinner = new JSpinner(new SpinnerNumberModel(0.0, 0.0, map.getHeight() - 1, 1.0));
 		ySpinner.setPreferredSize(new Dimension(50, (int) ySpinner.getPreferredSize().getHeight()));
 		
 		posButton = new JButton("Set Position");

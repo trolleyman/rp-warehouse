@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
-import warehouse.pc.shared.Bearing;
+import warehouse.pc.shared.Command;
 import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
@@ -62,7 +62,7 @@ public class RouteFinder {
 	 * @return the ArrayList of directions
 	 */
 
-	public LinkedList<Bearing> findRoute(Junction start, Junction goal, Direction direction) {
+	public ArrayList<Direction> findRoute(Junction start, Junction goal, Direction direction) {
 
 		// if the goal or start is not on the map return null
 
@@ -105,7 +105,8 @@ public class RouteFinder {
 
 			if ((currentJunct.getX() == goal.getX()) && (currentJunct.getY() == goal.getY())) {
 				ArrayList<Direction> directionList = makePath(start, goal);
-				return getActualDirections(directionList, direction);
+				//return getActualDirections(directionList, direction);
+				return directionList;
 			}
 
 			// remove the junction from the frontier and add it to the explored
@@ -205,7 +206,7 @@ public class RouteFinder {
 	 * @return the manhattan distance heuristic
 	 */
 
-	private int getHeuristic(Junction current, Junction goal) {
+	public int getHeuristic(Junction current, Junction goal) {
 		return (Math.abs(current.getX() - goal.getX()) + Math.abs(current.getY() - goal.getY()));
 	}
 	
@@ -216,29 +217,29 @@ public class RouteFinder {
 	 * @return a list of directions relative to the robot
 	 */
 
-	private LinkedList<Bearing> getActualDirections(ArrayList<Direction> oldList, Direction direction) {
+	LinkedList<Command> getActualDirections(ArrayList<Direction> oldList, Direction direction) {
 
-		LinkedList<Bearing> newList = new LinkedList<Bearing>();
+		LinkedList<Command> newList = new LinkedList<Command>();
 
 		for (int i = 0; i < oldList.size(); i++) {
 
 			Direction currentDirection = oldList.get(i);
-			Bearing bearing = null;
+			Command bearing = null;
 
 			switch (direction) {
 			case Y_POS:
 				switch (currentDirection) {
 				case Y_POS:
-					bearing = Bearing.FORWARD;
+					bearing = Command.FORWARD;
 					break;
 				case Y_NEG:
-					bearing = Bearing.BACKWARD;
+					bearing = Command.BACKWARD;
 					break;
 				case X_POS:
-					bearing = Bearing.RIGHT;
+					bearing = Command.RIGHT;
 					break;
 				case X_NEG:
-					bearing = Bearing.LEFT;
+					bearing = Command.LEFT;
 					break;
 
 				}
@@ -247,16 +248,16 @@ public class RouteFinder {
 			case Y_NEG:
 				switch (currentDirection) {
 				case Y_NEG:
-					bearing = Bearing.FORWARD;
+					bearing = Command.FORWARD;
 					break;
 				case Y_POS:
-					bearing = Bearing.BACKWARD;
+					bearing = Command.BACKWARD;
 					break;
 				case X_NEG:
-					bearing = Bearing.RIGHT;
+					bearing = Command.RIGHT;
 					break;
 				case X_POS:
-					bearing = Bearing.LEFT;
+					bearing = Command.LEFT;
 					break;
 				}
 				break;
@@ -264,16 +265,16 @@ public class RouteFinder {
 			case X_POS:
 				switch (currentDirection) {
 				case X_POS:
-					bearing = Bearing.FORWARD;
+					bearing = Command.FORWARD;
 					break;
 				case X_NEG:
-					bearing = Bearing.BACKWARD;
+					bearing = Command.BACKWARD;
 					break;
 				case Y_NEG:
-					bearing = Bearing.RIGHT;
+					bearing = Command.RIGHT;
 					break;
 				case Y_POS:
-					bearing = Bearing.LEFT;
+					bearing = Command.LEFT;
 					break;
 
 				}
@@ -282,16 +283,16 @@ public class RouteFinder {
 			case X_NEG:
 				switch (currentDirection) {
 				case X_NEG:
-					bearing = Bearing.FORWARD;
+					bearing = Command.FORWARD;
 					break;
 				case X_POS:
-					bearing = Bearing.BACKWARD;
+					bearing = Command.BACKWARD;
 					break;
 				case Y_POS:
-					bearing = Bearing.RIGHT;
+					bearing = Command.RIGHT;
 					break;
 				case Y_NEG:
-					bearing = Bearing.LEFT;
+					bearing = Command.LEFT;
 					break;
 
 				}
