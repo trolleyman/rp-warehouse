@@ -2,7 +2,21 @@ package warehouse.pc.localisation;
 
 import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Map;
-
+/***
+ *Class to represent localisation
+ *
+ *Still need :
+ *  some sort of procedure to follow when "lost". Maybe rotate 360 degrees, read distance every 90 degrees 
+ *  and call distance recieved to update the probabilities matrix.
+ *  if finished() returns true after this (should be unlikely, need to move around to get good probability),
+ *  then we should use getLikelyX / getLikelyY as our new accepted x,y coords. If finished returns false,
+ *  then we need to carry on with a (recursive?) procedure until we get enough information to determine location.
+ *  
+ *  This means this class should be able to send commands to the robot(s), or at least invoke another class to tell
+ *  the robots to follow the localise procedure.
+ *  
+ *  
+ */
 public class Localisation {
 	private static final double THRESHOLD = 0.9;
 	private Map map;
