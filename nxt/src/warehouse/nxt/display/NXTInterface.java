@@ -67,9 +67,8 @@ public class NXTInterface {
 		this.g = new Graphics();
 	}
 
-	// prints main Interface (testing)
+	// Prints Main Interface
 	public void show() {
-		Sound.setVolume(Sound.VOL_MAX / 4);
 		drawMainMenu();
 
 		while (Button.ESCAPE.isUp()) {

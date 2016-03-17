@@ -49,7 +49,7 @@ public class NXTMain {
 	
 	// Waits for a Connection, when one is succeeded, calls .startStreams and .startThreads
 	private void connect() {
-		this.robotInterface = new NXTInterface( "", "None", 0.0f, 0, 0, 0 );
+		this.robotInterface = new NXTInterface( "", 0, 0 );
 		
 		this.robotInterface.drawWaitForConnection(false);
 		this.connection = Bluetooth.waitForConnection();
