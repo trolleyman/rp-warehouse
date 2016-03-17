@@ -60,6 +60,7 @@ public class NXTInterface {
 	 */
 	// For testing with client info (like the final design)
 	public NXTInterface(String _robotName, int _x, int _y) {
+		Sound.setVolume(Sound.VOL_MAX / 4);
 		this.robotName = _robotName;
 		this.jobName = "None";
 		this.x = _x;
@@ -93,7 +94,7 @@ public class NXTInterface {
 	}
 
 	// displays Pick Up Interface
-	public void pickUp(int _quantity, float _weight) {
+	public boolean pickUp(int _quantity, float _weight) {
 
 		this.inPickUp = true;
 
@@ -123,7 +124,8 @@ public class NXTInterface {
 					g.setFont(Font.getDefaultFont());
 					g.clear();
 					counter = -1;
-					break;
+					//break;
+					return false;
 
 				}
 
@@ -196,9 +198,10 @@ public class NXTInterface {
 					pickUp(quantity, weight);
 				}
 			}
-
+			return true;
 			// counter = 0;
 		}
+		return true;
 	}
 
 	// Displays Drop Off Interface
@@ -310,12 +313,12 @@ public class NXTInterface {
 			g.drawLine(25, 45, 35, 38);
 			g.drawLine(25, 25, 25, 45);
 			break;
-		case 2: // Left
+		case 3: // Left
 			g.drawLine(15, 35, 22, 28);
 			g.drawLine(15, 35, 22, 42);
 			g.drawLine(15, 35, 35, 35);
 			break;
-		case 3: // Right
+		case 2: // Right
 			g.drawLine(35, 35, 28, 28);
 			g.drawLine(35, 35, 28, 42);
 			g.drawLine(15, 35, 35, 35);
@@ -424,10 +427,15 @@ public class NXTInterface {
 }
 
 /*
- * 1. Arrows (done) 2. Interface for client-in-waiting 3. Interface for
- * calibration 4. fix bugs of screen, g.clear() is not being called 5. check if
- * coordinates updates (ties in with localisation) 6. double check wrong
- * location with lenka. (may not need it) 7. make sure the right jobname is set
- * ... motion problems
+ * 4. fix bugs of screen, g.clear() is not being called
+ * 5. check if coordinates updates (ties in with localisation)
+ * 6. double check wrong location with lenka. (may not need it)
+ * 7. make sure the right jobname is set motion problems
+ * 
+ */
+/*
+ * 1) Fix null pointer / exception bug printing over interface (perhaps graceful exit)
+ * 2) after calibration, go to main menu and set to idle
+ * 3) make use of jobname, quanity, weight, and coordinates
  * 
  */
