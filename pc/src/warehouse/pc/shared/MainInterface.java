@@ -67,7 +67,7 @@ public class MainInterface {
 		jobList = new JobList("jobs.csv", itemList);
 		dropList = new DropList("drops.csv");
 		
-		jobSelector = new JobSelector(locList, itemList, jobList, dropList);
+		jobSelector = new JobSelector("locations.csv", "items.csv", "jobs.csv", "drops.csv", map);
 		
 		robotManager = new RobotManager();
 		this.addRobotListener(robotManager);

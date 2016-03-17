@@ -41,7 +41,7 @@ public class RobotManager implements Runnable, RobotListener {
 		
 		while (running) {
 			boolean sleep = false;
-			if (!robotJobs.isEmpty()) {
+			if (!robotJobs.isEmpty() && !paused) {
 				System.out.println("Robot Manager: Stepping system.");
 			} else {
 				//System.out.println("Robot Manager: No robots to manage.");
@@ -80,16 +80,16 @@ public class RobotManager implements Runnable, RobotListener {
 			
 			try {
 				if (sleep)
-					Thread.sleep(500);
+					Thread.sleep(100);
 			} catch (InterruptedException e) {
 				
 			}
 			
-			if (!robotCommands.isEmpty())
-				System.out.println("Robot Manager: Recalculating Paths...");
-			
-			if (nextStepRecalculate)
+			if (nextStepRecalculate) {
+				if (!robotCommands.isEmpty())
+					System.out.println("Robot Manager: Recalculating Paths...");
 				doRecalculate();
+			}
 		}
 	}
 	
@@ -189,6 +189,7 @@ public class RobotManager implements Runnable, RobotListener {
 	
 	public void resume() {
 		System.out.println("Robot Manager: Resuming.");
+		recalculate();
 		paused = false;
 	}
 	

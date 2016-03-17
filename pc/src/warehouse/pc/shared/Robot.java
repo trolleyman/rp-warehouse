@@ -81,11 +81,15 @@ public class Robot implements Comparable<Robot> {
 		if (facing < 0.0)
 			facing = facing + 360.0;
 		
+		direction = Direction.fromFacing(facing);
+		
 		update();
 	}
 	
 	public void setDirection(Direction _direction){
 		this.direction = _direction;
+		this.facing = direction.toFacing();
+		
 		update();
 	}
 	

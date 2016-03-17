@@ -8,6 +8,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import warehouse.pc.shared.MainInterface;
+
 public class JobSelectorTest {
 
 	JobSelector selector;
@@ -15,7 +17,7 @@ public class JobSelectorTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		selector = new JobSelector("locations.csv", "items.csv", "jobs.csv", "drops.csv");
+		selector = new JobSelector("locations.csv", "items.csv", "jobs.csv", "drops.csv", MainInterface.get().getMap());
 		jobList = selector.getList();
 	}
 

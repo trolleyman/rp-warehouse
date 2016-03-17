@@ -147,7 +147,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 						"Connection Error",
 						JOptionPane.WARNING_MESSAGE);
 				} else {
-					MainInterface.get().updateRobot(new Robot(info.name, info.deviceAddress, 0, 0, 0));
+					MainInterface.get().updateRobot(new Robot(info.name, info.deviceAddress, 0, 1, 0));
 				}
 			});
 			t.start();
