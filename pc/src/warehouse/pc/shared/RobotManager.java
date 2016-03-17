@@ -174,6 +174,14 @@ public class RobotManager implements Runnable, RobotListener {
 		}
 	}
 	
+	/**
+	 * Gets the commands for a robot.
+	 * @param robot
+	 */
+	public CommandQueue getCommands(Robot robot) {
+		return robotCommands.get(robot);
+	}
+	
 	public void pause() {
 		System.out.println("Robot Manager: Pausing.");
 		paused = true;
