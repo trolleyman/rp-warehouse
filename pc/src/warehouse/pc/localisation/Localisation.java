@@ -59,8 +59,36 @@ public class Localisation {
 	
 	public int getLikelyX() {
 		// Get maximum probability x-coordinate
+		double max = 0.0;
+		int likelyX = -1; //convention for unknown yet.
+		for (int y = 0;y < map.getHeight();y++)
+		{
+			for (int x = 0; x < map.getWidth();x++)
+			{
+				if (probabilities[y][x] > max)
+				{
+					max = probabilities[y][x];
+					likelyX = x;		
+				}
+			}
+		}
+		return likelyX;
 	}
 	public int getLikelyY() {
 		// Get maximum probability y-coordinate
+		double max = 0.0;
+		int likelyY = -1; //convention for unknown yet.
+		for (int y = 0;y < map.getHeight();y++)
+		{
+			for (int x = 0; x < map.getWidth();x++)
+			{
+				if (probabilities[y][x] > max)
+				{
+					max = probabilities[y][x];
+					likelyY = y;		
+				}
+			}
+		}
+		return likelyY;
 	}
 }
