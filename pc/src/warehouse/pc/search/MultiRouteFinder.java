@@ -71,11 +71,15 @@ public class MultiRouteFinder {
 		cameFrom = new HashMap<Junction, Junction>();
 
 		frontier.put(start, 0); // Initializes search
-		Junction currentJunct = null;
+		Junction currentJunct = start;	//	Assigning initial junction as start will immediately exit
+										//	search loop if already at goal
+		int timeStep = 0;
 		
 
 		//	Work in progress
-		for(int timeStep = 0; timeStep < reserveTable.length; timeStep++) {		//	New loop for WHCA*, removes while frontier is !empty
+		
+		while (((currentJunct.getX() != goal.getX()) || (currentJunct.getY() != goal.getY()) )
+				&& (timeStep < reserveTable.length)) {		//	New loop for WHCA*, removes while frontier is !empty
 																	//	This finder should be run multiple times for each robot
 																	// until EVERY robot is at its destination, at which point they
 																	//	can drop off, pickup etc. That is, perhaps routeplanner.java
@@ -119,11 +123,11 @@ public class MultiRouteFinder {
 
 			for (Junction neighbour : currentJunct.getNeighbours()) {
 
-				if ((neighbour == null) || (searched.contains(neighbour)) || ((reserveTable[timeStep].contains(neighbour)) && (reserveTable[timeStep + 1].contains(neighbour))))
+				if ((neighbour == null) || (searched.contains(neighbour)) || (reserveTable[timeStep].contains(neighbour)) || (reserveTable[timeStep + 1].contains(neighbour)))
 					continue;
 				
 				else if (reserveTable[timeStep].contains(neighbour) || reserveTable[timeStep + 1].contains(neighbour))
-					//	Add wait command
+					//	Add wait command NOT IMPLEMENTED
 
 				if (!frontier.containsKey(neighbour)) {
 					// For safety
@@ -137,12 +141,23 @@ public class MultiRouteFinder {
 
 				cameFrom.put(neighbour, currentJunct);
 			}
+			
+			timeStep++;
 		}
 		
-
-			ArrayList<Direction> directionList = makePath(start, currentJunct);
-			return getActualDirections(directionList, direction);
-
+			if ((start.getX() == goal.getX()) && (start.getY() == goal.getY())) {
+				
+				while(timeStep < reserveTable.length) {
+					
+					reserveTable[timeStep].add(start);
+				}
+				return null;
+			}
+			
+			else {
+				ArrayList<Direction> directionList = makePath(start, currentJunct);
+				return getActualDirections(directionList, direction);
+			}
 	}
 
 	private ArrayList<Direction> makePath(Junction start, Junction current) {
