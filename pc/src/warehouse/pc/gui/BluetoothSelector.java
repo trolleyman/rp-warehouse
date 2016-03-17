@@ -39,11 +39,12 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 		//setMaximumSize(new Dimension(100, 10));
 		this.addItem(SEARCHING);
 		
-		// Debugging stuff so I don't
+		// Debugging stuff
 		// Bot Lee - 001653155F9C
 		// Obama - 0016531B550D
-		/*
-		NXTInfo info = new NXTInfo(NXTCommFactory.BLUETOOTH, "Bot Lee", "001653155F9C");
+		// Daniel - 0016530FD7F4
+		//*
+		NXTInfo info = new NXTInfo(NXTCommFactory.BLUETOOTH, "Dobot", "0016530FD7F4");
 		{boolean result = MainInterface.get().getServer().open(info);
 		openingConnection = false;
 		if (!result) {

@@ -9,6 +9,7 @@ import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.robotics.subsumption.Arbitrator;
 import lejos.robotics.subsumption.Behavior;
+import warehouse.nxt.display.NXTInterface;
 import warehouse.nxt.motion.behaviours.JunctionBehaviour;
 import warehouse.nxt.motion.behaviours.TrackingBehaviour;
 import warehouse.nxt.utils.DifferentialDriveRobot;
@@ -28,7 +29,7 @@ public class NXTMotion {
 	
 	private final UltrasonicSensor eyes;
 
-	public NXTMotion( Robot _myself ) {
+	public NXTMotion( NXTInterface in, Robot _myself ) {
 		
 		this.myself = _myself;
 		this.moves = new ArrayList<String>();
@@ -40,8 +41,8 @@ public class NXTMotion {
 		DifferentialPilot pilot = robot.getDifferentialPilot();
 		LightSensor left =  new LightSensor( SensorPort.S3 );
 		LightSensor right = new LightSensor( SensorPort.S1 );
-		LightSensor middle = new LightSensor( SensorPort.S1 );
-		LightSensorCalibration calibration = new LightSensorCalibration( left, right, middle );
+		LightSensor middle = new LightSensor( SensorPort.S2 );
+		LightSensorCalibration calibration = new LightSensorCalibration( in, left, right, middle );
 		
 		this.eyes = new UltrasonicSensor( SensorPort.S4 );
 		

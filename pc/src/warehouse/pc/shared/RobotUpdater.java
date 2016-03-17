@@ -14,36 +14,34 @@ public class RobotUpdater extends Thread {
 	}
 	
 	private void interpolateTravel(double travel, double speed) {
-		double travelX = travel * Math.sin(robot.getFacing());
-		double travelY = travel * Math.cos(robot.getFacing());
+		double travelX = travel * Math.sin(Math.toRadians(robot.getFacing()));
+		double travelY = travel * Math.cos(Math.toRadians(robot.getFacing()));
 		
 		double totalDist = Math.sqrt(travelX*travelX + travelY*travelY);
-		long finishedTime = System.nanoTime() + (long) ((totalDist / speed) * 1_000_000_000L);
-		System.out.println("Now     : " + System.nanoTime());
-		System.out.println("Finished: " + finishedTime);
+		long finishedTime = System.currentTimeMillis() + (long) (totalDist / speed * 1000.0);
 		
 		double startX = robot.getX();
 		double startY = robot.getY();
 		
 		double percentDone = 0.0;
-		long start = System.nanoTime();
-		long now = System.nanoTime();
+		long start = System.currentTimeMillis();
+		long now = System.currentTimeMillis();
 		while (now < finishedTime) {
-			percentDone = (start - now) / (start - finishedTime);
-			System.out.println("Precent Done: " +  percentDone);
+			percentDone = ((double)(start - now)) / (start - finishedTime);
 			
-			double dx = mi.getMap().getGridX(travelX * percentDone);
-			double dy = mi.getMap().getGridY(travelY * percentDone);
+			double dx = travelX * percentDone;
+			double dy = travelY * percentDone;
 			
+			System.out.println("p:" + percentDone + ", x:" + (startX + dx) + ", y:" + (startY + dy));
 			robot.setX(startX + dx);
 			robot.setY(startY + dy);
 			
 			try {
-				Thread.sleep(100);
+				Thread.sleep(50);
 			} catch (InterruptedException e) {
 				
 			}
-			now = System.nanoTime();
+			now = System.currentTimeMillis();
 		}
 		
 		robot.setX(startX + travelX);
@@ -51,61 +49,56 @@ public class RobotUpdater extends Thread {
 	}
 	
 	private void interpolateRotate(double rotate, double rotationSpeed) {
-		long finishedTime = System.nanoTime() + (long) ((rotate / rotationSpeed) * 1_000_000_000L);
+		long finishedTime = System.currentTimeMillis() + (long)(rotate / rotationSpeed * 1000.0);
 		
 		double startRotate = robot.getFacing();
 		
 		double percentDone = 0.0;
-		long start = System.nanoTime();
-		long now = System.nanoTime();
+		long start = System.currentTimeMillis();
+		long now = System.currentTimeMillis();
 		while (now < finishedTime) {
 			percentDone = (start - now) / (start - finishedTime);
-			System.out.println("Precent Done: " +  percentDone);
 			
 			double dr = rotate * percentDone;
 			
 			robot.setFacing(startRotate + dr);
 			
 			try {
-				Thread.sleep(100);
+				Thread.sleep(50);
 			} catch (InterruptedException e) {
 				
 			}
-			now = System.nanoTime();
+			now = System.currentTimeMillis();
 		}
 		robot.setFacing(startRotate + rotate);
 	}
 	
 	@Override
 	public void run() {
-		double speed = Constants.ROBOT_SPEED;
+		double cellSize = MainInterface.get().getMap().getCellSize();
+		double speed = Constants.ROBOT_SPEED / cellSize;
 		double rotationSpeed = Constants.ROBOT_ROTATION_SPEED;
 		
-		double travelBefore = 0.0;
-		double travelAfter = 0.0;
+		double travel = 1.0;
 		double rotate = 0.0;
 		
 		switch (com) {
 		case FORWARD:
-			travelBefore = 0.05;
 			break;
 		case BACKWARD:
 			rotate = 180.0;
 			break;
 		case LEFT:
-			travelBefore = 0.07;
 			rotate = -90.0;
 			break;
 		case RIGHT:
-			travelBefore = 0.07;
 			rotate = 90.0;
 			break;
 		default:
 			return;
 		}
 		
-		interpolateTravel(travelBefore, speed);
 		interpolateRotate(rotate, rotationSpeed);
-		interpolateTravel(travelAfter, speed);
+		interpolateTravel(travel, speed);
 	}
 }
