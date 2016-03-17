@@ -97,7 +97,7 @@ public class NXTInterface {
 	}
 
 	// displays Pick Up Interface
-	public void pickUp(int _quantity, float _weight) {
+	public boolean pickUp(int _quantity, float _weight) {
 
 		this.inPickUp = true;
 
@@ -127,7 +127,8 @@ public class NXTInterface {
 					g.setFont(Font.getDefaultFont());
 					g.clear();
 					counter = -1;
-					break;
+					//break;
+					return false;
 
 				}
 
@@ -200,7 +201,7 @@ public class NXTInterface {
 					pickUp(quantity, weight);
 				}
 			}
-
+			return true;
 			// counter = 0;
 		}
 	}
