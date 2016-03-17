@@ -17,14 +17,14 @@ public class RobotManager implements IRobotManager, RobotListener {
 	private HashMap<Robot, ArrayDeque<Job>> robotJobs = new HashMap<>();
 	private HashMap<Robot, CommandQueue> robotCommands = new HashMap<>();
 	private HashMap<Robot, LinkedBlockingQueue<String>> robotMessages = new HashMap<>();
-	private MainInterface mi;
+	private volatile MainInterface mi;
 	
-	private ArrayList<Robot> robotsToAdd = new ArrayList<>();
-	private ArrayList<Robot> robotsToRemove = new ArrayList<>();
+	private volatile ArrayList<Robot> robotsToAdd = new ArrayList<>();
+	private volatile ArrayList<Robot> robotsToRemove = new ArrayList<>();
 	
-	boolean running;
-	private boolean nextStepRecalculate;
-	private boolean paused;
+	private volatile boolean running;
+	private volatile boolean nextStepRecalculate;
+	private volatile boolean paused;
 	
 	public RobotManager() {
 		
@@ -37,6 +37,7 @@ public class RobotManager implements IRobotManager, RobotListener {
 		doRecalculate();
 		nextStepRecalculate = false;
 		running = true;
+		paused = true;
 		
 		while (running) {
 			boolean sleep = false;
@@ -175,11 +176,13 @@ public class RobotManager implements IRobotManager, RobotListener {
 	
 	@Override
 	public void pause() {
+		System.out.println("Robot Manager: Pausing.");
 		paused = true;
 	}
 	
 	@Override
 	public void resume() {
+		System.out.println("Robot Manager: Resuming.");
 		paused = false;
 	}
 	
@@ -196,7 +199,7 @@ public class RobotManager implements IRobotManager, RobotListener {
 	@Override
 	public void robotAdded(Robot _r) {
 		synchronized (this) {
-			System.out.println(_r.getIdentity() + " added to Robot Manager queue.");
+			System.out.println("Robot Manager: " + _r.getIdentity() + " added.");
 			robotsToAdd.add(_r);
 			recalculate();
 		}
