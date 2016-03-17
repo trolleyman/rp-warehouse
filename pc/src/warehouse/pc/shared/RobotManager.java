@@ -13,7 +13,7 @@ import warehouse.pc.job.Job;
 import warehouse.pc.job.JobSelector;
 import warehouse.pc.search.RoutePlanner;
 
-public class RobotManager implements IRobotManager, RobotListener {
+public class RobotManager implements Runnable, RobotListener {
 	private HashMap<Robot, ArrayDeque<Job>> robotJobs = new HashMap<>();
 	private HashMap<Robot, CommandQueue> robotCommands = new HashMap<>();
 	private HashMap<Robot, LinkedBlockingQueue<String>> robotMessages = new HashMap<>();
@@ -174,19 +174,16 @@ public class RobotManager implements IRobotManager, RobotListener {
 		}
 	}
 	
-	@Override
 	public void pause() {
 		System.out.println("Robot Manager: Pausing.");
 		paused = true;
 	}
 	
-	@Override
 	public void resume() {
 		System.out.println("Robot Manager: Resuming.");
 		paused = false;
 	}
 	
-	@Override
 	public void recalculate() {
 		nextStepRecalculate = true;
 	}
