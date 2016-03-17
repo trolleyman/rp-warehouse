@@ -56,7 +56,7 @@ public class MultiRouteFinder {
 	 * @return the ArrayList of directions
 	 */
 
-	public LinkedList<Command> findRoute(Junction start, Junction goal, Direction direction, ArrayList<Junction>[] reserveTable) {
+	public RoutePackage findRoute(Junction start, Junction goal, Direction direction, ArrayList<Junction>[] reserveTable) {
 
 		start = map.getJunction(start.getX(), start.getY());
 		goal = map.getJunction(goal.getX(), goal.getY());
@@ -110,8 +110,13 @@ public class MultiRouteFinder {
 			// if the current junction is the goal return the path
 
 			if ((currentJunct.getX() == goal.getX()) && (currentJunct.getY() == goal.getY())) {
-				ArrayList<Direction> directionList = makePath(start, goal);
-				return getActualDirections(directionList, direction);
+				
+				RoutePackage rPackage = new RoutePackage();
+				ArrayList<Direction> directionList = makePath(start, goal, rPackage);
+				rPackage.setCommandList(getActualDirections(directionList, direction));
+				rPackage.setDirectionList(directionList);
+				
+				return rPackage;
 			}
 
 			// remove the junction from the frontier and add it to the explored
@@ -155,12 +160,18 @@ public class MultiRouteFinder {
 			}
 			
 			else {
-				ArrayList<Direction> directionList = makePath(start, currentJunct);
-				return getActualDirections(directionList, direction);
+				RoutePackage rPackage = new RoutePackage();
+				ArrayList<Direction> directionList = makePath(start, currentJunct, rPackage);
+				
+				rPackage.setDirectionList(directionList);
+				rPackage.setCommandList(getActualDirections(directionList, direction));
+				
+				return rPackage;
+				
 			}
 	}
 
-	private ArrayList<Direction> makePath(Junction start, Junction current) {
+	private ArrayList<Direction> makePath(Junction start, Junction current, RoutePackage rPackage) {
 
 		ArrayList<Junction> revPath = new ArrayList<Junction>();
 
@@ -206,6 +217,8 @@ public class MultiRouteFinder {
 			}
 		}
 
+		rPackage.setJunctionList(revPath);
+		
 		return moveList;
 	}
 

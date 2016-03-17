@@ -11,33 +11,45 @@ public class RoutePackage {
 
 	private ArrayList<Direction> directionList;
 	private LinkedList<Command> commandList;
-	private ArrayList<ArrayList<Junction>> reservedJunctions;
-	private int robotPriority;
+	private ArrayList<Junction> junctionList;
 	
-	public RoutePackage(ArrayList<Direction> directionList, LinkedList<Command> commandList, ArrayList<ArrayList<Junction>> reservedJunctions, int robotPriority){
-		
-		this.directionList = directionList;
-		this.commandList = commandList;
-		this.reservedJunctions = reservedJunctions;
-		this.robotPriority = robotPriority;
+	public RoutePackage(){
 		
 	}
 	
-	public ArrayList<Direction> getDirections(){
+	public RoutePackage(ArrayList<Direction> directionList, LinkedList<Command> commandList, ArrayList<Junction> junctionList){
+		
+		this.directionList = directionList;
+		this.commandList = commandList;
+		this.junctionList = junctionList;
+		
+	}
+	
+	public ArrayList<Direction> getDirectionList(){
 		return directionList;
 	}
 
 	public LinkedList<Command> getCommandList() {
 		return commandList;
 	}
-
-	public ArrayList<ArrayList<Junction>> getReservedJunctions() {
-		return reservedJunctions;
+	
+	public ArrayList<Junction> getJunctionList(){
+		return junctionList;
 	}
 
-	public int getRobotPriority() {
-		return robotPriority;
+	public void setDirectionList(ArrayList<Direction> directionList) {
+		this.directionList = directionList;
 	}
+
+	public void setCommandList(LinkedList<Command> commandList) {
+		this.commandList = commandList;
+	}
+
+	public void setJunctionList(ArrayList<Junction> junctionList) {
+		this.junctionList = junctionList;
+	}
+	
+	
 	
 	
 	
