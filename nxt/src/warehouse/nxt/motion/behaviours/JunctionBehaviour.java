@@ -33,6 +33,15 @@ public class JunctionBehaviour implements Behavior {
 		return this.calibration.rightSensor.readValue() < THRESHOLD;
 	}
 	
+	private void rotate(boolean turnRight) {
+		while (turnRight && !rightOnLine()) {
+			pilot.rotateRight();
+		}
+		while (!turnRight && !leftOnLine()) {
+			pilot.rotateLeft();
+		}
+	}
+	
 	@Override
 	public boolean takeControl() {
 		if( this.shouldTakeControl ) { return true; }
@@ -57,8 +66,8 @@ public class JunctionBehaviour implements Behavior {
 		
 		switch( direction ) {
 			case "Backward": pilot.rotate( 180 ); break;
-			case "Left"    : pilot.travel( TURNING_OFFSET ); pilot.rotate( 90 ); break;
-			case "Right"   : pilot.travel( TURNING_OFFSET ); pilot.rotate( -90 ); break;
+			case "Left"    : pilot.travel( TURNING_OFFSET ); rotate(false); break;
+			case "Right"   : pilot.travel( TURNING_OFFSET ); rotate(true); break;
 			case "Forward" : pilot.travel( 0.05 ); break;
 			default        : return;
 		}
