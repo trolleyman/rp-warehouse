@@ -206,7 +206,7 @@ public class RouteFinder {
 	 * @return the manhattan distance heuristic
 	 */
 
-	private int getHeuristic(Junction current, Junction goal) {
+	public int getHeuristic(Junction current, Junction goal) {
 		return (Math.abs(current.getX() - goal.getX()) + Math.abs(current.getY() - goal.getY()));
 	}
 	
