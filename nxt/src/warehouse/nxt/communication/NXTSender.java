@@ -42,6 +42,7 @@ public class NXTSender extends Thread {
 	public void run() {
 		
 		try {
+			sendReady();
 			long lastDistance = System.currentTimeMillis();
 			while( true ) {
 				
@@ -49,17 +50,31 @@ public class NXTSender extends Thread {
 				catch( Exception _exception ) { /* I guess we dont care */ }
 				
 				if (System.currentTimeMillis() - lastDistance > 200) {
-					this.toPC.writeUTF( "Distance:" + this.robotMotion.getDistance() );
+					synchronized (this) {
+						this.toPC.writeUTF( "Distance:" + this.robotMotion.getDistance() );
+					}
 					lastDistance = System.currentTimeMillis();
 				}
 				
-				if( this.statusUpdated() ) { this.toPC.writeUTF( this.myself.status ); this.updateOldRobot(); }
-				if( this.positionUpdated() ) { this.robotInterface.updatePosition( this.myself.x, this.myself.y ); this.updateOldRobot(); }
+				synchronized (this) {
+					if( this.statusUpdated() ) { this.toPC.writeUTF( this.myself.status ); this.updateOldRobot(); }
+					if( this.positionUpdated() ) { this.robotInterface.updatePosition( this.myself.x, this.myself.y ); this.updateOldRobot(); }
+				}
 				
 			}
 		}
 		catch( IOException _exception ) { this.throwError( "NXTSender:" + _exception.getMessage() ); }
 		
+	}
+	
+	public void sendReady() throws IOException {
+		send("ready");
+	}
+	
+	public void send(String msg) throws IOException {
+		synchronized (this) {
+			this.toPC.writeUTF(msg);
+		}
 	}
 	
 	// Checks if the Robot instance has changed by comparison to the initialized Instance

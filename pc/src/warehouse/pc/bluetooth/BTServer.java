@@ -11,6 +11,7 @@ import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
 import warehouse.pc.shared.Command;
+import warehouse.pc.shared.MainInterface;
 import warehouse.pc.shared.Robot;
 
 /**
@@ -150,9 +151,29 @@ public class BTServer {
 	
 	public void waitForReady(String robotName) throws IOException {
 		String msg = null;
-		while (msg == null || !msg.equalsIgnoreCase("Idle")) {
+		while (msg == null || !msg.equalsIgnoreCase("ready")) {
 			msg = listen(robotName);
-			System.out.println("Wanted 'Idle', recieved: " + msg);
+			System.out.println("Recv from " + robotName + ": Wanted 'ready', got: " + msg);
+		}
+	}
+	
+	public void waitForReady(Robot robot) throws IOException {
+		String msg = null;
+		while (msg == null || !msg.equalsIgnoreCase("ready")) {
+			msg = listen(robot.getName());
+			String dist = "Distance:";
+			if (msg.startsWith(dist)) {
+				String distString = msg.substring(dist.length(), msg.length() - 1);
+				try {
+					int d = Integer.parseInt(distString);
+					MainInterface.get().distanceRecieved(robot, d);
+					// Ignore message: don't print out debug message
+					continue;
+				} catch (NumberFormatException e) {
+					// Ignore.
+				}
+			}
+			System.out.println("Recv from " + robot.getName() + ": Wanted 'ready', got: " + msg);
 		}
 	}
 	

@@ -39,14 +39,16 @@ public class NXTReceiver extends Thread {
 	private Robot myself;					// Robot Object Instance for this robot
 	private NXTMotion robotMotion;			// Robot Motion Control Object
 	private NXTInterface robotInterface;	// Robot Interface Control Object
+	private NXTSender sender;
 	
-	public NXTReceiver( DataInputStream _fromPC, BTConnection _connection, Robot _myself, NXTMotion _rMotion, NXTInterface _rInterface ) {
+	public NXTReceiver( DataInputStream _fromPC, BTConnection _connection, Robot _myself, NXTMotion _rMotion, NXTInterface _rInterface, NXTSender _sender) {
 	
 		this.fromPC = _fromPC;
 		this.connection = _connection;
 		this.myself = _myself;
 		this.robotMotion = _rMotion;
 		this.robotInterface = _rInterface;
+		this.sender = _sender;
 		
 	}
 	
@@ -65,15 +67,21 @@ public class NXTReceiver extends Thread {
 	}
 	
 	// Categorises commands into Go or Do
-	private void find( String _action ) {
+	private void find( String _action ) throws IOException {
 		
 		String[] explosion = MyString.split( ":", _action );
 		String type = explosion[ 0 ];
 		
 		String[] data = MyString.split( "," , explosion[ 1 ] );
 		switch( type ) {
-			case "Do" : this.action( data );break;
-			case "Go" : this.move( data );break;
+			case "Do" :
+				this.action( data );
+				sender.sendReady();
+				break;
+			case "Go" :
+				this.move( data );
+				sender.sendReady();
+				break;
 			case "Cancel Job" : this.cancel( data );
 			default : this.throwError( "NXTReceiver: Unknown data format received." ); break;
 		}
