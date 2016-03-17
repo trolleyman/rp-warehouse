@@ -61,6 +61,7 @@ public class NXTMain {
 		this.robotInterface.setRobotName(this.myself.name);
 		
 		this.robotMotion = new NXTMotion( this.robotInterface, this.myself );
+		this.robotInterface.show();
 		this.startThreads();
 	}
 	

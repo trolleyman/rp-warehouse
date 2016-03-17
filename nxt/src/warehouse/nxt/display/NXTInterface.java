@@ -70,9 +70,7 @@ public class NXTInterface {
 	// prints main Interface (testing)
 	public void show() {
 		Sound.setVolume(Sound.VOL_MAX / 4);
-
-		drawWaitForConnection(false);
-		drawCalibrationPhase(true, true);
+		
 		drawMainMenu();
 
 		while (Button.ESCAPE.isUp()) {
