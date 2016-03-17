@@ -62,14 +62,14 @@ public class NXTMain {
 	private void connect() {
 		this.robotInterface = new NXTInterface( "", "None", 0.0f, 0, 0, 0 );
 		
-		this.robotInterface.drawWaitForConnection(false);
+		this.robotInterface.drawWaitForConnection( false );
 		this.connection = Bluetooth.waitForConnection();
-		this.robotInterface.drawWaitForConnection(true);
+		this.robotInterface.drawWaitForConnection( true );
 		Delay.msDelay(1000);
 		
 		this.startStreams();
 		this.getMyself();
-		this.robotInterface.setRobotName(this.myself.name);
+		this.robotInterface.setRobotName( this.myself.name );
 		
 		this.robotMotion = new NXTMotion( this.robotInterface, this.myself );
 		this.startThreads();
@@ -114,7 +114,6 @@ public class NXTMain {
 	
 	
 	
-	private void say( String _message ) { System.out.println( _message ); }	// Helper method to print
 	public static void main( String[] _arguments ) { new NXTMain(); }
 	
 }

@@ -64,7 +64,7 @@ public class NXTReceiver extends Thread {
 		}
 	}
 	
-	// Categorises commands into Go or Do
+	// Categorizes commands into Go or Do
 	private void find( String _action ) {
 		
 		String[] explosion = MyString.split( ":", _action );

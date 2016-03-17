@@ -29,6 +29,10 @@ public class NXTSender extends Thread {
 	private Robot myself_old;				// new Instance of the initial Robot Object which will not be changed anywhere but this class
 	private NXTMotion robotMotion;			// Robot Motion Object which handles movements and Robot side actions
 	private NXTInterface robotInterface;	// Robot Interface Object which handles display
+	
+	private boolean stateChange;
+	private boolean statusChange;
+	private boolean positionChange;
 
 	public NXTSender( DataOutputStream _toPC, Robot _myself, NXTMotion _rMotion, NXTInterface _rInterface  ) {
 		this.toPC = _toPC;
@@ -42,19 +46,13 @@ public class NXTSender extends Thread {
 	public void run() {
 		
 		try {
-			long lastDistance = System.currentTimeMillis();
 			while( true ) {
 				
-				try { Thread.sleep( 10 ); }
-				catch( Exception _exception ) { /* I guess we dont care */ }
+				this.updateCheck();
 				
-				if (System.currentTimeMillis() - lastDistance > 200) {
-					this.toPC.writeUTF( "Distance:" + this.robotMotion.getDistance() );
-					lastDistance = System.currentTimeMillis();
-				}
-				
-				if( this.statusUpdated() ) { this.toPC.writeUTF( this.myself.status ); this.updateOldRobot(); }
-				if( this.positionUpdated() ) { this.robotInterface.updatePosition( this.myself.x, this.myself.y ); this.updateOldRobot(); }
+				if( this.stateChange ) { this.toPC.writeUTF( "Ready" ); this.toPC.writeUTF( "" + this.robotMotion.getDistance() ); this.myself.ready = false; this.stateChange = false; }
+				if( this.statusChange ) { this.toPC.writeUTF( this.myself.status ); this.statusChange = false; }
+				if( this.positionChange ) { this.robotInterface.updatePosition( this.myself.x, this.myself.y ); this.positionChange = false; }
 				
 			}
 		}
@@ -62,22 +60,18 @@ public class NXTSender extends Thread {
 		
 	}
 	
-	// Checks if the Robot instance has changed by comparison to the initialized Instance
-	private boolean statusUpdated() {
-		return ( !this.myself.status.equals( this.myself_old.status ) );
-	}
-	
-	// Same as statusUpdated but for the position
-	private boolean positionUpdated() {
-		return ( ( this.myself.x != this.myself_old.x ) || ( this.myself.y != this.myself_old.y ) );
-	}
-	
-	// Resets the old robot as this one for later comparisons
-	private void updateOldRobot() {
+	// Checks for important updates of states between the old robot and the current one
+	private void updateCheck() {
+		switch( this.myself.differentiate( this.myself_old ) ) {
+			case "stateChange" : this.stateChange = true; break;
+			case "statusChange" : this.statusChange = true; break;
+			case "positionChange" : this.positionChange = true; break;
+			default : break;
+		}
+		
 		this.myself_old = new Robot( this.myself );
 	}
-	
-	
+		
 	// Helper Method to throw errors
 	private void throwError( String _message ) {
 		System.err.print( "\n" + _message );

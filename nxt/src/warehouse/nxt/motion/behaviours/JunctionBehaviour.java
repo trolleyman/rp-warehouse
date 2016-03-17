@@ -59,11 +59,11 @@ public class JunctionBehaviour implements Behavior {
 			case "Backward": pilot.rotate( 180 ); break;
 			case "Left"    : pilot.travel( TURNING_OFFSET ); pilot.rotate( 90 ); break;
 			case "Right"   : pilot.travel( TURNING_OFFSET ); pilot.rotate( -90 ); break;
-			case "Forward" : pilot.travel( 0.05 ); break;
+			case "Forward" : pilot.travel( TURNING_OFFSET ); break;
 			default        : return;
 		}
 		
-		shouldTakeControl = false;
+		this.shouldTakeControl = false;
 	}
 
 	@Override
