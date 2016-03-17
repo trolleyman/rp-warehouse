@@ -44,18 +44,7 @@ public class NXTMain {
 	private NXTInterface robotInterface;
 	
 	public NXTMain() {
-		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-			@Override
-			public void uncaughtException(Thread _t, Throwable _e) {
-				System.err.println("Exception");
-				_e.printStackTrace();
-				Button.waitForAnyPress();
-				System.exit(1);
-			}
-		});
-		
 		this.connect();
-
 	}
 	
 	// Waits for a Connection, when one is succeeded, calls .startStreams and .startThreads
@@ -113,8 +102,9 @@ public class NXTMain {
 	}
 	
 	
-	
-	private void say( String _message ) { System.out.println( _message ); }	// Helper method to print
 	public static void main( String[] _arguments ) { new NXTMain(); }
 	
+	public static void error(String msg) {
+		// TODO: Something here
+	}
 }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import lejos.nxt.Button;
 import lejos.nxt.comm.BTConnection;
 import warehouse.nxt.display.NXTInterface;
+import warehouse.nxt.main.NXTMain;
 import warehouse.nxt.motion.NXTMotion;
 import warehouse.nxt.utils.MyString;
 import warehouse.nxt.utils.Robot;
@@ -62,7 +63,7 @@ public class NXTReceiver extends Thread {
 				this.find( fromServer );
 			}
 		} catch( IOException _exception ) {
-			this.throwError( "Recieve: " + _exception.getMessage() );
+			NXTMain.error( "Server closed." );
 		}
 	}
 	
@@ -83,7 +84,7 @@ public class NXTReceiver extends Thread {
 				sender.sendReady();
 				break;
 			case "Cancel Job" : this.cancel( data );
-			default : this.throwError( "NXTReceiver: Unknown data format received." ); break;
+			default : NXTMain.error( "NXTReceiver: Unknown data format received." ); break;
 		}
 	}
 	
@@ -91,7 +92,7 @@ public class NXTReceiver extends Thread {
 	// Usage: "Cancel Job: Shut Down"
 	//    OR: "Cancel Job: <String: NextJobName>"
 	private void cancel( String[] _next ) {
-		if( _next[ 0 ].equals( "Shut Down" ) ) { this.connection.close(); throwError("Shut Down"); }
+		if( _next[ 0 ].equals( "Shut Down" ) ) { this.connection.close(); NXTMain.error("Shut Down"); }
 		else {
 			this.robotInterface.setJobName( _next[ 0 ] );
 			this.myself.jobName = _next[ 0 ];
@@ -107,7 +108,7 @@ public class NXTReceiver extends Thread {
 		switch( _action[ 0 ] ) {
 			case "Shut Down"  :
 				this.connection.close();
-				throwError("Shut Down");
+				NXTMain.error("Shut Down");
 				break;
 			case "Pick Up"	  :
 				this.myself.status = "Picking Items";
@@ -119,7 +120,7 @@ public class NXTReceiver extends Thread {
 				this.myself.status = "Finished";
 				break;
 			default           :
-				this.throwError( "NXTReceiver: Unknown data format received after 'Do: '." );
+				NXTMain.error( "NXTReceiver: Unknown data format received after 'Do: '." );
 				break;
 		}
 	}
@@ -152,16 +153,8 @@ public class NXTReceiver extends Thread {
 			this.robotMotion.go( "Backward", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) );
 			break;
 		default 		:
-			this.throwError( "NXTReceiver: Unknown data format received after 'Go: '." );
+			NXTMain.error( "NXTReceiver: Unknown data format received after 'Go: '." );
 			break;
 		}
 	}
-	
-	// Helper method to throw errors
-	private void throwError( String _message ) {
-		this.connection.close(); System.err.println( _message );
-		Button.waitForAnyPress();
-		System.exit( 0 );
-	}
-	
 }
