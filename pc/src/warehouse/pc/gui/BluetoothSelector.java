@@ -133,11 +133,9 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	public void connect() {
 		synchronized (this) {
 			openingConnection = true;
-			int i = this.getSelectedIndex();
-			if (i == -1 || infos.length == 0 || i >= infos.length)
+			NXTInfo info = getSelectedRobot();
+			if (info == null)
 				return;
-			
-			NXTInfo info = infos[i];
 			
 			// Call open() in communication module to connect to a new robot.
 			Thread t = new Thread(() -> {
