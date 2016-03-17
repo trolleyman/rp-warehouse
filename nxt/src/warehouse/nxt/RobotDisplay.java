@@ -1,3 +1,4 @@
+package warehouse.nxt;
 
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
@@ -66,6 +67,7 @@ public class RobotDisplay implements DisplayInterface {
 	/**
 	 * Shows the Van Gogh masterpiece on screen
 	 */
+	@Override
 	public void show() {
 		Sound.setVolume(Sound.VOL_MAX / 4);
 		
@@ -103,6 +105,7 @@ public class RobotDisplay implements DisplayInterface {
 	/**
 	 * Shows the interface when arriving at the pick up point
 	 */
+	@Override
 	public void pickUp(int quantity, int weight) {
 		int counter = 0;
 		this.quantity = quantity;
@@ -135,7 +138,7 @@ public class RobotDisplay implements DisplayInterface {
 				if (Button.ESCAPE.isDown()) {
 					g.clear();
 					g.setFont(Font.getLargeFont());
-					this.inPickUp = false; 
+					this.inPickUp = false;
 					g.drawString("At", 49, 6, Graphics.HCENTER);
 					g.drawString("Wrong", 49, 23, Graphics.HCENTER);
 					g.drawString("Location!", 49, 39, Graphics.HCENTER);
@@ -222,6 +225,7 @@ public class RobotDisplay implements DisplayInterface {
 	/**
 	 * Shows the interface when reaching the drop off point
 	 */
+	@Override
 	public void dropOff() {
 		Sound.beepSequence();
 		this.inDropOff = true;
@@ -345,27 +349,33 @@ public class RobotDisplay implements DisplayInterface {
 	}
 
 	// setter methods
+	@Override
 	public void setDropOff(boolean value) {
 		inDropOff = value;
 	}
 
+	@Override
 	public void setPickUp(boolean value) {
 		inPickUp = value;
 	}
 
+	@Override
 	public void setJobName(String value) {
-			jobName = value;			
+			jobName = value;
 			
 	}
 
+	@Override
 	public void setQuantity(int value) {
 		quantity = value;
 	}
 
+	@Override
 	public void setWeight(int value) {
 		weight = value;
 	}
 
+	@Override
 	public void directionUpdate(String direction) {
 		g.clear();
 		if (direction == "forward")

@@ -8,6 +8,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import lejos.nxt.Button;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
+import lejos.util.Delay;
 import warehouse.nxt.communication.NXTReceiver;
 import warehouse.nxt.communication.NXTSender;
 import warehouse.nxt.display.NXTInterface;
@@ -53,31 +54,25 @@ public class NXTMain {
 			}
 		});
 		
-		this.say( "Waiting for connection." );
 		this.connect();
 
 	}
 	
 	// Waits for a Connection, when one is succeeded, calls .startStreams and .startThreads
 	private void connect() {
+		this.robotInterface = new NXTInterface( "", "None", 0.0f, 0, 0, 0 );
+		
+		this.robotInterface.drawWaitForConnection(false);
 		this.connection = Bluetooth.waitForConnection();
+		this.robotInterface.drawWaitForConnection(true);
+		Delay.msDelay(1000);
 		
 		this.startStreams();
 		this.getMyself();
-		this.initRobotInterface();
-		this.initRobotMotion();
-		this.startThreads();
+		this.robotInterface.setRobotName(this.myself.name);
 		
-		this.robotInterface.show();
-	}
-	
-	// Initialize Robot Interface
-	private void initRobotInterface() {
-		this.robotInterface = new NXTInterface( this.myself );
-	}
-	
-	private void initRobotMotion() {
-		this.robotMotion = new NXTMotion( this.myself );
+		this.robotMotion = new NXTMotion( this.robotInterface, this.myself );
+		this.startThreads();
 	}
 	
 	// Initializes the I/O Streams
