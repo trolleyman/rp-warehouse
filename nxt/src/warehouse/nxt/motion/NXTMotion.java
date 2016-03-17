@@ -12,6 +12,7 @@ import lejos.robotics.subsumption.Behavior;
 import warehouse.nxt.display.NXTInterface;
 import warehouse.nxt.motion.behaviours.JunctionBehaviour;
 import warehouse.nxt.motion.behaviours.TrackingBehaviour;
+import warehouse.nxt.motion.behaviours.WaitingBehaviour;
 import warehouse.nxt.utils.DifferentialDriveRobot;
 import warehouse.nxt.utils.Robot;
 import warehouse.nxt.utils.WheeledRobotConfiguration;
@@ -26,6 +27,8 @@ public class NXTMotion {
 	
 	private TrackingBehaviour trackingBehaviour;
 	private JunctionBehaviour junctionBehaviour;
+	private WaitingBehaviour waitingBehaviour;
+	private Arbitrator arbitrator;
 	
 	private final UltrasonicSensor eyes;
 
@@ -34,7 +37,7 @@ public class NXTMotion {
 		this.myself = _myself;
 		this.moves = new ArrayList<String>();
 
-		this.provider = new SetPath(moves);
+		this.provider = new SetPath( moves );
 		
 		WheeledRobotConfiguration config = new WheeledRobotConfiguration( 0.056f, 0.111f, 0.111f, Motor.C, Motor.B );
 		DifferentialDriveRobot robot = new DifferentialDriveRobot( config );
@@ -46,19 +49,21 @@ public class NXTMotion {
 		
 		this.eyes = new UltrasonicSensor( SensorPort.S4 );
 		
-		trackingBehaviour = new TrackingBehaviour( pilot, calibration, provider );
-		junctionBehaviour = new JunctionBehaviour( pilot, calibration, provider );
+		this.trackingBehaviour = new TrackingBehaviour( pilot, calibration, this.provider );
+		this.junctionBehaviour = new JunctionBehaviour( pilot, calibration, this.provider );
+		this.waitingBehaviour = new WaitingBehaviour( this.provider, this.myself );
+		
+		this.arbitrator = new Arbitrator( ( new Behavior[] { this.trackingBehaviour, this.junctionBehaviour, this.waitingBehaviour } ), true );
+		this.arbitrator.start();
+		
 	}
 	
-	public void go(String _direction, int _x, int _y) {
+	public void go( String _direction, int _x, int _y ) {
 		//System.out.println("Go:" + _direction);
 		this.moves.add(_direction);
-		Arbitrator arby = new Arbitrator(new Behavior[] {trackingBehaviour, junctionBehaviour}, true);
-		arby.start();
 		
 		this.myself.x = _x;
 		this.myself.y = _y;
-		this.myself.status = "Idle";
 	}
 	
 	public int getDistance() {
