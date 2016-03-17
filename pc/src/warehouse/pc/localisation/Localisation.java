@@ -44,6 +44,17 @@ public class Localisation {
 	
 	public boolean isFinished() {
 		// If one location is above THRESHOLD
+		for (int y = 0;y < map.getHeight();y++)
+		{
+			for (int x = 0;x < width;x++)
+			{
+				if (probabilities[y][x] > THRESHOLD)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	public int getLikelyX() {
