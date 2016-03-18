@@ -102,7 +102,7 @@ public class JobInfo extends JPanel implements RobotListener {
 	}
 	
 	public void update() {
-		// Update jobs
+		// Update jobs TODO: Synchronize
 		ArrayList<Pair<Robot, Job>> newJobs = new ArrayList<>();
 		
 		RobotManager man = mi.getRobotManager();

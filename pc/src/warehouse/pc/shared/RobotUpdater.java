@@ -57,10 +57,10 @@ public class RobotUpdater extends Thread {
 		long start = System.currentTimeMillis();
 		long now = System.currentTimeMillis();
 		while (now < finishedTime) {
-			percentDone = (start - now) / (start - finishedTime);
+			percentDone = (start - now) / (double) (start - finishedTime);
 			
 			double dr = rotate * percentDone;
-			
+			System.out.println("p:" + percentDone + ", dr:" + (dr) + ", r:" + (startRotate + dr));
 			robot.setFacing(startRotate + dr);
 			
 			try {
