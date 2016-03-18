@@ -166,7 +166,13 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 			ArrayList<NXTInfo> combined = new ArrayList<>();
 			combined.addAll(defaultInfos);
 			for (int i = 0; i < infos.length; i++) {
-				if (!defaultInfos.contains(infos[i])) {
+				boolean defaultContains = false;
+				for (NXTInfo info : defaultInfos) {
+					if (info.name.equals(infos[i].name) && info.deviceAddress.equalsIgnoreCase(infos[i].deviceAddress)) {
+						defaultContains = true;
+					}
+				}
+				if (!defaultContains) {
 					combined.add(infos[i]);
 				}
 			}
