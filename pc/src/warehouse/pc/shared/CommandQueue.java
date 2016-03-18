@@ -61,4 +61,8 @@ public class CommandQueue{
 		return commands;
 	}
 	
+	public String toString(){
+		return commands.toString();
+	}
+	
 }

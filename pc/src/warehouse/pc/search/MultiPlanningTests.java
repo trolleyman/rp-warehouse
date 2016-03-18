@@ -19,6 +19,8 @@ public class MultiPlanningTests {
 	static Map mapA;
 
 	static Robot robotA;
+	static Robot robotB;
+	static Robot robotC;
 
 	static Direction xp = Direction.X_POS;
 	static Direction xn = Direction.X_NEG;
@@ -37,11 +39,16 @@ public class MultiPlanningTests {
 	static Item crackers;
 
 	static ArrayList<Junction> bases;
-	static HashMap<Robot, LinkedList<Job>> map;
-
+	
+	static HashMap<Robot, LinkedList<Job>> map1;
+	static HashMap<Robot, LinkedList<Job>> map2;
+	static HashMap<Robot, LinkedList<Job>> map3;
+	
 	public static void main(String[] args) {
 
 		robotA = new Robot("george", "george", 0, 0, 0);
+		robotB = new Robot("jason", "jason", 1, 0, 0);
+		robotC = new Robot("lenka", "lenka", 2, 0, 0);
 		
 		mapA = TestMaps.TEST_MAP2;
 
@@ -49,7 +56,10 @@ public class MultiPlanningTests {
 		lego = new Item("lego", 20, 10f, 1, 1);
 		crackers = new Item("crackers", 1, 5f, 4, 0);
 
-		map = new HashMap<Robot, LinkedList<Job>>();
+		map1 = new HashMap<Robot, LinkedList<Job>>();
+		map2 = new HashMap<Robot, LinkedList<Job>>();
+		map3 = new HashMap<Robot, LinkedList<Job>>();
+		
 		bases = new ArrayList<Junction>();
 
 		bases.add(mapA.getJunction(0, 0));
@@ -75,10 +85,16 @@ public class MultiPlanningTests {
 
 		jobA.add(new Job(1, listB, 75, 0));
 
-		map.put(robotA, jobA);
+		map1.put(robotA, jobA);
+		map1.put(robotB, jobB);
+		map1.put(robotC, jobC);
+		
+		plannerA = new MultiRoutePlanner(mapA, 60f, map1, bases, 4);
 
-		plannerA = new MultiRoutePlanner(mapA, 60f, map, bases, 10);
-
+		plannerA.computeCommands();
+		
+		System.out.println(plannerA.getCommands(robotA));
+		
 
 	}
 

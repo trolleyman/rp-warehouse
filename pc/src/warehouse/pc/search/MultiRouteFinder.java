@@ -62,7 +62,7 @@ public class MultiRouteFinder {
 
 		start = map.getJunction(start.getX(), start.getY());
 		goal = map.getJunction(goal.getX(), goal.getY());
-
+		
 		if (!nodes.contains(start) || !nodes.contains(goal)) {
 			return null;
 		}
@@ -132,10 +132,10 @@ public class MultiRouteFinder {
 
 				if ((neighbour == null) || (searched.contains(neighbour))
 						|| (reserveTable[timeStep].contains(neighbour))
-						|| (reserveTable[timeStep + 1].contains(neighbour)))
+						|| arrayPlusOne(reserveTable, timeStep, neighbour)) {
 					continue;
-
-				else if (reserveTable[timeStep].contains(neighbour) || reserveTable[timeStep + 1].contains(neighbour))
+				} else if (reserveTable[timeStep].contains(neighbour)
+						|| arrayPlusOne(reserveTable, timeStep, neighbour))
 					// Add wait command NOT IMPLEMENTED
 
 					if (!frontier.containsKey(neighbour)) {
@@ -166,12 +166,26 @@ public class MultiRouteFinder {
 		else {
 			RoutePackage rPackage = new RoutePackage();
 			ArrayList<Direction> directionList = makePath(start, currentJunct, rPackage);
-
+			
 			rPackage.setDirectionList(directionList);
 			rPackage.setCommandList(getActualDirections(directionList, direction));
 
 			return rPackage;
 
+		}
+
+	}
+
+	private boolean arrayPlusOne(ArrayList<Junction>[] a, int x, Junction j) {
+
+		try {
+			if (a[x + 1].contains(j)) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (ArrayIndexOutOfBoundsException e) {
+			return false;
 		}
 
 	}
@@ -190,10 +204,13 @@ public class MultiRouteFinder {
 			revPath.add(cameFrom.get(current));
 			current = cameFrom.get(current);
 		}
+		
+		
 
 		// reverse the list (it currently goes goal -> start)
 
 		Collections.reverse(revPath);
+		System.out.println(revPath);
 
 		// convert the list of nodes into a list of directions (relative to
 		// north)
@@ -224,10 +241,12 @@ public class MultiRouteFinder {
 
 		rPackage.setJunctionList(revPath);
 
+		System.out.println(moveList);
+		
 		return moveList;
 	}
 
-	private int getHeuristic(Junction current, Junction goal) {
+	public int getHeuristic(Junction current, Junction goal) {
 		return (Math.abs(current.getX() - goal.getX()) + Math.abs(current.getY() - goal.getY()));
 	}
 
