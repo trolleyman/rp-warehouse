@@ -22,6 +22,7 @@ public class Connection {
 	
 	public void close() {
 		try {
+			send("Shut Down");
 			this.toRobot.close();
 			this.fromRobot.close();
 		} catch (IOException e) {
