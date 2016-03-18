@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
+import com.sun.jndi.rmi.registry.ReferenceWrapper;
+
 import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
@@ -33,6 +35,8 @@ public class MultiRoutePlanner {
 	private Float maxWeight;
 	private HashMap<Robot, Float> weights;
 	private ArrayList<Junction> bases;
+	private int timeWindow;
+	private HashMap<Robot, ArrayList<ItemCollection>> weightedJobs;
 
 	/**
 	 * Create a new RoutePlanner for a map
@@ -50,7 +54,7 @@ public class MultiRoutePlanner {
 	 */
 
 	public MultiRoutePlanner(Map _map, Float _maxWeight, HashMap<Robot, LinkedList<Job>> _jobs,
-			ArrayList<Junction> _dropList) {
+			ArrayList<Junction> _dropList, int timeWindow) {
 
 		finder = new MultiRouteFinder(_map);
 		maxWeight = _maxWeight;
@@ -58,26 +62,54 @@ public class MultiRoutePlanner {
 		map = _map;
 
 		pairedCommands = new HashMap<Robot, CommandQueue>();
-
+		weightedJobs = new HashMap<Robot, ArrayList<ItemCollection>>();
 		// make a command queue for every robot, and put them in a hash table
 
 		int i = 0;
 
-		for (Entry<Robot, LinkedList<Job>> entry : pairedJobs.entrySet()) {
-
-			setUpRobots(entry.getKey(), i);
-			pairedCommands.put(entry.getKey(), new CommandQueue());
-		}
-
 		bases = _dropList;
 		weights = new HashMap<Robot, Float>();
 
-		// set the weight for every robot to be 0 (carrying nothing)
+		for (Entry<Robot, LinkedList<Job>> entry : pairedJobs.entrySet()) {
 
-		for (Entry<Robot, CommandQueue> entry : pairedCommands.entrySet()) {
-
+			setUpRobots(entry.getKey(), i);
+			i++;
+			pairedCommands.put(entry.getKey(), new CommandQueue());
 			weights.put(entry.getKey(), 0f);
+			ItemCollection itemColl = new ItemCollection();
+			weightedJobs.put(entry.getKey(), new ArrayList<ItemCollection>());
+			weightedJobs.get(entry.getKey()).add(itemColl);
 
+			for (Job job : entry.getValue()) {
+
+				ArrayList<ItemQuantity> tempItems = job.getItems();
+				
+				
+
+				for (ItemQuantity item : tempItems) {
+
+					float totalWeight = item.getItem().getWeight() * item.getQuantity();
+
+					if ((totalWeight + weights.get(entry.getKey())) <= maxWeight) {
+						weights.put(entry.getKey(), weights.get(entry.getKey()) + totalWeight);
+						itemColl.addItem(item);
+						System.out.println(weightedJobs);
+
+					} else {
+
+						itemColl = new ItemCollection();
+						itemColl.addItem(item);
+						weightedJobs.get(entry.getKey()).add(itemColl);
+						weights.put(entry.getKey(), totalWeight);
+						System.out.println(weightedJobs);
+					}
+				}
+			}
+
+		}
+		
+		for(Entry<Robot, ArrayList<ItemCollection>> entry : weightedJobs.entrySet()){
+			System.out.println(entry.getValue());
 		}
 
 	}
@@ -177,205 +209,281 @@ public class MultiRoutePlanner {
 
 	public void computeCommands() {
 
+		// we need to work on each robot at the same time, so we get all the job
+		// queues
 
-		for (Entry<Robot, LinkedList<Job>> entry : pairedJobs.entrySet()) {
+		ArrayList<ItemCollection> queue1 = weightedJobs.get(robot1);
+		ArrayList<ItemCollection> queue2 = weightedJobs.get(robot2);
+		ArrayList<ItemCollection> queue3 = weightedJobs.get(robot3);
 
-			LinkedList<Job> queue1 = pairedJobs.get(robot1); // getting the
-																// queue of jobs
-			LinkedList<Job> queue2 = pairedJobs.get(robot2);
-			LinkedList<Job> queue3 = pairedJobs.get(robot3);
+		// since all robots will be done at the same stage we don't need to
+		// iterate over robots
 
-			// this assumes the queue is already in the order we
-			// want the robot to pick them up in
+		// find the longest queue to iterate over
 
-			double longestList = Math.max(queue1.size(), Math.max(queue2.size(), queue3.size()));
+		double longestList = Math.max(queue1.size(), Math.max(queue2.size(), queue3.size()));
 
-			for (int j = 0; j < longestList; j++) {
+		for (int j = 0; j < longestList; j++) {
 
-				Job job1 = new Job(0, new ArrayList<ItemQuantity>(), 0, 0);
-				Job job2 = new Job(0, new ArrayList<ItemQuantity>(), 0, 0);
-				Job job3 = new Job(0, new ArrayList<ItemQuantity>(), 0, 0);
-				
-				if (j <= queue1.size()) {
-					job1 = queue1.get(j); // get the jth for robot1
+			ItemCollection job1 = new ItemCollection();
+			ItemCollection job2 = new ItemCollection();
+			ItemCollection job3 = new ItemCollection();
+
+			if (j <= queue1.size()) {
+				job1 = queue1.get(j); // get the jth for robot1
+			}
+
+			if (j <= queue2.size()) {
+				job2 = queue2.get(j); // get the jth for robot2
+			}
+
+			if (j <= queue3.size()) {
+				job3 = queue3.get(j); // get the jth for robot3
+			}
+
+			ArrayList<ItemQuantity> items1 = job1.getCollection();
+			ArrayList<ItemQuantity> items2 = job2.getCollection();
+			ArrayList<ItemQuantity> items3 = job3.getCollection();
+
+			double longestListItem = Math.max(items1.size(), Math.max(items2.size(), items3.size()));
+
+			for (int k = 0; k < longestListItem; k++) {
+
+				// this is really dodgy, feck it I'm George Kaye
+				// did Martin tell us not to do this?
+
+				@SuppressWarnings("unchecked")
+				ArrayList<Junction>[] reserveTable = (ArrayList<Junction>[]) new ArrayList<?>[3];
+
+				// these three arraylists hold the spaces for each robot,
+				// they will be added to the reserveTable array as they are
+				// filled
+
+				ArrayList<Junction> spaces1 = new ArrayList<>();
+				ArrayList<Junction> spaces2 = new ArrayList<>();
+				ArrayList<Junction> spaces3 = new ArrayList<>();
+
+				reserveTable[0] = spaces1;
+				reserveTable[1] = spaces2;
+				reserveTable[2] = spaces3;
+
+				Item item1 = null;
+				Item item2 = null;
+				Item item3 = null;
+				int quantity1 = 0;
+				int quantity2 = 0;
+				int quantity3 = 0;
+				boolean moved1 = false;
+				boolean moved2 = false;
+				boolean moved3 = false;
+				int steps1 = 0;
+				int steps2 = 0;
+				int steps3 = 0;
+
+				if (k <= items1.size()) {
+					item1 = items1.get(k).getItem();
+					quantity1 = items1.get(k).getQuantity();
 				}
 
-				if (j <= queue2.size()) {
-					job2 = queue2.get(j); // get the jth for robot2
+				if (k <= items2.size()) {
+					item2 = items2.get(k).getItem();
+					quantity2 = items2.get(k).getQuantity();
 				}
 
-				if (j <= queue3.size()) {
-					job3 = queue3.get(j); // get the jth for robot3
+				if (k <= items3.size()) {
+					item3 = items1.get(k).getItem();
+					quantity3 = items3.get(k).getQuantity();
 				}
 
-				
-				
-				ArrayList<ItemQuantity> items1 = job1.getItems();
-				ArrayList<ItemQuantity> items2 = job2.getItems();
-				ArrayList<ItemQuantity> items3 = job3.getItems();
-				
-				double longestListItem = Math.max(items1.size(), Math.max(items2.size(), items3.size()));
-				
-				for (int k = 0; k < longestListItem; k++) {
+				Junction start1 = map.getJunction((int) robot1.getX(), (int) robot1.getY());
+				Junction start2 = map.getJunction((int) robot2.getX(), (int) robot2.getY());
+				Junction start3 = map.getJunction((int) robot3.getX(), (int) robot3.getY());
 
-					@SuppressWarnings("unchecked")
-					ArrayList<Junction>[] reserveTable = (ArrayList<Junction>[]) new ArrayList<?>[pairedJobs.size()];
-					
-					Item item1 = null;
-					Item item2 = null;
-					Item item3 = null;
-					int quantity1 = 0;
-					int quantity2 = 0;
-					int quantity3 = 0;
-					boolean moved1 = false;
-					boolean moved2 = false;
-					boolean moved3 = false;
-					int steps1 = 0;
-					int steps2 = 0;
-					int steps3 = 0;
-					
-					if (k <= items1.size()) {
-						item1 = items1.get(k).getItem();
-						quantity1 = items1.get(k).getQuantity();
-					}
+				reserveTable[0].set(0, start1);
+				reserveTable[1].set(1, start2);
+				reserveTable[2].set(2, start3);
 
-					if (k <= items2.size()) {
-						item2 = items2.get(k).getItem();
-						quantity2 = items2.get(k).getQuantity();
-					}
+				Junction goal1 = null;
+				Junction goal2 = null;
+				Junction goal3 = null;
 
-					if (k <= items3.size()) {
-						item3 = items1.get(k).getItem();
-						quantity3  = items3.get(k).getQuantity();
-					}
-					
-					
+				Direction facing1 = robot1.getDirection();
+				Direction facing2 = robot2.getDirection();
+				Direction facing3 = robot3.getDirection();
 
-					Junction start1 = map.getJunction((int) robot1.getX(), (int) robot1.getY());
-					Junction start2 = map.getJunction((int) robot2.getX(), (int) robot2.getY());
-					Junction start3 = map.getJunction((int) robot3.getX(), (int) robot3.getY());
-					
-					Junction goal1 = null;
-					Junction goal2 = null;
-					Junction goal3 = null;
-					
-					
-					Direction facing1 = robot1.getDirection();
-					Direction facing2 = robot2.getDirection();
-					Direction facing3 = robot3.getDirection();
-					
-					// robot1 - highest priority
-					
-					if(weights.get(robot1) + quantity1 * item1.getWeight() > maxWeight){
+				ArrayList<Junction> junctionList1 = new ArrayList<>();
+				ArrayList<Junction> junctionList2 = new ArrayList<>();
+				ArrayList<Junction> junctionList3 = new ArrayList<>();
+
+				// robot1 - highest priority
+
+				if (item1 != null) {
+
+					if (weights.get(robot1) + quantity1 * item1.getWeight() > maxWeight) {
 						goal1 = findClosestBase(start1, facing1);
 					}
-					
-					RoutePackage rPackage = finder.findRoute(start1, goal1, facing1, reserveTable);
-					ArrayList<Direction> directList = rPackage.getDirectionList();
-					LinkedList<Command> list = rPackage.getCommandList();
-					ArrayList<Junction> junctionList = rPackage.getJunctionList();
 
-					for(int o = 0; o < reserveTable.length; o++){
-						
-						
-						reserveTable[o].set(o, junctionList.get(o));
-						
-					}
-					
-					
-					
-					
-					
-					// if adding that item would make the robot carry more than
-					// the max weight
-					// go to the nearest base instead and repeat this iteration
+					RoutePackage rPackage1 = finder.findRoute(start1, goal1, facing1, reserveTable);
+					ArrayList<Direction> directList1 = rPackage1.getDirectionList();
+					LinkedList<Command> list1 = rPackage1.getCommandList();
+					junctionList1 = rPackage1.getJunctionList();
 
-					if (weights.get(robot) + quantity * item.getWeight() > maxWeight) {
+					pairedCommands.get(robot1).addCommandList(list1);
+					pairedCommands.get(robot1).addCommand(Command.PICK);
 
-						facing = robot.getDirection();
-						goal = findClosestBase(start, facing);
+					for (int a = 0; a < junctionList1.size(); a++) {
 
-						RoutePackage rPackage = finder.findRoute(start, goal, facing);
-						directList = rPackage.getDirections();
-						list = rPackage.getCommandList();
-
-						weights.put(robot, 0f);
-						/*
-						 * System.out.println("base: " + start + " to " + goal);
-						 * System.out.println(directList);
-						 * System.out.println(list);
-						 */
-						pairedCommands.get(robot).addCommandList(list);
-						pairedCommands.get(robot).addCommand(Command.DROP);
-
-						// this should be updated by the robot, here for testing
-						// purposes
-
-						robot.setX(goal.getX());
-						robot.setY(goal.getY());
-
-						if (directList.size() != 0) {
-							robot.setDirection(directList.get(directList.size() - 1));
-						}
-
-						start = goal;
+						reserveTable[0].set(a, junctionList1.get(a));
 
 					}
-
-					facing = robot.getDirection();
-					goal = item.getJunction();
-
-					RoutePackage itemPackage = finder.findRoute(start, goal, facing);
-					directList = itemPackage.getDirections();
-					list = itemPackage.getCommandList();
-
-					Float newWeight = weights.get(robot) + quantity * item.getWeight();
-					weights.put(robot, newWeight);
-					/*
-					 * System.out.println("item: " + start + " to " + goal);
-					 * System.out.println(directList); System.out.println(list);
-					 */
-					pairedCommands.get(robot).addCommandList(list);
-					pairedCommands.get(robot).addCommand(Command.pickUp(quantity, item.getWeight()));
-
-					// this should be updated by the robot, here for testing
-					// purposes
-
-					robot.setX(goal.getX());
-					robot.setY(goal.getY());
-
-					if (directList.size() != 0) {
-						robot.setDirection(directList.get(directList.size() - 1));
-					}
-
 				}
 
+				// robot2 - second priority
+
+				if (item2 != null) {
+
+					if (weights.get(robot2) + quantity2 * item2.getWeight() > maxWeight) {
+						goal2 = findClosestBase(start2, facing2);
+
+					}
+
+					RoutePackage rPackage2 = finder.findRoute(start2, goal2, facing2, reserveTable);
+					ArrayList<Direction> directList2 = rPackage2.getDirectionList();
+					LinkedList<Command> list2 = rPackage2.getCommandList();
+					junctionList2 = rPackage2.getJunctionList();
+
+					pairedCommands.get(robot2).addCommandList(list2);
+					pairedCommands.get(robot2).addCommand(Command.PICK);
+
+					for (int a = 0; a < junctionList2.size(); a++) {
+
+						reserveTable[1].set(a, junctionList2.get(a));
+
+						if (a > junctionList1.size()) {
+							reserveTable[0].set(a, reserveTable[0].get(a - 1));
+							pairedCommands.get(robot1).addCommand(Command.WAIT);
+						}
+
+					}
+				}
+
+				// robot3 - lowest priority
+
+				if (item3 != null) {
+
+					if (weights.get(robot3) + quantity3 * item3.getWeight() > maxWeight) {
+						goal3 = findClosestBase(start3, facing3);
+
+					}
+
+					RoutePackage rPackage3 = finder.findRoute(start3, goal3, facing3, reserveTable);
+					ArrayList<Direction> directList3 = rPackage3.getDirectionList();
+					LinkedList<Command> list3 = rPackage3.getCommandList();
+					junctionList3 = rPackage3.getJunctionList();
+
+					pairedCommands.get(robot3).addCommandList(list3);
+					pairedCommands.get(robot3).addCommand(Command.PICK);
+
+					for (int a = 0; a < junctionList3.size(); a++) {
+
+						reserveTable[2].set(a, junctionList3.get(a));
+
+						if (a > junctionList1.size()) {
+							reserveTable[0].set(a, reserveTable[0].get(a - 1));
+							pairedCommands.get(robot1).addCommand(Command.WAIT);
+						}
+
+					}
+				}
+
+				// if adding that item would make the robot carry more than
+				// the max weight
+				// go to the nearest base instead and repeat this iteration
+
+				/*
+				 * if (weights.get(robot) + quantity * item.getWeight() >
+				 * maxWeight) {
+				 * 
+				 * facing = robot.getDirection(); goal = findClosestBase(start,
+				 * facing);
+				 * 
+				 * RoutePackage rPackage = finder.findRoute(start, goal,
+				 * facing); directList = rPackage.getDirections(); list =
+				 * rPackage.getCommandList();
+				 * 
+				 * weights.put(robot, 0f);
+				 * 
+				 * System.out.println("base: " + start + " to " + goal);
+				 * System.out.println(directList); System.out.println(list);
+				 * 
+				 * pairedCommands.get(robot).addCommandList(list);
+				 * pairedCommands.get(robot).addCommand(Command.DROP);
+				 * 
+				 * // this should be updated by the robot, here for testing //
+				 * purposes
+				 * 
+				 * robot.setX(goal.getX()); robot.setY(goal.getY());
+				 * 
+				 * if (directList.size() != 0) {
+				 * robot.setDirection(directList.get(directList.size() - 1)); }
+				 * 
+				 * start = goal;
+				 * 
+				 * }
+				 * 
+				 * facing = robot.getDirection(); goal = item.getJunction();
+				 * 
+				 * RoutePackage itemPackage = finder.findRoute(start, goal,
+				 * facing); directList = itemPackage.getDirections(); list =
+				 * itemPackage.getCommandList();
+				 * 
+				 * Float newWeight = weights.get(robot) + quantity *
+				 * item.getWeight(); weights.put(robot, newWeight);
+				 * 
+				 * System.out.println("item: " + start + " to " + goal);
+				 * System.out.println(directList); System.out.println(list);
+				 * 
+				 * pairedCommands.get(robot).addCommandList(list);
+				 * pairedCommands.get(robot).addCommand(Command.pickUp(quantity,
+				 * item.getWeight()));
+				 * 
+				 * // this should be updated by the robot, here for testing //
+				 * purposes
+				 * 
+				 * robot.setX(goal.getX()); robot.setY(goal.getY());
+				 * 
+				 * if (directList.size() != 0) {
+				 * robot.setDirection(directList.get(directList.size() - 1)); }
+				 * 
+				 * }
+				 * 
+				 * }
+				 * 
+				 * // robot has done its last job and must go home
+				 * 
+				 * Direction facing = robot.getDirection();
+				 * 
+				 * Junction start = map.getJunction((int) robot.getX(), (int)
+				 * robot.getY()); Junction goal = findClosestBase(start,
+				 * facing); RoutePackage homePackage = finder.findRoute(start,
+				 * goal, facing); ArrayList<Direction> directList =
+				 * homePackage.getDirections(); LinkedList<Command> list =
+				 * homePackage.getCommandList();
+				 * 
+				 * 
+				 * System.out.println("home: " + start + " to " + goal);
+				 * System.out.println(directList); System.out.println(list);
+				 * 
+				 * pairedCommands.get(robot).addCommandList(list);
+				 * pairedCommands.get(robot).addCommand(Command.DROP);
+				 * 
+				 * robot.setX(goal.getX()); robot.setY(goal.getY());
+				 * 
+				 * if (directList.size() != 0) {
+				 * robot.setDirection(directList.get(directList.size() - 1)); }
+				 */
+
 			}
-
-			// robot has done its last job and must go home
-
-			Direction facing = robot.getDirection();
-
-			Junction start = map.getJunction((int) robot.getX(), (int) robot.getY());
-			Junction goal = findClosestBase(start, facing);
-			RoutePackage homePackage = finder.findRoute(start, goal, facing);
-			ArrayList<Direction> directList = homePackage.getDirections();
-			LinkedList<Command> list = homePackage.getCommandList();
-
-			/*
-			 * System.out.println("home: " + start + " to " + goal);
-			 * System.out.println(directList); System.out.println(list);
-			 */
-			pairedCommands.get(robot).addCommandList(list);
-			pairedCommands.get(robot).addCommand(Command.DROP);
-
-			robot.setX(goal.getX());
-			robot.setY(goal.getY());
-
-			if (directList.size() != 0) {
-				robot.setDirection(directList.get(directList.size() - 1));
-			}
-
 		}
 
 	}
@@ -387,8 +495,8 @@ public class MultiRoutePlanner {
 
 		for (int l = 0; l < bases.size(); l++) {
 
-			RoutePackage basePackage = finder.findRoute(start, bases.get(l), facing);
-			list = basePackage.getDirections();
+			//RoutePackage basePackage = finder.findRoute(start, bases.get(l), facing);
+			//list = basePackage.getDirections();
 
 			if (list.size() < steps) {
 				closestBase = bases.get(l);

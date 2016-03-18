@@ -174,7 +174,7 @@ public class RoutePlanner {
 						goal = findClosestBase(start, facing);
 						
 						RoutePackage rPackage = finder.findRoute(start, goal, facing);
-						directList = rPackage.getDirections();
+						directList = rPackage.getDirectionList();
 						list = rPackage.getCommandList();
 						
 						weights.put(robot, 0f);
@@ -203,7 +203,7 @@ public class RoutePlanner {
 					goal = item.getJunction();
 
 					RoutePackage itemPackage = finder.findRoute(start, goal, facing);
-					directList = itemPackage.getDirections();
+					directList = itemPackage.getDirectionList();
 					list = itemPackage.getCommandList();
 						
 					Float newWeight = weights.get(robot) + quantity * item.getWeight();
@@ -236,7 +236,7 @@ public class RoutePlanner {
 			Junction start = map.getJunction((int)robot.getX(), (int)robot.getY());
 			Junction goal = findClosestBase(start, facing);
 			RoutePackage homePackage = finder.findRoute(start, goal, facing);
-			ArrayList<Direction> directList = homePackage.getDirections();
+			ArrayList<Direction> directList = homePackage.getDirectionList();
 			LinkedList<Command> list = homePackage.getCommandList();
 			
 			/*System.out.println("home: " + start + " to " + goal);
@@ -267,7 +267,7 @@ public class RoutePlanner {
 			for (int l = 0; l < bases.size(); l++){
 				
 				RoutePackage basePackage = finder.findRoute(start, bases.get(l), facing);	
-				list = basePackage.getDirections();
+				list = basePackage.getDirectionList();
 				
 				if(list.size() < steps){
 					closestBase = bases.get(l);

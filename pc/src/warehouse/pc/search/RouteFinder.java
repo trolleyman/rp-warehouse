@@ -104,11 +104,15 @@ public class RouteFinder {
 			// if the current junction is the goal return the path
 
 			if ((currentJunct.getX() == goal.getX()) && (currentJunct.getY() == goal.getY())) {
-				ArrayList<Direction> directionList = makePath(start, goal);
+				
+				RoutePackage rPackage = new RoutePackage();
+				ArrayList<Direction> directionList = makePath(start, goal, rPackage);
 				//return getActualDirections(directionList, direction);
-				ArrayList<ArrayList<Junction>> reserveTable = new ArrayList<>();
-				return new RoutePackage(directionList, getActualDirections(directionList, direction), reserveTable, 0);
+				rPackage.setCommandList(getActualDirections(directionList, direction));
+				
+				return rPackage;
 			}
+			
 
 			// remove the junction from the frontier and add it to the explored
 
@@ -148,7 +152,7 @@ public class RouteFinder {
 	 * @return the ArrayList of directions
 	 */
 
-	private ArrayList<Direction> makePath(Junction start, Junction current) {
+	private ArrayList<Direction> makePath(Junction start, Junction current, RoutePackage rPackage) {
 
 		ArrayList<Junction> revPath = new ArrayList<Junction>();
 
@@ -194,6 +198,9 @@ public class RouteFinder {
 			}
 		}
 
+		rPackage.setJunctionList(revPath);
+		rPackage.setDirectionList(moveList);
+		
 		return moveList;
 	}
 

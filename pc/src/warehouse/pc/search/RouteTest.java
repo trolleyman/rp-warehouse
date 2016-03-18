@@ -27,7 +27,7 @@ public class RouteTest {
 		
 		RoutePackage routes = testSearch.findRoute(testMap.getJunction(5, 1), testMap.getJunction(4, 0),
 				Direction.X_POS);
-		ArrayList<Direction> testArray = routes.getDirections();
+		ArrayList<Direction> testArray = routes.getDirectionList();
 		LinkedList<Command> directions = routes.getCommandList();
 
 		// prints a list of bearings
