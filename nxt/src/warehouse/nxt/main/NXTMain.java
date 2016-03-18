@@ -44,23 +44,12 @@ public class NXTMain {
 	private NXTInterface robotInterface;
 	
 	public NXTMain() {
-		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-			@Override
-			public void uncaughtException(Thread _t, Throwable _e) {
-				System.err.println("Exception");
-				_e.printStackTrace();
-				Button.waitForAnyPress();
-				System.exit(1);
-			}
-		});
-		
 		this.connect();
-
 	}
 	
 	// Waits for a Connection, when one is succeeded, calls .startStreams and .startThreads
 	private void connect() {
-		this.robotInterface = new NXTInterface( "", "None", 0.0f, 0, 0, 0 );
+		this.robotInterface = new NXTInterface( "", 0, 0 );
 		
 		this.robotInterface.drawWaitForConnection(false);
 		this.connection = Bluetooth.waitForConnection();
@@ -72,6 +61,7 @@ public class NXTMain {
 		this.robotInterface.setRobotName(this.myself.name);
 		
 		this.robotMotion = new NXTMotion( this.robotInterface, this.myself );
+		this.robotInterface.show();
 		this.startThreads();
 	}
 	
@@ -113,8 +103,9 @@ public class NXTMain {
 	}
 	
 	
-	
-	private void say( String _message ) { System.out.println( _message ); }	// Helper method to print
 	public static void main( String[] _arguments ) { new NXTMain(); }
 	
+	public static void error(String msg) {
+		// TODO: Something here
+	}
 }

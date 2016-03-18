@@ -1,6 +1,6 @@
 package warehouse.pc.gui;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
