@@ -3,8 +3,6 @@ package warehouse.pc.gui;
 import java.awt.Point;
 import java.util.Optional;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -12,7 +10,6 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SpringLayout;
 
-import sun.swing.SwingLazyValue;
 import warehouse.pc.shared.MainInterface;
 import warehouse.pc.shared.Map;
 

@@ -94,6 +94,8 @@ public class Gui implements Runnable, RobotListener {
 	public String selectedItemName;
 	private JFrame frame;
 	private RobotEditor editor;
+	private BluetoothSelector selector;
+	private JButton connectionButton;
 	
 	public Gui() {
 		selectedItemName = "";
@@ -146,20 +148,20 @@ public class Gui implements Runnable, RobotListener {
 		
 		inner.setLayout(new BoxLayout(inner, BoxLayout.PAGE_AXIS));
 		inner.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-		JButton connect = new JButton("Connect");
-		BluetoothSelector select = new BluetoothSelector();
-		select.setAlignmentX(BluetoothSelector.RIGHT_ALIGNMENT);
-		connect.setAlignmentX(JButton.RIGHT_ALIGNMENT);
-		connect.addActionListener(new ActionListener() {
+		connectionButton = new JButton("Connect");
+		selector = new BluetoothSelector(this);
+		selector.setAlignmentX(BluetoothSelector.RIGHT_ALIGNMENT);
+		connectionButton.setAlignmentX(JButton.RIGHT_ALIGNMENT);
+		connectionButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				select.connect();
+				selector.connect();
 			}
 		});
 		
-		inner.add(select);
+		inner.add(selector);
 		inner.add(Box.createVerticalStrut(5));
-		inner.add(connect);
+		inner.add(connectionButton);
 		connectBox.add(inner);
 		Dimension min = connectBox.getMinimumSize();
 		Dimension max = connectBox.getMinimumSize();
@@ -293,6 +295,9 @@ public class Gui implements Runnable, RobotListener {
 	}
 
 	public void update() {
+		if (!selector.isRunning()) {
+			connectionButton.setEnabled(false);
+		}
 		frame.repaint();
 	}
 	@Override

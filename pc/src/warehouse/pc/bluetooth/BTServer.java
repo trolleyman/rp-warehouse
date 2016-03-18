@@ -82,7 +82,6 @@ public class BTServer {
 				fromRobot = new DataInputStream(comm.getInputStream());
 			}
 		} catch (NXTCommException e) {
-			e.printStackTrace();
 			return false;
 		}
 		
@@ -94,7 +93,6 @@ public class BTServer {
 			sendToRobot(nxt.name, Format.robot(nxt.name, 0, 0, ""));
 			waitForReady(nxt.name);
 		} catch (IOException e) {
-			e.printStackTrace();
 			return false;
 		}
 
