@@ -30,6 +30,21 @@ public class Junction {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		return o instanceof Junction
+			&& ((Junction) o).x == x
+			&& ((Junction) o).y == y;
+	}
+	
+	@Override
+	public int hashCode() {
+		// Cantor pairing function
+		return ((Integer.hashCode(x) + Integer.hashCode(y)) *
+			((Integer.hashCode(x) + Integer.hashCode(y) + 1) / 2)
+			+ Integer.hashCode(y));
+	}
+	
+	@Override
 	public String toString() {
 		return "[" + x + ", " + y + "]";
 
