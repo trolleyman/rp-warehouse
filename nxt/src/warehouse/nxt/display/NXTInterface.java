@@ -71,26 +71,6 @@ public class NXTInterface {
 	// Prints Main Interface
 	public void show() {
 		drawMainMenu();
-
-		while (Button.ESCAPE.isUp()) {
-			/*
-			if (Button.ENTER.isDown()) {
-				g.clear();
-				Delay.msDelay(500);
-				action++;
-				drawMainMenuUpdate();
-			}
-			*/
-			if (inPickUp) {
-				pickUp(this.quantity, this.weight);
-			}
-
-			if (inDropOff) {
-				dropOff();
-			}
-
-			Thread.yield();
-		}
 	}
 
 	// displays Pick Up Interface
