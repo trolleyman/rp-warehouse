@@ -19,6 +19,15 @@ public class Connection {
 		this.fromRobot = fromRobot;
 		this.toRobot = toRobot;
 	}
+	
+	public void close() {
+		try {
+			this.toRobot.close();
+			this.fromRobot.close();
+		} catch (IOException e) {
+			
+		}
+	}
 
 	public boolean open(NXTComm comm) {
 		try {

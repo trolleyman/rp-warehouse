@@ -1,5 +1,6 @@
 package warehouse.pc.gui;
 
+import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -145,7 +147,14 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 						"Connection Error",
 						JOptionPane.WARNING_MESSAGE);
 				} else {
-					MainInterface.get().updateRobot(new Robot(info.name, info.deviceAddress, 0, 1, 0));
+					Optional<Point> op = StartingLocation.getFromUser(MainInterface.get().getMap());
+					if (!op.isPresent()) {
+						MainInterface.get().getServer().close(info);
+						return;
+					}
+					Point p = op.get();
+					
+					MainInterface.get().updateRobot(new Robot(info.name, info.deviceAddress, p.getX(), p.getY(), 0));
 				}
 			});
 			t.start();
@@ -179,15 +188,24 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 			
 			combined.sort(infoComparator);
 			
-			// Add to combo box
-			this.removeAllItems();
-			for (NXTInfo i : combined)
-				this.addItem(i.name);
+			String selectedRobotName = this.getSelectedItem().toString();
 			
-			// TODO: Keep same selected item across updates
-			this.setSelectedIndex(-1);
+			// Add to combo box
+			int selectedIndex = 0;
+			this.removeAllItems();
+			for (int i = 0; i < combined.size(); i++) {
+				this.addItem(combined.get(i).name);
+				if (combined.get(i).name.equals(selectedRobotName)) {
+					selectedIndex = i;
+				}
+			}
+			
+			// Keep selection across updates
+			this.setSelectedIndex(selectedIndex);
 			
 			if (error) {
+				this.removeAllItems();
+				this.setSelectedIndex(0);
 				this.addItem("Error: " + errorMessage);
 			} else if (combined.size() == 0) {
 				this.addItem(NO_ROBOTS_DETECTED);

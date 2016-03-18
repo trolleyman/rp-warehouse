@@ -190,6 +190,7 @@ public class MainInterface {
 			for (RobotListener l : robotListeners) {
 				l.robotRemoved(_r);
 			}
+			server.close(_r.getNXTInfo());
 		}
 	}
 	

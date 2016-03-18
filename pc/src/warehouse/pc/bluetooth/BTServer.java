@@ -46,6 +46,15 @@ public class BTServer {
 		new Thread(executer, "RouteExecuter").start();
 		connections = new HashMap<>();
 	}
+	
+	/**
+	 * Closes a connection with a robot
+	 */
+	public synchronized void close(NXTInfo nxt) {
+		Connection con = connections.get(nxt.name);
+		if (con != null)
+			con.close();
+	}
 
 	/**
 	 * Try to open a connection and threads to a NXT. First the in and output
