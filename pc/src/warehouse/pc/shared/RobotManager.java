@@ -23,6 +23,8 @@ public class RobotManager implements Runnable, RobotListener {
 	private volatile ArrayList<Robot> robotsToRemove = new ArrayList<>();
 	private volatile ArrayList<Robot> robotJobsToCancel = new ArrayList<>();
 	
+	private volatile ArrayList<Job> completedJobs = new ArrayList<>();
+	
 	private volatile boolean running;
 	private volatile boolean nextStepRecalculate;
 	private volatile boolean paused;
@@ -85,6 +87,20 @@ public class RobotManager implements Runnable, RobotListener {
 					}
 					jq.clear();
 				}
+				robotJobsToCancel.clear();
+				
+				// If any robot doesn't have any commands but has a job, complete job & recalculate.
+				for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
+					if (e.getValue().getCommands().isEmpty()) {
+						ArrayDeque<Job> jobs = robotJobs.get(e.getKey());
+						if (jobs != null && !jobs.isEmpty()) {
+							// Complete first job in queue
+							Job j = jobs.removeFirst();
+							System.out.println("Robot Manager: Completed Job: " + j);
+							completedJobs.add(j);
+						}
+					}
+				}
 				
 				// If any robot doesn't have a job, recalculate.
 				for (Entry<Robot, ArrayDeque<Job>> e : robotJobs.entrySet()) {
@@ -93,8 +109,6 @@ public class RobotManager implements Runnable, RobotListener {
 						break;
 					}
 				}
-				
-				// TODO: If any robot doesn't have any commands, complete job & recalculate.
 			}
 			
 			try {
@@ -107,7 +121,12 @@ public class RobotManager implements Runnable, RobotListener {
 			if (nextStepRecalculate) {
 				if (!robotCommands.isEmpty())
 					System.out.println("Robot Manager: Recalculating Paths...");
+				long t0 = System.currentTimeMillis();
 				doRecalculate();
+				long t1 = System.currentTimeMillis();
+				long ms = t1 - t0;
+				if (!robotCommands.isEmpty())
+					System.out.println("Robot Manager: Done Recalculating Paths. (" + ms + "ms)");
 			}
 		}
 	}
