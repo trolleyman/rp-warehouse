@@ -20,4 +20,8 @@ public class ItemQuantity {
 	public int getQuantity() {
 		return this.quantity;
 	}
+	
+	public String toString(){
+		return item.getName() + ": " + quantity;
+	}
 }

@@ -172,9 +172,10 @@ public class RoutePlanner {
 
 						facing = robot.getDirection();
 						goal = findClosestBase(start, facing);
-						directList = finder.findRoute(start, goal, facing);
-						list = finder.getActualDirections(directList, facing);
 						
+						RoutePackage rPackage = finder.findRoute(start, goal, facing);
+						directList = rPackage.getDirectionList();
+						list = rPackage.getCommandList();
 						
 						weights.put(robot, 0f);
 						/*System.out.println("base: " + start + " to " + goal);
@@ -200,9 +201,11 @@ public class RoutePlanner {
 					
 					facing = robot.getDirection();
 					goal = item.getJunction();
-					directList = finder.findRoute(start, goal, facing);
-					list = finder.getActualDirections(directList, facing);
-					
+
+					RoutePackage itemPackage = finder.findRoute(start, goal, facing);
+					directList = itemPackage.getDirectionList();
+					list = itemPackage.getCommandList();
+						
 					Float newWeight = weights.get(robot) + quantity * item.getWeight();
 					weights.put(robot, newWeight);
 					/*System.out.println("item: " + start + " to " + goal);
@@ -232,8 +235,9 @@ public class RoutePlanner {
 			
 			Junction start = map.getJunction((int)robot.getX(), (int)robot.getY());
 			Junction goal = findClosestBase(start, facing);
-			ArrayList<Direction> directList = finder.findRoute(start, goal, facing);
-			LinkedList<Command> list = finder.getActualDirections(directList, facing);
+			RoutePackage homePackage = finder.findRoute(start, goal, facing);
+			ArrayList<Direction> directList = homePackage.getDirectionList();
+			LinkedList<Command> list = homePackage.getCommandList();
 			
 			/*System.out.println("home: " + start + " to " + goal);
 			System.out.println(directList);
@@ -262,7 +266,8 @@ public class RoutePlanner {
 			
 			for (int l = 0; l < bases.size(); l++){
 				
-				list = finder.findRoute(start, bases.get(l), facing);
+				RoutePackage basePackage = finder.findRoute(start, bases.get(l), facing);	
+				list = basePackage.getDirectionList();
 				
 				if(list.size() < steps){
 					closestBase = bases.get(l);

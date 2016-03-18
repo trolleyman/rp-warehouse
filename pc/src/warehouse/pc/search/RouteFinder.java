@@ -57,7 +57,7 @@ public class RouteFinder {
 
 	private Map map;
 	
-	private HashMap<RouteStartEnd, ArrayList<Direction>> cache;
+	private HashMap<RouteStartEnd, RoutePackage> cache;
 	
 	/**
 	 * Create a new RouteFinder object for a given map
@@ -77,7 +77,7 @@ public class RouteFinder {
 			}
 		}
 		
-		cache = new HashMap<RouteStartEnd, ArrayList<Direction>>();
+		cache = new HashMap<RouteStartEnd, RoutePackage>();
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class RouteFinder {
 	 * @return the ArrayList of directions
 	 */
 
-	public ArrayList<Direction> findRoute(Junction start, Junction goal, Direction direction) {
+	public RoutePackage findRoute(Junction start, Junction goal, Direction direction) {
 		// if the goal or start is not on the map return null
 
 		start = map.getJunction(start.getX(), start.getY());
@@ -105,7 +105,7 @@ public class RouteFinder {
 		
 		// If route is in the cache, return that.
 		RouteStartEnd rse = new RouteStartEnd(start, goal);
-		ArrayList<Direction> cachedRoute = cache.get(rse);
+		RoutePackage cachedRoute = cache.get(rse);
 		if (cachedRoute != null)
 			return cachedRoute;
 		
@@ -138,12 +138,18 @@ public class RouteFinder {
 			// if the current junction is the goal return the path
 
 			if ((currentJunct.getX() == goal.getX()) && (currentJunct.getY() == goal.getY())) {
-				ArrayList<Direction> directionList = makePath(start, goal);
+				
+				RoutePackage rPackage = new RoutePackage();
+				ArrayList<Direction> directionList = makePath(start, goal, rPackage);
 				//return getActualDirections(directionList, direction);
-				// Cache route
-				cache.put(rse, directionList);
-				return directionList;
+				rPackage.setCommandList(getActualDirections(directionList, direction));
+				
+				// Cache route package
+				cache.put(rse, rPackage);
+				
+				return rPackage;
 			}
+			
 
 			// remove the junction from the frontier and add it to the explored
 
@@ -183,7 +189,7 @@ public class RouteFinder {
 	 * @return the ArrayList of directions
 	 */
 
-	private ArrayList<Direction> makePath(Junction start, Junction current) {
+	private ArrayList<Direction> makePath(Junction start, Junction current, RoutePackage rPackage) {
 
 		ArrayList<Junction> revPath = new ArrayList<Junction>();
 
@@ -229,6 +235,9 @@ public class RouteFinder {
 			}
 		}
 
+		rPackage.setJunctionList(revPath);
+		rPackage.setDirectionList(moveList);
+		
 		return moveList;
 	}
 
@@ -253,7 +262,7 @@ public class RouteFinder {
 	 * @return a list of directions relative to the robot
 	 */
 
-	LinkedList<Command> getActualDirections(ArrayList<Direction> oldList, Direction direction) {
+	private LinkedList<Command> getActualDirections(ArrayList<Direction> oldList, Direction direction) {
 
 		LinkedList<Command> newList = new LinkedList<Command>();
 
