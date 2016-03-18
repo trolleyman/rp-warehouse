@@ -85,10 +85,13 @@ public class ItemList implements FileList {
 		} catch (ItemNotInListException e) {
 			//Item in the list wasn't in location list.
 			System.err.println("Item " + e + " not found in location file");
+			System.exit(1);
 		} catch (FileNotFoundException e) {
 			System.err.println("Item file not found: " + e);
+			System.exit(1);
 		} catch (IOException e) {
 			System.err.println("Problem reading item file: " + e);
+			System.exit(1);
 		} finally {
 			try {
 				br.close();
