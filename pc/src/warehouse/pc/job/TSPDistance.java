@@ -18,7 +18,7 @@ public class TSPDistance {
 	}
 	
 	public int getDistance(Job job, int x, int y){
-		ArrayList<ItemQuantity> items = job.getItems();
+		ArrayList<ItemQuantity> items = new ArrayList<>(job.getItems());
 		int[] dToItem = new int[items.size()];
 		for(int i=0; i<items.size(); i++){
 			dToItem[i] = (routeFinder.findRoute(new Junction(x, y), items.get(i).getItem().getJunction(), Direction.X_POS).size());
@@ -98,7 +98,7 @@ public class TSPDistance {
 			ItemQuantity nextSelected = items.get(nextIndex);
 			totalDistance += next;
 			res.add(resIndex, nextSelected);;
-			items.remove(nextSelected);	
+			items.remove(nextSelected);
 		}
 		
 		int lastValue = Integer.MAX_VALUE;
@@ -117,6 +117,6 @@ public class TSPDistance {
 		
 		totalDistance += lastValue;
 		
-		return totalDistance;		
+		return totalDistance;
 	}
 }
