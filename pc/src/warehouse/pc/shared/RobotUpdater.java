@@ -32,7 +32,7 @@ public class RobotUpdater extends Thread {
 			double dx = travelX * percentDone;
 			double dy = travelY * percentDone;
 			
-			System.out.println("p:" + percentDone + ", x:" + (startX + dx) + ", y:" + (startY + dy));
+			//System.out.println("p:" + percentDone + ", x:" + (startX + dx) + ", y:" + (startY + dy));
 			robot.setX(startX + dx);
 			robot.setY(startY + dy);
 			
