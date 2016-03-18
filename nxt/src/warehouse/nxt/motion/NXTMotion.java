@@ -9,13 +9,13 @@ import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.robotics.subsumption.Arbitrator;
 import lejos.robotics.subsumption.Behavior;
+import rp.config.WheeledRobotConfiguration;
+import rp.robotics.DifferentialDriveRobot;
 import warehouse.nxt.display.NXTInterface;
 import warehouse.nxt.motion.behaviours.JunctionBehaviour;
 import warehouse.nxt.motion.behaviours.TrackingBehaviour;
 import warehouse.nxt.motion.behaviours.WaitingBehaviour;
-import warehouse.nxt.utils.DifferentialDriveRobot;
 import warehouse.nxt.utils.Robot;
-import warehouse.nxt.utils.WheeledRobotConfiguration;
 
 public class NXTMotion {
 
