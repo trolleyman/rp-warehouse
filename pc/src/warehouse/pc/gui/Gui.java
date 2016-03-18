@@ -94,8 +94,12 @@ public class Gui implements Runnable, RobotListener {
 	public String selectedItemName;
 	private JFrame frame;
 	private RobotEditor editor;
+	
 	private BluetoothSelector selector;
 	private JButton connectionButton;
+	
+	private JobInfo jobInfo;
+	private JButton cancelButton;
 	
 	public Gui() {
 		selectedItemName = "";
@@ -182,7 +186,7 @@ public class Gui implements Runnable, RobotListener {
 	
 	private JPanel createItemInfo() {
 		JPanel info = new JPanel();
-		info.setBorder(BorderFactory.createTitledBorder("Item Info"));
+		info.setBorder(BorderFactory.createTitledBorder("Item Information"));
 		ItemList items = MainInterface.get().getItemList();
 		@SuppressWarnings("serial")
 		TableModel dataModel = new AbstractTableModel() {
@@ -240,13 +244,13 @@ public class Gui implements Runnable, RobotListener {
 		res.add(createRobotEditor());
 		res.add(createItemInfo());
 		//res.add(Box.createVerticalGlue());
-		SpringUtilities.makeCompactGrid(res, res.getComponentCount(), 1, 6, 6, 6, 6);
+		SpringUtilities.makeCompactGrid(res, res.getComponentCount(), 1, 0, 0, 6, 6);
 		return res;
 	}
 	
 	private JPanel createManagerControls() {
 		JPanel res = new JPanel();
-		res.setBorder(BorderFactory.createTitledBorder("Robot Manager"));
+		res.setBorder(BorderFactory.createTitledBorder("Robot Manager Controls"));
 		JButton pause = new JButton("Pause");
 		JButton resume = new JButton("Resume");
 		pause.setEnabled(false);
@@ -278,12 +282,25 @@ public class Gui implements Runnable, RobotListener {
 		return res;
 	}
 	
+	private JPanel createJobInfo() {
+		JPanel res = new JPanel();
+		res.setBorder(BorderFactory.createTitledBorder("Job Information"));
+		cancelButton = new JButton("Cancel Job");
+		
+		jobInfo = new JobInfo();
+		res.setLayout(new BorderLayout());
+		res.add(jobInfo, BorderLayout.CENTER);
+		res.add(cancelButton, BorderLayout.PAGE_END);
+		return res;
+	}
+	
 	private JPanel createRightToolbar() {
 		JPanel res = new JPanel();
 		res.setLayout(new SpringLayout());
 		res.add(createManagerControls());
-		//res.add(Box.createVerticalGlue());
-		SpringUtilities.makeCompactGrid(res, res.getComponentCount(), 1, 6, 6, 6, 6);
+		res.add(createJobInfo());
+		res.add(Box.createVerticalGlue());
+		SpringUtilities.makeCompactGrid(res, res.getComponentCount(), 1, 0, 0, 6, 6);
 		return res;
 	}
 	
@@ -298,8 +315,13 @@ public class Gui implements Runnable, RobotListener {
 		if (!selector.isRunning()) {
 			connectionButton.setEnabled(false);
 		}
+		if (jobInfo.getSelectedIndex() == -1)
+			cancelButton.setEnabled(false);
+		else
+			cancelButton.setEnabled(true);
 		frame.repaint();
 	}
+	
 	@Override
 	public void robotChanged(Robot _r) {
 		update();

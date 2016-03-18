@@ -1,5 +1,6 @@
 package warehouse.pc.gui;
 
+import java.awt.Dimension;
 import java.awt.Point;
 import java.util.Optional;
 
@@ -17,6 +18,7 @@ public class StartingLocation {
 	public static void main(String[] args) {
 		Optional<Point> p = StartingLocation.getFromUser(MainInterface.get().getMap());
 		System.out.println(p);
+		System.exit(0);
 	}
 	
 	/**
@@ -51,6 +53,14 @@ public class StartingLocation {
 		layout.putConstraint(SpringLayout.WEST, xSpinner, 6, SpringLayout.EAST, xLabel);
 		layout.putConstraint(SpringLayout.WEST, yLabel, 6, SpringLayout.EAST, xSpinner);
 		layout.putConstraint(SpringLayout.WEST, ySpinner, 6, SpringLayout.EAST, yLabel);
+		
+		panel.doLayout();
+		
+		int w = message.getWidth();
+		int h = message.getHeight() + 6 + ySpinner.getHeight();
+		
+		panel.setPreferredSize(new Dimension(w, h));
+		//panel.setPreferredSize(new Dimension(300, 300));
 		
 		while (true) {
 			int res = JOptionPane.showConfirmDialog(null, panel, "Enter Starting Location",

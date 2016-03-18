@@ -181,10 +181,16 @@ public class RobotManager implements Runnable, RobotListener {
 	
 	/**
 	 * Gets the commands for a robot.
-	 * @param robot
 	 */
 	public CommandQueue getCommands(Robot robot) {
 		return robotCommands.get(robot);
+	}
+	
+	/**
+	 * Gets the jobs assigned to a robot.
+	 */
+	public ArrayDeque<Job> getJobs(Robot _r) {
+		return robotJobs.get(_r);
 	}
 	
 	public void pause() {

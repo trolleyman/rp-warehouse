@@ -149,6 +149,11 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 			
 			// Call open() in communication module to connect to a new robot.
 			Thread t = new Thread(() -> {
+				Optional<Point> op = StartingLocation.getFromUser(MainInterface.get().getMap());
+				if (!op.isPresent()) {
+					return;
+				}
+				
 				boolean result = MainInterface.get().getServer().open(info);
 				openingConnection = false;
 				if (!result) {
@@ -157,13 +162,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 						"Connection Error",
 						JOptionPane.WARNING_MESSAGE);
 				} else {
-					Optional<Point> op = StartingLocation.getFromUser(MainInterface.get().getMap());
-					if (!op.isPresent()) {
-						MainInterface.get().getServer().close(info);
-						return;
-					}
 					Point p = op.get();
-					
 					MainInterface.get().updateRobot(new Robot(info.name, info.deviceAddress, p.getX(), p.getY(), 0));
 				}
 			});

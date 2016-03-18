@@ -121,7 +121,7 @@ public class Robot implements Comparable<Robot> {
 	
 	@Override
 	public int compareTo(Robot other) {
-		return this.getIdentity().toString().compareTo(other.getIdentity().toString());
+		return this.getIdentity().compareTo(other.getIdentity());
 	}
 
 	public NXTInfo getNXTInfo() {
