@@ -41,10 +41,15 @@ public class RobotEditor extends JPanel {
 
 	private JButton headingButton;
 	
+	/** true if the RobotManager is paused (allows robot editing!) */
+	private volatile boolean isPaused;
+	
 	public RobotEditor() {
 		super();
 		
 		map = MainInterface.get().getMap();
+		
+		isPaused = true;
 		
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		selectedRobotLabel = new JLabel("", JLabel.LEADING);
@@ -160,7 +165,7 @@ public class RobotEditor extends JPanel {
 			robotIDLabel.setText("ID: " + selectedRobot.getID());
 		}
 		
-		boolean enabled = selectedRobot != null;
+		boolean enabled = (isPaused && selectedRobot != null);
 		xSpinner.setEnabled(enabled);
 		ySpinner.setEnabled(enabled);
 		posButton.setEnabled(enabled);
@@ -177,6 +182,11 @@ public class RobotEditor extends JPanel {
 			headingSpinner.setValue(selectedRobot.getFacing());
 		}
 		repaint();
+	}
+	
+	public void setIsPaused(boolean _isPaused) {
+		this.isPaused = _isPaused;
+		update();
 	}
 	
 	@Test

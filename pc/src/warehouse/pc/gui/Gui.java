@@ -265,6 +265,7 @@ public class Gui implements Runnable, RobotListener {
 				man.pause();
 				pause.setEnabled(false);
 				resume.setEnabled(true);
+				editor.setIsPaused(true);
 			}
 		});
 		resume.addActionListener(new ActionListener() {
@@ -274,6 +275,7 @@ public class Gui implements Runnable, RobotListener {
 				man.resume();
 				pause.setEnabled(true);
 				resume.setEnabled(false);
+				editor.setIsPaused(false);
 			}
 		});
 		res.add(pause);

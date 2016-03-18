@@ -27,6 +27,7 @@ public class RobotManager implements Runnable, RobotListener {
 	
 	private volatile boolean running;
 	private volatile boolean nextStepRecalculate;
+	private volatile boolean recalculateAllRobots;
 	private volatile boolean paused;
 	
 	public RobotManager() {
@@ -39,6 +40,7 @@ public class RobotManager implements Runnable, RobotListener {
 		
 		doRecalculate();
 		nextStepRecalculate = false;
+		recalculateAllRobots = false;
 		running = true;
 		paused = true;
 		
@@ -98,6 +100,7 @@ public class RobotManager implements Runnable, RobotListener {
 							Job j = jobs.removeFirst();
 							System.out.println("Robot Manager: Completed Job: " + j);
 							completedJobs.add(j);
+							nextStepRecalculate = true;
 						}
 					}
 				}
@@ -108,6 +111,15 @@ public class RobotManager implements Runnable, RobotListener {
 						nextStepRecalculate = true;
 						break;
 					}
+				}
+				
+				// Remove all commands from all robots, and recalculate
+				if (recalculateAllRobots) {
+					for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
+						e.getValue().getCommands().clear();
+					}
+					nextStepRecalculate = true;
+					recalculateAllRobots = false;
 				}
 			}
 			
@@ -230,14 +242,20 @@ public class RobotManager implements Runnable, RobotListener {
 	}
 	
 	public void pause() {
-		System.out.println("Robot Manager: Pausing.");
-		paused = true;
+		synchronized (this) {
+			System.out.println("Robot Manager: Pausing.");
+			paused = true;
+		}
 	}
 	
 	public void resume() {
-		System.out.println("Robot Manager: Resuming.");
-		recalculate();
-		paused = false;
+		synchronized (this) {
+			System.out.println("Robot Manager: Resuming.");
+			// Recalculate all commands - we don't know if the robots have changed position
+			recalculate();
+			recalculateAllRobots = true;
+			paused = false;
+		}
 	}
 	
 	public void recalculate() {
