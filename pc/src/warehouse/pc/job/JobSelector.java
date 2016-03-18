@@ -29,7 +29,16 @@ public class JobSelector {
 		jobs = jobList.getList();
 		jobs.sort(new RewardComparator()); //This sorts the jobs into reward order
 	}
+	
+	public JobSelector(LocationList locList, ItemList itemList, JobList jobList, DropList dropList, Map _map){
+		dropLocations = dropList.getList();
+		this.map = _map;
+		tsp = new TSPDistance(map, dropLocations);
 		
+		jobs = jobList.getList();
+		jobs.sort(new RewardComparator()); //This sorts the jobs into reward order
+	}
+	
 	/**
 	 * Returns the job that is supported by the robots free weight and has the highest reward per steps taken ratio and removes it from the queue
 	 * @param x The x coordinates of the robot
