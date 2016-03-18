@@ -2,8 +2,12 @@ package warehouse.pc.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -99,7 +103,6 @@ public class Gui implements Runnable, RobotListener {
 	private JButton connectionButton;
 	
 	private JobInfo jobInfo;
-	private JButton cancelButton;
 	
 	public Gui() {
 		selectedItemName = "";
@@ -283,15 +286,9 @@ public class Gui implements Runnable, RobotListener {
 	}
 	
 	private JPanel createJobInfo() {
-		JPanel res = new JPanel();
-		res.setBorder(BorderFactory.createTitledBorder("Job Information"));
-		cancelButton = new JButton("Cancel Job");
-		
 		jobInfo = new JobInfo();
-		res.setLayout(new BorderLayout());
-		res.add(jobInfo, BorderLayout.CENTER);
-		res.add(cancelButton, BorderLayout.PAGE_END);
-		return res;
+		jobInfo.setBorder(BorderFactory.createTitledBorder("Job Information"));
+		return jobInfo;
 	}
 	
 	private JPanel createRightToolbar() {
@@ -315,10 +312,6 @@ public class Gui implements Runnable, RobotListener {
 		if (!selector.isRunning()) {
 			connectionButton.setEnabled(false);
 		}
-		if (jobInfo.getSelectedIndex() == -1)
-			cancelButton.setEnabled(false);
-		else
-			cancelButton.setEnabled(true);
 		frame.repaint();
 	}
 	

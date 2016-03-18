@@ -21,6 +21,7 @@ public class RobotManager implements Runnable, RobotListener {
 	
 	private volatile ArrayList<Robot> robotsToAdd = new ArrayList<>();
 	private volatile ArrayList<Robot> robotsToRemove = new ArrayList<>();
+	private volatile ArrayList<Robot> robotJobsToCancel = new ArrayList<>();
 	
 	private volatile boolean running;
 	private volatile boolean nextStepRecalculate;
@@ -51,6 +52,7 @@ public class RobotManager implements Runnable, RobotListener {
 				step();
 			
 			synchronized (this) {
+				// Add robots
 				for (Robot robot : robotsToAdd) {
 					robotJobs.put(robot, new ArrayDeque<>());
 					robotCommands.put(robot, new CommandQueue());
@@ -58,6 +60,7 @@ public class RobotManager implements Runnable, RobotListener {
 					nextStepRecalculate = true;
 				}
 				robotsToAdd.clear();
+				// Remove robots
 				for (Robot robot : robotsToRemove) {
 					robotJobs.remove(robot);
 					robotCommands.remove(robot);
@@ -66,8 +69,22 @@ public class RobotManager implements Runnable, RobotListener {
 				}
 				robotsToRemove.clear();
 				
+				// If no robots, sleep for a bit
 				if (robotCommands.isEmpty())
 					sleep = true;
+				
+				// Remove robot jobs
+				for (Robot r : robotJobsToCancel) {
+					ArrayDeque<Job> jq = robotJobs.get(r);
+					if (jq == null)
+						continue;
+					
+					// Cancel every job in the queue
+					for (Job j : jq) {
+						mi.getJobList().getList().add(j);
+					}
+					jq.clear();
+				}
 				
 				// If any robot doesn't have a job, recalculate.
 				for (Entry<Robot, ArrayDeque<Job>> e : robotJobs.entrySet()) {
@@ -77,7 +94,7 @@ public class RobotManager implements Runnable, RobotListener {
 					}
 				}
 				
-				// TODO: If any robot doesn't have a command, recalculate.
+				// TODO: If any robot doesn't have any commands, complete job & recalculate.
 			}
 			
 			try {
@@ -228,6 +245,16 @@ public class RobotManager implements Runnable, RobotListener {
 			System.out.println(_r.getIdentity() + " removed from Robot Manager queue.");
 			robotsToRemove.add(_r);
 			recalculate();
+		}
+	}
+	
+	/**
+	 * Cancels the jobs on a certain robot.
+	 * @param robot the robot
+	 */
+	public void cancelJobs(Robot robot) {
+		synchronized (this) {
+			robotJobsToCancel.add(robot);
 		}
 	}
 }

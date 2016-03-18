@@ -34,15 +34,18 @@ public class JobInfo extends JPanel implements RobotListener {
 	
 	private ArrayList<Pair<Robot, Job>> jobs;
 	
+	private JPanel tableContainer;
 	private JTable table;
 	private AbstractTableModel model;
+	private JButton cancel;
 	
 	public JobInfo() {
 		super();
 		
 		mi = MainInterface.get();
 		
-		JButton cancel = new JButton("Cancel Job");
+		cancel = new JButton("Cancel Job");
+		cancel.setEnabled(false);
 		cancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent _e) {
@@ -62,9 +65,19 @@ public class JobInfo extends JPanel implements RobotListener {
 				Pair<Robot, Job> p = jobs.get(row);
 				switch (col) {
 				case 0: return p.getItem1().getName();
-				case 1: return p.getItem2().getId();
+				case 1: {
+					Job j = p.getItem2();
+					if (j != null)
+						return j.getId();
+					return "";
+				}
 				case 2: {
-					ArrayList<ItemQuantity> iqs = p.getItem2().getItems();
+					Job j = p.getItem2();
+					if (j == null)
+						return "";
+					
+					ArrayList<ItemQuantity> iqs = j.getItems();
+					
 					StringBuilder b = new StringBuilder();
 					for (ItemQuantity iq : iqs) {
 						b.append(iq.getQuantity());
@@ -106,19 +119,30 @@ public class JobInfo extends JPanel implements RobotListener {
 		
 		//JScrollPane scrollpane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		
-		JPanel pan = new JPanel();
-		pan.setLayout(new BorderLayout());
-		pan.add(table.getTableHeader(), BorderLayout.NORTH);
-		pan.add(table, BorderLayout.CENTER);
+		tableContainer = new JPanel();
+		tableContainer.setLayout(new BorderLayout());
+		tableContainer.add(table.getTableHeader(), BorderLayout.NORTH);
+		tableContainer.add(table, BorderLayout.CENTER);
+		table.getColumnModel().getColumn(0).setPreferredWidth(100);
+		table.getColumnModel().getColumn(2).setPreferredWidth(200);
 		//setPreferredSize(new Dimension(200, (int) getPreferredSize().getHeight()));
-		pan.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+		tableContainer.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+		
+		tableContainer.doLayout();
 		
 		SpringLayout layout = new SpringLayout();
 		setLayout(layout);
-		add(pan);
+		add(tableContainer);
 		add(cancel);
 		
+		layout.putConstraint(SpringLayout.NORTH, cancel, 6, BorderLayout.SOUTH, tableContainer);
+		layout.putConstraint(SpringLayout.EAST, cancel, -7, BorderLayout.EAST, tableContainer);
+		
 		mi.addRobotListener(this);
+		
+		update();
+		
+		doLayout();
 		
 		update();
 	}
@@ -132,9 +156,10 @@ public class JobInfo extends JPanel implements RobotListener {
 			
 			for (Robot r : mi.getRobots()) {
 				ArrayDeque<Job> jobs = man.getJobs(r);
-				if (jobs == null)
-					continue;
-				Job j = jobs.peekFirst();
+				Job j = null;
+				if (jobs != null) {
+					j = jobs.peekFirst();
+				}
 				newJobs.add(Pair.makePair(r, j));
 			}
 			
@@ -161,6 +186,18 @@ public class JobInfo extends JPanel implements RobotListener {
 			
 			// Notify the table
 			model.fireTableDataChanged();
+			
+			int w = tableContainer.getWidth() + 6 + 6;
+			int h = tableContainer.getHeight() + 6 + cancel.getHeight() + 36;
+			setPreferredSize(new Dimension(w, h));
+		}
+	}
+	
+	public void cancelSelectedJob() {
+		synchronized (this) {
+			int i = table.getSelectedRow();
+			if (i != -1)
+				mi.getRobotManager().cancelJobs(jobs.get(i).getItem1());
 		}
 	}
 	
