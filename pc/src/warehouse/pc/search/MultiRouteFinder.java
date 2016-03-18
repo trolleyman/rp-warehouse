@@ -24,6 +24,7 @@ public class MultiRouteFinder {
 	// path is found
 
 	private Map map;
+
 	/**
 	 * Create a new RouteFinder object for a given map
 	 * 
@@ -56,7 +57,8 @@ public class MultiRouteFinder {
 	 * @return the ArrayList of directions
 	 */
 
-	public RoutePackage findRoute(Junction start, Junction goal, Direction direction, ArrayList<Junction>[] reserveTable) {
+	public RoutePackage findRoute(Junction start, Junction goal, Direction direction,
+			ArrayList<Junction>[] reserveTable) {
 
 		start = map.getJunction(start.getX(), start.getY());
 		goal = map.getJunction(goal.getX(), goal.getY());
@@ -65,27 +67,27 @@ public class MultiRouteFinder {
 			return null;
 		}
 
-
 		searched = new ArrayList<Junction>();
 		frontier = new LinkedHashMap<Junction, Integer>();
 		cameFrom = new HashMap<Junction, Junction>();
 
 		frontier.put(start, 0); // Initializes search
-		Junction currentJunct = start;	//	Assigning initial junction as start will immediately exit
-										//	search loop if already at goal
+		Junction currentJunct = start; // Assigning initial junction as start
+										// will immediately exit
+										// search loop if already at goal
 		int timeStep = 0;
-		
 
-		//	Work in progress
-		
-		while (((currentJunct.getX() != goal.getX()) || (currentJunct.getY() != goal.getY()) )
-				&& (timeStep < reserveTable.length)) {		//	New loop for WHCA*, removes while frontier is !empty
-																	//	This finder should be run multiple times for each robot
-																	// until EVERY robot is at its destination, at which point they
-																	//	can drop off, pickup etc. That is, perhaps routeplanner.java
-																	//	should be changed to operate on robots simultaneously, so get
-																	//	each robots goal (one pickup or dropoff), and then execute the finder 
+		// Work in progress
 
+		// New loop for WHCA*, removes while frontier is !empty
+		// This finder should be run multiple times for each robot until EVERY
+		// robot is at its destination, at which point they can drop off, pickup
+		// etc. That is, perhaps routeplanner.java should be changed to
+		// operate on robots simultaneously, so get each robots goal (one
+		// pickup or dropoff), and then execute the finder
+
+		while (((currentJunct.getX() != goal.getX()) || (currentJunct.getY() != goal.getY()))
+				&& (timeStep < reserveTable.length)) {
 			int minCost = -1;
 			int pathEstimate = 0;
 			int movesFromStart = 0;
@@ -104,18 +106,18 @@ public class MultiRouteFinder {
 					currentJunct = entry.getKey();
 				}
 			}
-			
+
 			reserveTable[timeStep].add(currentJunct);
 
 			// if the current junction is the goal return the path
 
 			if ((currentJunct.getX() == goal.getX()) && (currentJunct.getY() == goal.getY())) {
-				
+
 				RoutePackage rPackage = new RoutePackage();
 				ArrayList<Direction> directionList = makePath(start, goal, rPackage);
 				rPackage.setCommandList(getActualDirections(directionList, direction));
 				rPackage.setDirectionList(directionList);
-				
+
 				return rPackage;
 			}
 
@@ -128,48 +130,50 @@ public class MultiRouteFinder {
 
 			for (Junction neighbour : currentJunct.getNeighbours()) {
 
-				if ((neighbour == null) || (searched.contains(neighbour)) || (reserveTable[timeStep].contains(neighbour)) || (reserveTable[timeStep + 1].contains(neighbour)))
+				if ((neighbour == null) || (searched.contains(neighbour))
+						|| (reserveTable[timeStep].contains(neighbour))
+						|| (reserveTable[timeStep + 1].contains(neighbour)))
 					continue;
-				
+
 				else if (reserveTable[timeStep].contains(neighbour) || reserveTable[timeStep + 1].contains(neighbour))
-					//	Add wait command NOT IMPLEMENTED
+					// Add wait command NOT IMPLEMENTED
 
-				if (!frontier.containsKey(neighbour)) {
-					// For safety
-					frontier.put(neighbour, movesFromStart + 1);
+					if (!frontier.containsKey(neighbour)) {
+						// For safety
+						frontier.put(neighbour, movesFromStart + 1);
 
-				} else if ((movesFromStart + 1) >= frontier.get(neighbour))
-					continue;
+					} else if ((movesFromStart + 1) >= frontier.get(neighbour))
+						continue;
 
 				frontier.remove(neighbour);
 				frontier.put(neighbour, movesFromStart + 1);
 
 				cameFrom.put(neighbour, currentJunct);
 			}
-			
+
 			timeStep++;
 		}
-		
-			if ((start.getX() == goal.getX()) && (start.getY() == goal.getY())) {
-				
-				while(timeStep < reserveTable.length) {
-					
-					reserveTable[timeStep].add(start);
-				}
-				return null;
+
+		if ((start.getX() == goal.getX()) && (start.getY() == goal.getY())) {
+
+			while (timeStep < reserveTable.length) {
+
+				reserveTable[timeStep].add(start);
 			}
-			
-			else {
-				RoutePackage rPackage = new RoutePackage();
-				ArrayList<Direction> directionList = makePath(start, currentJunct, rPackage);
-				
-				rPackage.setDirectionList(directionList);
-				rPackage.setCommandList(getActualDirections(directionList, direction));
-				
-				return rPackage;
-				
-			}
-			
+			return null;
+		}
+
+		else {
+			RoutePackage rPackage = new RoutePackage();
+			ArrayList<Direction> directionList = makePath(start, currentJunct, rPackage);
+
+			rPackage.setDirectionList(directionList);
+			rPackage.setCommandList(getActualDirections(directionList, direction));
+
+			return rPackage;
+
+		}
+
 	}
 
 	private ArrayList<Direction> makePath(Junction start, Junction current, RoutePackage rPackage) {
@@ -219,16 +223,13 @@ public class MultiRouteFinder {
 		}
 
 		rPackage.setJunctionList(revPath);
-		
+
 		return moveList;
 	}
-
 
 	private int getHeuristic(Junction current, Junction goal) {
 		return (Math.abs(current.getX() - goal.getX()) + Math.abs(current.getY() - goal.getY()));
 	}
-
-
 
 	private LinkedList<Command> getActualDirections(ArrayList<Direction> oldList, Direction direction) {
 

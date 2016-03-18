@@ -36,7 +36,13 @@ public class ItemCollection {
 		String items = "";
 		
 		for(int i = 0; i < list.size(); i++){
+			if(i !=0){
 			items = items + ", " + list.get(i);
+			}
+			else
+			{
+				items = items + list.get(i);
+			}
 		}
 		
 		return "[" + items + "] : weight " + weight;

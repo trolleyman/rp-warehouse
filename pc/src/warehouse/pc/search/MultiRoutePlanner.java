@@ -54,24 +54,68 @@ public class MultiRoutePlanner {
 	 */
 
 	public MultiRoutePlanner(Map _map, Float _maxWeight, HashMap<Robot, LinkedList<Job>> _jobs,
-			ArrayList<Junction> _dropList, int timeWindow) {
+			ArrayList<Junction> _dropList, int _timeWindow) {
 
 		finder = new MultiRouteFinder(_map);
 		maxWeight = _maxWeight;
 		pairedJobs = _jobs;
 		map = _map;
-
+		timeWindow = _timeWindow;
+		
 		pairedCommands = new HashMap<Robot, CommandQueue>();
 		weightedJobs = new HashMap<Robot, ArrayList<ItemCollection>>();
-		// make a command queue for every robot, and put them in a hash table
-
-		int i = 0;
-
+		
 		bases = _dropList;
 		weights = new HashMap<Robot, Float>();
+		
+		setUpJobs();
 
+		for(Entry<Robot, ArrayList<ItemCollection>> entry : weightedJobs.entrySet()){
+			System.out.println(entry.getValue());
+		}
+		
+	}
+
+	/**
+	 * Helper method to set up robots on initialisation
+	 * 
+	 * @param robot
+	 *            the robot
+	 * @param i
+	 *            the number
+	 */
+
+	private void setUpRobots(Robot robot, int i) {
+
+		switch (i) {
+		case 0:
+			robot1 = robot;
+			break;
+		case 1:
+			robot2 = robot;
+			break;
+		case 2:
+			robot3 = robot;
+			break;
+		default:
+			break;
+		}
+
+		i++;
+
+	}
+	
+	/**
+	 * Split the jobs into collections the robot can manage at once
+	 */
+	
+	private void setUpJobs(){
+		
+		// make a command queue for every robot, and put them in a hash table
+		
 		for (Entry<Robot, LinkedList<Job>> entry : pairedJobs.entrySet()) {
 
+			int i = 0;
 			setUpRobots(entry.getKey(), i);
 			i++;
 			pairedCommands.put(entry.getKey(), new CommandQueue());
@@ -93,7 +137,6 @@ public class MultiRoutePlanner {
 					if ((totalWeight + weights.get(entry.getKey())) <= maxWeight) {
 						weights.put(entry.getKey(), weights.get(entry.getKey()) + totalWeight);
 						itemColl.addItem(item);
-						System.out.println(weightedJobs);
 
 					} else {
 
@@ -101,46 +144,11 @@ public class MultiRoutePlanner {
 						itemColl.addItem(item);
 						weightedJobs.get(entry.getKey()).add(itemColl);
 						weights.put(entry.getKey(), totalWeight);
-						System.out.println(weightedJobs);
 					}
 				}
 			}
 
 		}
-		
-		for(Entry<Robot, ArrayList<ItemCollection>> entry : weightedJobs.entrySet()){
-			System.out.println(entry.getValue());
-		}
-
-	}
-
-	/**
-	 * Helper method to set up robots on initialisation
-	 * 
-	 * @param robot
-	 *            the robot
-	 * @param i
-	 *            the number
-	 */
-
-	public void setUpRobots(Robot robot, int i) {
-
-		switch (i) {
-		case 0:
-			robot1 = robot;
-			break;
-		case 1:
-			robot2 = robot;
-			break;
-		case 2:
-			robot3 = robot;
-			break;
-		default:
-			break;
-		}
-
-		i++;
-
 	}
 
 	/**
@@ -201,6 +209,8 @@ public class MultiRoutePlanner {
 			weights.put(entry.getKey(), 0f);
 
 		}
+		
+		setUpJobs();
 	}
 
 	/**
@@ -209,18 +219,28 @@ public class MultiRoutePlanner {
 
 	public void computeCommands() {
 
-		// we need to work on each robot at the same time, so we get all the job
-		// queues
+		// work on each robot at the same time, so we get all the job queues
+		// these queues are split into parts the robot can carry at once
+		// so there is no need to visit the base inside an iteration
+		// the robots go collection - base - collection - base etc
 
 		ArrayList<ItemCollection> queue1 = weightedJobs.get(robot1);
 		ArrayList<ItemCollection> queue2 = weightedJobs.get(robot2);
 		ArrayList<ItemCollection> queue3 = weightedJobs.get(robot3);
 
-		// since all robots will be done at the same stage we don't need to
-		// iterate over robots
+		// this is such a ghetto arrayList
+		// there's probably a better way to do this
+		
+		@SuppressWarnings("unchecked")
+		ArrayList<Junction>[] reserveTable = (ArrayList<Junction>[]) new ArrayList<?>[timeWindow];
+		
+		// right, this is how this works
+		// each robot has already been assigned a job queue (above)
+		// finder.findRoute gets an n step path for each robot
+		// 
 
-		// find the longest queue to iterate over
-
+		// find out which robot has the most number of stops
+		
 		double longestList = Math.max(queue1.size(), Math.max(queue2.size(), queue3.size()));
 
 		for (int j = 0; j < longestList; j++) {
@@ -252,8 +272,7 @@ public class MultiRoutePlanner {
 				// this is really dodgy, feck it I'm George Kaye
 				// did Martin tell us not to do this?
 
-				@SuppressWarnings("unchecked")
-				ArrayList<Junction>[] reserveTable = (ArrayList<Junction>[]) new ArrayList<?>[3];
+				
 
 				// these three arraylists hold the spaces for each robot,
 				// they will be added to the reserveTable array as they are
