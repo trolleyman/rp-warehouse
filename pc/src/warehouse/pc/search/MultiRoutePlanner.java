@@ -61,19 +61,19 @@ public class MultiRoutePlanner {
 		pairedJobs = _jobs;
 		map = _map;
 		timeWindow = _timeWindow;
-		
+
 		pairedCommands = new HashMap<Robot, CommandQueue>();
 		weightedJobs = new HashMap<Robot, ArrayList<ItemCollection>>();
-		
+
 		bases = _dropList;
 		weights = new HashMap<Robot, Float>();
-		
+
 		setUpJobs();
 
-		for(Entry<Robot, ArrayList<ItemCollection>> entry : weightedJobs.entrySet()){
+		for (Entry<Robot, ArrayList<ItemCollection>> entry : weightedJobs.entrySet()) {
 			System.out.println(entry.getValue());
 		}
-		
+
 	}
 
 	/**
@@ -104,15 +104,15 @@ public class MultiRoutePlanner {
 		i++;
 
 	}
-	
+
 	/**
 	 * Split the jobs into collections the robot can manage at once
 	 */
-	
-	private void setUpJobs(){
-		
+
+	private void setUpJobs() {
+
 		// make a command queue for every robot, and put them in a hash table
-		
+
 		for (Entry<Robot, LinkedList<Job>> entry : pairedJobs.entrySet()) {
 
 			int i = 0;
@@ -127,8 +127,6 @@ public class MultiRoutePlanner {
 			for (Job job : entry.getValue()) {
 
 				ArrayList<ItemQuantity> tempItems = job.getItems();
-				
-				
 
 				for (ItemQuantity item : tempItems) {
 
@@ -209,7 +207,7 @@ public class MultiRoutePlanner {
 			weights.put(entry.getKey(), 0f);
 
 		}
-		
+
 		setUpJobs();
 	}
 
@@ -230,17 +228,28 @@ public class MultiRoutePlanner {
 
 		// this is such a ghetto arrayList
 		// there's probably a better way to do this
-		
+
 		@SuppressWarnings("unchecked")
 		ArrayList<Junction>[] reserveTable = (ArrayList<Junction>[]) new ArrayList<?>[timeWindow];
-		
+
 		// right, this is how this works
 		// each robot has already been assigned a job queue (above)
+		// these queues may or may not be different lengths
+		// we should iterate one job at a time
 		// finder.findRoute gets an n step path for each robot
-		// 
+		// (I keep thinking it's ten but this can change)
+		// it will return null if the start = goal
+		// this might not be enough to cover all the collections
+		// if every job is finished, great, carry on
+		// if not then call findRoute again for each robot
+		// other robots should wait if they are finished
+		// once every robot is done, proceed to next job
+		// (this will be a base return job)
+		// IMPORTANT: there may be less bases than robots
+		// this may cause a problem, will have to be looked at
 
 		// find out which robot has the most number of stops
-		
+
 		double longestList = Math.max(queue1.size(), Math.max(queue2.size(), queue3.size()));
 
 		for (int j = 0; j < longestList; j++) {
@@ -271,8 +280,6 @@ public class MultiRoutePlanner {
 
 				// this is really dodgy, feck it I'm George Kaye
 				// did Martin tell us not to do this?
-
-				
 
 				// these three arraylists hold the spaces for each robot,
 				// they will be added to the reserveTable array as they are
@@ -514,8 +521,9 @@ public class MultiRoutePlanner {
 
 		for (int l = 0; l < bases.size(); l++) {
 
-			//RoutePackage basePackage = finder.findRoute(start, bases.get(l), facing);
-			//list = basePackage.getDirections();
+			// RoutePackage basePackage = finder.findRoute(start, bases.get(l),
+			// facing);
+			// list = basePackage.getDirections();
 
 			if (list.size() < steps) {
 				closestBase = bases.get(l);
