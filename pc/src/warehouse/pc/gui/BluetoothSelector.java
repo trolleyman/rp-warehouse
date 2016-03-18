@@ -25,15 +25,27 @@ import warehouse.pc.shared.Robot;
 public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	private static final String SEARCHING = "Searching...";
 	private static final String NO_ROBOTS_DETECTED = "No robots detected.";
+	private static final Comparator<NXTInfo> infoComparator = new Comparator<NXTInfo>() {
+		@Override
+		public int compare(NXTInfo o1, NXTInfo o2) {
+			int res = o1.name.compareToIgnoreCase(o2.name);
+			if (res == 0) {
+				return o1.deviceAddress.compareToIgnoreCase(o2.deviceAddress);
+			} else {
+				return res;
+			}
+		}
+	};
 	
 	private volatile boolean openingConnection;
 	
 	private NXTInfo[] infos;
-	private String errorMessage;
-	private boolean error;
-	private boolean running;
+	private ArrayList<NXTInfo> defaultInfos;
 	
-	private ArrayList<NXTInfo> defaultRobots;
+	private boolean error;
+	private String errorMessage;
+	
+	private volatile boolean running;
 	
 	private static ArrayList<NXTInfo> readDefaultRobots() {
 		BufferedReader br = null;
@@ -55,6 +67,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 				line = br.readLine();
 			}
 			
+			robots.sort(infoComparator);
 			return robots;
 		} catch (IOException e) {
 			return new ArrayList<>();
@@ -71,7 +84,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	public BluetoothSelector() {
 		super();
 		
-		defaultRobots = readDefaultRobots();
+		defaultInfos = readDefaultRobots();
 		
 		openingConnection = false;
 		running = true;
@@ -80,28 +93,13 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 		infos = new NXTInfo[0];
 		
 		//setMaximumSize(new Dimension(100, 10));
-		if (defaultRobots.size() == 0) {
+		if (defaultInfos.size() == 0) {
 			this.addItem(SEARCHING);
 		} else {
-			for (NXTInfo info : defaultRobots) {
+			for (NXTInfo info : defaultInfos) {
 				this.addItem(info.name);
 			}
 		}
-		
-		// Debugging stuff
-		/*
-		NXTInfo info = new NXTInfo(NXTCommFactory.BLUETOOTH, "Dobot", "0016530FD7F4");
-		{boolean result = MainInterface.get().getServer().open(info);
-		openingConnection = false;
-		if (!result) {
-			JOptionPane.showMessageDialog(null,
-				"Could not connect to " + info.name + " (" + info.deviceAddress + ").",
-				"Connection Error",
-				JOptionPane.WARNING_MESSAGE);
-		} else {
-			MainInterface.get().updateRobot(new Robot(info.name, info.deviceAddress, 0, 0, 0));
-		}}
-		//*/
 		
 		Thread t = new Thread(this);
 		t.setDaemon(true);
@@ -114,7 +112,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	public NXTInfo getSelectedRobot() {
 		String name = this.getSelectedItem().toString();
 		// Check defaults first.
-		for (NXTInfo info : defaultRobots) {
+		for (NXTInfo info : defaultInfos) {
 			if (info.name.equals(name)) {
 				return info;
 			}
@@ -166,19 +164,14 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 			}
 			// If infos hasn't changed, return.
 			ArrayList<NXTInfo> combined = new ArrayList<>();
-			combined.addAll(defaultRobots);
+			combined.addAll(defaultInfos);
 			for (int i = 0; i < infos.length; i++) {
-				if (!defaultRobots.contains(infos[i])) {
+				if (!defaultInfos.contains(infos[i])) {
 					combined.add(infos[i]);
 				}
 			}
 			
-			combined.sort(new Comparator<NXTInfo>() {
-				@Override
-				public int compare(NXTInfo o1, NXTInfo o2) {
-					return o1.name.compareToIgnoreCase(o2.name);
-				}
-			});
+			combined.sort(infoComparator);
 			
 			// Add to combo box
 			this.removeAllItems();
