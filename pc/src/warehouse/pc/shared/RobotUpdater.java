@@ -49,7 +49,7 @@ public class RobotUpdater extends Thread {
 	}
 	
 	private void interpolateRotate(double rotate, double rotationSpeed) {
-		long finishedTime = System.currentTimeMillis() + (long)(rotate / rotationSpeed * 1000.0);
+		long finishedTime = System.currentTimeMillis() + (long)(Math.abs(rotate) / rotationSpeed * 1000.0);
 		
 		double startRotate = robot.getFacing();
 		
@@ -60,7 +60,7 @@ public class RobotUpdater extends Thread {
 			percentDone = (start - now) / (double) (start - finishedTime);
 			
 			double dr = rotate * percentDone;
-			System.out.println("p:" + percentDone + ", dr:" + (dr) + ", r:" + (startRotate + dr));
+			//System.out.println("p:" + percentDone + ", dr:" + (dr) + ", r:" + (startRotate + dr));
 			robot.setFacing(startRotate + dr);
 			
 			try {

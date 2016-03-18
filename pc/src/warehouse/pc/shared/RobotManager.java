@@ -132,13 +132,13 @@ public class RobotManager implements Runnable, RobotListener {
 			
 			if (nextStepRecalculate) {
 				if (!robotCommands.isEmpty())
-					System.out.println("Robot Manager: Recalculating Paths...");
+					System.out.println("Robot Manager: Recalculating...");
 				long t0 = System.currentTimeMillis();
 				doRecalculate();
 				long t1 = System.currentTimeMillis();
 				long ms = t1 - t0;
 				if (!robotCommands.isEmpty())
-					System.out.println("Robot Manager: Done Recalculating Paths. (" + ms + "ms)");
+					System.out.println("Robot Manager: Done Recalculating. (" + ms + "ms)");
 			}
 		}
 	}
