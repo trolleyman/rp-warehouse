@@ -125,22 +125,18 @@ public class NXTReceiver extends Thread {
 		switch( _data[0] ) {
 		case "Right" 	:
 			this.robotInterface.directionUpdate( "Right" );
-			this.myself.status = "Moving Right";
 			this.robotMotion.go( "Right", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) );
 			break;
 		case "Left" 	:
 			this.robotInterface.directionUpdate( "Left" );
-			this.myself.status = "Moving Left";
 			this.robotMotion.go( "Left", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) );
 			break;
 		case "Forward" 	:
 			this.robotInterface.directionUpdate( "Forward" );
-			this.myself.status = "Moving Forward";
 			this.robotMotion.go( "Forward", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) );
 			break;
 		case "Backward" :
 			this.robotInterface.directionUpdate( "Backward" );
-			this.myself.status = "Moving Backward";
 			this.robotMotion.go( "Backward", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) );
 			break;
 		default 		:

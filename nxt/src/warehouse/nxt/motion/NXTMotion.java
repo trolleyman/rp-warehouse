@@ -50,8 +50,8 @@ public class NXTMotion {
 		this.eyes = new UltrasonicSensor( SensorPort.S4 );
 		
 		this.trackingBehaviour = new TrackingBehaviour( pilot, calibration, this.provider );
-		this.junctionBehaviour = new JunctionBehaviour( pilot, calibration, this.provider );
-		this.waitingBehaviour = new WaitingBehaviour( this.provider, this.myself );
+		this.junctionBehaviour = new JunctionBehaviour( pilot, calibration, this.provider, this.myself );
+		this.waitingBehaviour = new WaitingBehaviour( calibration, this.provider, this.myself );
 		
 		this.arbitrator = new Arbitrator( ( new Behavior[] { this.trackingBehaviour, this.junctionBehaviour, this.waitingBehaviour } ), true );
 		this.arbitrator.start();
