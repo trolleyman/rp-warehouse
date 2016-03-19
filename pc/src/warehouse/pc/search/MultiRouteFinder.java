@@ -168,11 +168,22 @@ public class MultiRouteFinder {
 			while (timeStep < reserveTable.size()) {
 
 				reserveTable.get(timeStep).add(start);
+				timeStep++;
 			}
 			return null;
 		}
 
 		else {
+			
+			if ((currentJunct.getX() == goal.getX()) && (currentJunct.getY() == goal.getY())) {
+
+				while (timeStep < reserveTable.size()) {
+
+					reserveTable.get(timeStep).add(goal);
+					timeStep++;
+				}
+			}
+			
 			RoutePackage rPackage = new RoutePackage();
 			ArrayList<Direction> directionList = makePath(start, currentJunct, rPackage);
 
