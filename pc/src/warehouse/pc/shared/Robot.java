@@ -1,5 +1,7 @@
 package warehouse.pc.shared;
 
+import java.util.Optional;
+
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
 
@@ -94,7 +96,9 @@ public class Robot implements Comparable<Robot> {
 	}
 	
 	private void update() {
-		MainInterface.get().updateRobot(this);
+		Optional<MainInterface> mi = MainInterface.getLazy();
+		if (mi.isPresent())
+			mi.get().updateRobot(this);
 	}
 	
 	/**

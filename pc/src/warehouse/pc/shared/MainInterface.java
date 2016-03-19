@@ -2,6 +2,7 @@ package warehouse.pc.shared;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Optional;
 
 import warehouse.pc.bluetooth.BTServer;
 import warehouse.pc.job.DropList;
@@ -24,12 +25,25 @@ public class MainInterface {
 	private volatile static Object interfaceInitLock = new Object();
 	private volatile static MainInterface mainInterface = null;
 	
+	/**
+	 * Gets the MainInterface global instance. Constructs MainInterface if necessary.
+	 */
 	public static MainInterface get() {
 		synchronized (interfaceInitLock) {
 			if (mainInterface == null) {
 				mainInterface = new MainInterface();
 			}
 			return mainInterface;
+		}
+	}
+	
+	/**
+	 * Gets the MainInterface global instance if it has been constructed.
+	 * Returns Optional.empty() if it hasn't.
+	 */
+	public static Optional<MainInterface> getLazy() {
+		synchronized (interfaceInitLock) {
+			return Optional.ofNullable(mainInterface);
 		}
 	}
 	
