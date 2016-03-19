@@ -54,11 +54,13 @@ public class MultiRouteFinder {
 	 *            the end junction
 	 * @param direction
 	 *            the initial direction of the robot
+	 * @param reserveTable
+	 *            the junctions that are reserved at a particular time step
 	 * @return the ArrayList of directions
 	 */
 
 	public RoutePackage findRoute(Junction start, Junction goal, Direction direction,
-			ArrayList<Junction>[] reserveTable) {
+			ArrayList<ArrayList<Junction>> reserveTable) {
 
 		start = map.getJunction(start.getX(), start.getY());
 		goal = map.getJunction(goal.getX(), goal.getY());
@@ -86,11 +88,18 @@ public class MultiRouteFinder {
 		// operate on robots simultaneously, so get each robots goal (one
 		// pickup or dropoff), and then execute the finder
 
-		while (((currentJunct.getX() != goal.getX()) || (currentJunct.getY() != goal.getY()))
-				&& (timeStep < reserveTable.length)) {
+		while (currentJunct.getX() != goal.getX() || currentJunct.getY() != goal.getY()) {
 			int minCost = -1;
 			int pathEstimate = 0;
 			int movesFromStart = 0;
+			
+			// Ensure reserveTable.get(timeStep + 1) exists
+			if (timeStep + 1 >= reserveTable.size()) {
+				int add = timeStep - reserveTable.size() + 2;
+				for (int i = 0; i < add; i++) {
+					reserveTable.add(new ArrayList<>());
+				}
+			}
 
 			// Iterate through frontier to find lowest cost junction
 			for (Entry<Junction, Integer> entry : frontier.entrySet()) {
@@ -107,11 +116,11 @@ public class MultiRouteFinder {
 				}
 			}
 
-			reserveTable[timeStep].add(currentJunct);
+			reserveTable.get(timeStep).add(currentJunct);
 
 			// if the current junction is the goal return the path
 
-			if ((currentJunct.getX() == goal.getX()) && (currentJunct.getY() == goal.getY())) {
+			if (currentJunct.getX() == goal.getX() && currentJunct.getY() == goal.getY()) {
 
 				RoutePackage rPackage = new RoutePackage();
 				ArrayList<Direction> directionList = makePath(start, goal, rPackage);
@@ -131,11 +140,11 @@ public class MultiRouteFinder {
 			for (Junction neighbour : currentJunct.getNeighbours()) {
 
 				if ((neighbour == null) || (searched.contains(neighbour))
-						|| (reserveTable[timeStep].contains(neighbour))
-						|| (reserveTable[timeStep + 1].contains(neighbour)))
+						|| (reserveTable.get(timeStep).contains(neighbour))
+						|| (reserveTable.get(timeStep + 1).contains(neighbour)))
 					continue;
 
-				else if (reserveTable[timeStep].contains(neighbour) || reserveTable[timeStep + 1].contains(neighbour))
+				else if (reserveTable.get(timeStep).contains(neighbour) || reserveTable.get(timeStep + 1).contains(neighbour))
 					// Add wait command NOT IMPLEMENTED
 
 					if (!frontier.containsKey(neighbour)) {
@@ -154,11 +163,11 @@ public class MultiRouteFinder {
 			timeStep++;
 		}
 
-		if ((start.getX() == goal.getX()) && (start.getY() == goal.getY())) {
+		if (start.getX() == goal.getX() && start.getY() == goal.getY()) {
 
-			while (timeStep < reserveTable.length) {
+			while (timeStep < reserveTable.size()) {
 
-				reserveTable[timeStep].add(start);
+				reserveTable.get(timeStep).add(start);
 			}
 			return null;
 		}
