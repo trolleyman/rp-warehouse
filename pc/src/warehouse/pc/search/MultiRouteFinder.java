@@ -144,15 +144,15 @@ public class MultiRouteFinder {
 						|| (reserveTable.get(timeStep + 1).contains(neighbour)))
 					continue;
 
-				else if (reserveTable.get(timeStep).contains(neighbour) || reserveTable.get(timeStep + 1).contains(neighbour))
+					// else if (reserveTable.get(timeStep).contains(neighbour) || reserveTable.get(timeStep + 1).contains(neighbour))
 					// Add wait command NOT IMPLEMENTED
 
-					if (!frontier.containsKey(neighbour)) {
-						// For safety
-						frontier.put(neighbour, movesFromStart + 1);
+				if (!frontier.containsKey(neighbour)) {
+					// For safety
+					frontier.put(neighbour, movesFromStart + 1);
 
-					} else if ((movesFromStart + 1) >= frontier.get(neighbour))
-						continue;
+				} else if ((movesFromStart + 1) >= frontier.get(neighbour))
+					continue;
 
 				frontier.remove(neighbour);
 				frontier.put(neighbour, movesFromStart + 1);
