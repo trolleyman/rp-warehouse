@@ -1,0 +1,12 @@
+TODO
+ - GUI
+   - Display what robot's plans are
+ - Communication
+   - RobotManager should tell Robot what job it has regularly
+   - Needs function in BTServer - sendRobotInfo(Robot r);
+   - Distance needs to be properly handled by the BTServer - call distanceRecieved on MainInterface
+   - Distance needs to be only transmitted at each junction
+ - Localisation
+   - Robot should tell the server when it doesn't know where it is: via the ESCAPE button when unloading/picking up
+   - Server then should stop all robots, then start localisation.
+   - GUI should then display probable locations of robot (Extension)
