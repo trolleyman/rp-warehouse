@@ -30,6 +30,19 @@ public enum Direction {
 	}
 	
 	/**
+	 * Converts a direction into a command
+	 */
+	public Command toCommand() {
+		switch (this) {
+		case Y_POS: return Command.Y_POS;
+		case X_POS: return Command.X_POS;
+		case Y_NEG: return Command.Y_NEG;
+		case X_NEG: return Command.X_NEG;
+		default: return Command.WAIT;
+		}
+	}
+	
+	/**
 	 * Converts degrees from Y+ to a Direction.
 	 */
 	public static Direction fromFacing(double facing) {
@@ -64,37 +77,5 @@ public enum Direction {
 			return 270.0;
 		}
 		return 0.0;
-	}
-	
-	/**
-	 * Applies a list of bearings to this Direction, returning the Direction transformed.
-	 */
-	public Direction applyCommands(List<Command> bearings) {
-		Direction facing = this;
-		for (Command b : bearings) {
-			int turn = 0;
-			switch (b) {
-			case RIGHT:
-				turn = 1;
-				break;
-			case BACKWARD:
-				turn = 2;
-				break;
-			case LEFT:
-				turn = 3;
-				break;
-			case WAIT:
-			case PICK:
-			case DROP:
-			case FORWARD:
-			default:
-				turn = 0;
-				break;
-			}
-			
-			facing = Direction.values()[(facing.ordinal() + turn) % 4];
-		}
-		
-		return facing;
 	}
 }

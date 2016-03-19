@@ -91,9 +91,11 @@ public class RobotManager implements Runnable, RobotListener {
 				}
 				robotJobsToCancel.clear();
 				
-				// If any robot doesn't have any commands but has a job, complete job & recalculate.
+				// If any robot's next command is Command.COMPLETE_JOB, complete job & recalculate.
 				for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
-					if (e.getValue().getCommands().isEmpty()) {
+					ArrayDeque<Command> coms = e.getValue().getCommands();
+					if (coms.peekFirst() != null && coms.peekFirst().equals(Command.COMPLETE_JOB)) {
+						coms.pollFirst();
 						ArrayDeque<Job> jobs = robotJobs.get(e.getKey());
 						if (jobs != null && !jobs.isEmpty()) {
 							// Complete first job in queue
@@ -186,10 +188,9 @@ public class RobotManager implements Runnable, RobotListener {
 	
 	/**
 	 * Run one step of the system.
-	 * i.e. Move robots and wait for their reply. TODO: Sort out localisation stuff as well.
+	 * i.e. Move robots and wait for their reply.
 	 */
 	private void step() {
-		// TODO: Update the position of the robots.
 		//HashMap<Robot, Direction> newRobotDirections = new HashMap<>();
 
 		ArrayList<Robot> readyRobots = new ArrayList<>();

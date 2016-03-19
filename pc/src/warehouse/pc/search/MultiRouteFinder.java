@@ -1,5 +1,6 @@
 package warehouse.pc.search;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,7 +61,7 @@ public class MultiRouteFinder {
 	 * @return the ArrayList of directions
 	 */
 
-	public LinkedList<Command> findRoute(Junction start, Junction goal, Direction direction) {
+	public ArrayDeque<Command> findRoute(Junction start, Junction goal, Direction direction) {
 
 		Integer timeStep;
 
@@ -85,7 +86,7 @@ public class MultiRouteFinder {
 																	// until EVERY robot is at its destination, at which point they
 																	//	can drop off, pickup etc. That is, perhaps routeplanner.java
 																	//	should be changed to operate on robots simultaneously, so get
-																	//	each robots goal (one pickup or dropoff), and then execute the finder 
+																	//	each robots goal (one pickup or dropoff), and then execute the finder
 
 			int minCost = -1;
 			int pathEstimate = 0;
@@ -110,7 +111,7 @@ public class MultiRouteFinder {
 
 			if ((currentJunct.getX() == goal.getX()) && (currentJunct.getY() == goal.getY())) {
 				ArrayList<Direction> directionList = makePath(start, goal);
-				return getActualDirections(directionList, direction);
+				return Command.fromDirections(directionList);
 			}
 
 			// remove the junction from the frontier and add it to the explored
@@ -194,98 +195,5 @@ public class MultiRouteFinder {
 
 	private int getHeuristic(Junction current, Junction goal) {
 		return (Math.abs(current.getX() - goal.getX()) + Math.abs(current.getY() - goal.getY()));
-	}
-
-
-
-	private LinkedList<Command> getActualDirections(ArrayList<Direction> oldList, Direction direction) {
-
-		LinkedList<Command> newList = new LinkedList<Command>();
-
-		for (int i = 0; i < oldList.size(); i++) {
-
-			Direction currentDirection = oldList.get(i);
-			Command bearing = null;
-
-			switch (direction) {
-			case Y_POS:
-				switch (currentDirection) {
-				case Y_POS:
-					bearing = Command.FORWARD;
-					break;
-				case Y_NEG:
-					bearing = Command.BACKWARD;
-					break;
-				case X_POS:
-					bearing = Command.RIGHT;
-					break;
-				case X_NEG:
-					bearing = Command.LEFT;
-					break;
-
-				}
-				break;
-
-			case Y_NEG:
-				switch (currentDirection) {
-				case Y_NEG:
-					bearing = Command.FORWARD;
-					break;
-				case Y_POS:
-					bearing = Command.BACKWARD;
-					break;
-				case X_NEG:
-					bearing = Command.RIGHT;
-					break;
-				case X_POS:
-					bearing = Command.LEFT;
-					break;
-				}
-				break;
-
-			case X_POS:
-				switch (currentDirection) {
-				case X_POS:
-					bearing = Command.FORWARD;
-					break;
-				case X_NEG:
-					bearing = Command.BACKWARD;
-					break;
-				case Y_NEG:
-					bearing = Command.RIGHT;
-					break;
-				case Y_POS:
-					bearing = Command.LEFT;
-					break;
-
-				}
-				break;
-
-			case X_NEG:
-				switch (currentDirection) {
-				case X_NEG:
-					bearing = Command.FORWARD;
-					break;
-				case X_POS:
-					bearing = Command.BACKWARD;
-					break;
-				case Y_POS:
-					bearing = Command.RIGHT;
-					break;
-				case Y_NEG:
-					bearing = Command.LEFT;
-					break;
-
-				}
-
-				break;
-			}
-
-			direction = currentDirection;
-			newList.add(bearing);
-
-		}
-
-		return newList;
 	}
 }

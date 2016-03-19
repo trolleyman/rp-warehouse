@@ -1,5 +1,7 @@
 package warehouse.pc.shared;
 
+import java.util.Optional;
+
 import warehouse.shared.Constants;
 
 public class RobotUpdater extends Thread {
@@ -75,6 +77,13 @@ public class RobotUpdater extends Thread {
 	
 	@Override
 	public void run() {
+		Optional<Direction> od = com.toDirection();
+		if (!od.isPresent())
+			return;
+		
+		Direction d = od.get();
+		RelativeDirection relDir = RelativeDirection.fromTo(robot.getDirection(), d);
+		
 		double cellSize = MainInterface.get().getMap().getCellSize();
 		double speed = Constants.ROBOT_SPEED / cellSize;
 		double rotationSpeed = Constants.ROBOT_ROTATION_SPEED;
@@ -82,7 +91,7 @@ public class RobotUpdater extends Thread {
 		double travel = 1.0;
 		double rotate = 0.0;
 		
-		switch (com) {
+		switch (relDir) {
 		case FORWARD:
 			break;
 		case BACKWARD:

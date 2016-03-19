@@ -2,6 +2,7 @@ package warehouse.pc.search;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -62,8 +63,8 @@ public class PlanningTests {
 	ArrayList<Junction> bases;
 	HashMap<Robot, LinkedList<Job>> map;
 	
-	LinkedList<Command> bearingsA;
-	LinkedList<Command> bearingsB;
+	ArrayDeque<Command> bearingsA;
+	ArrayDeque<Command> bearingsB;
 
 	@Before
 	public void setUp() throws Exception {

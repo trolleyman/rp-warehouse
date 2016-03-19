@@ -21,7 +21,7 @@ public class TSPDistance {
 		ArrayList<ItemQuantity> items = new ArrayList<>(job.getItems());
 		int[] dToItem = new int[items.size()];
 		for(int i=0; i<items.size(); i++){
-			dToItem[i] = (routeFinder.findRoute(new Junction(x, y), items.get(i).getItem().getJunction(), Direction.X_POS).size());
+			dToItem[i] = (routeFinder.findRoute(new Junction(x, y), items.get(i).getItem().getJunction()).size());
 		}
 		ArrayList<ItemQuantity> res = new ArrayList<ItemQuantity>();
 		
@@ -40,15 +40,16 @@ public class TSPDistance {
 		int[][] itemToItem = new int[items.size()][items.size()];
 		for(int i=0; i<items.size(); i++){
 			for(int j=0; j<items.size(); j++){
-				itemToItem[i][j] = (routeFinder.findRoute(items.get(i).getItem().getJunction(), items.get(j).getItem().getJunction(), Direction.X_POS).size());
+				itemToItem[i][j] = (routeFinder.findRoute(items.get(i).getItem().getJunction(), items.get(j).getItem().getJunction()).size());
 			}
 		}
 		int[] itemToDrop = new int[items.size()];
 		for(int i=0; i<items.size(); i++){
 			int temp = Integer.MAX_VALUE;
 			for(int j=0; j<dropLocations.size(); j++){
-				if(routeFinder.findRoute(items.get(i).getItem().getJunction(), dropLocations.get(j), Direction.X_POS).size() < temp){
-					temp = routeFinder.findRoute(items.get(i).getItem().getJunction(), dropLocations.get(j), Direction.X_POS).size();
+				int len = routeFinder.findRoute(items.get(i).getItem().getJunction(), dropLocations.get(j)).size();
+				if(len < temp){
+					temp = len;
 				}
 			}
 			itemToDrop[i] = temp;
