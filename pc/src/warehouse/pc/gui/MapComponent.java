@@ -95,8 +95,9 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 		// 		(int) (bounds.getHeight() * yScale));
 		
 		paintGrid(g2);
-		paintRobotTrails(g2);
 		paintJunctions(g2);
+		paintRobotTrails(g2);
+		paintJunctionsText(g2);
 		paintWalls(g2);
 		paintRobots(g2);
 	}
@@ -141,7 +142,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 						break;
 					}
 					
-					// Draw line
+					// Draw line from prev to updated pos
 					_g2.drawLine(
 						(int)(prevX * xScale),
 						(int)(prevY * yScale),
@@ -151,6 +152,12 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 					// Update prev
 					prevX = x;
 					prevY = y;
+				} else {
+					// Draw circle at junction to signify PICKUP/DROPOFF etc.
+					int size = 8;
+					double size2 = size / 2.;
+					_g2.fillOval((int)(x * xScale - size2), (int)(y * yScale - size2),
+						size, size);
 				}
 			}
 		}
@@ -169,6 +176,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 			double w = ROBOT_W * xScale;
 			double h = ROBOT_H * yScale;
 			
+			// Simplify calculations by transforming everything
 			g.translate(x, y);
 			
 			Graphics2D fg = (Graphics2D) g.create();
@@ -178,6 +186,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 			trans.scale(xScale * 0.015, yScale * 0.015);
 			fg.transform(trans);
 			int nameW = g.getFontMetrics().stringWidth(robot.getName());
+			// Centre text
 			fg.translate(- nameW / 2.0, 14.0);
 			
 			g.rotate(-Math.toRadians(robot.getFacing()));
@@ -207,6 +216,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 	}
 
 	private void paintGrid(Graphics2D _g2) {
+		// Draw grid first
 		ArrayList<Line2D> lines = map.getGrid();
 		_g2.setColor(Color.BLACK);
 		for (Line2D line : lines) {
@@ -214,13 +224,18 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 						 (int) (line.getX2() * xScale), (int) (line.getY2() * yScale));
 		}
 		
+		// Drink numbers along the side
 		Graphics2D fg = (Graphics2D) _g2.create();
+		// Scale text
 		fg.scale(xScale * 0.015, yScale * 0.015);
+		// Flip y-axis, to make text upright
 		fg.scale(1.0, -1.0);
 		for (int x = 0; x < map.getWidth(); x++) {
+			// This one weird formula!
 			fg.drawString(Integer.toString(x), (int)(x * 66.666666666666667 - 3.0), (int)(50.0));
 		}
 		for (int y = 0; y < map.getHeight(); y++) {
+			// Mathematicians hate him!
 			fg.drawString(Integer.toString(y), (int)(-50.0), (int)(-y * 66.666666666666667 + 4.0));
 		}
 		fg.dispose();
@@ -232,28 +247,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 				Junction j = map.getJunction(x, y);
 				if (j == null)
 					continue;
-				
-				for (Location loc : locList.getList()) {
-					if (loc.getJunction().getX() == x && loc.getJunction().getY() == y) {
-						Graphics2D fg = (Graphics2D) _g2.create();
-						if (loc.getItemName().equals(gui.selectedItemName)) {
-							Font f = fg.getFont();
-							f = f.deriveFont(Font.BOLD, (float) (f.getSize() * 1.5));
-							fg.setFont(f);
-						}
-						fg.setColor(Color.RED);
-						AffineTransform trans = new AffineTransform();
-						trans.scale(1.0, -1.0);
-						trans.scale(xScale * 0.015, yScale * 0.015);
-						
-						int nameW = (int) (fg.getFontMetrics().stringWidth(loc.getItemName()) * xScale * 0.015);
-						fg.translate(-nameW / 2.0, 14.0);
-						fg.translate(x * xScale, y * yScale);
-						fg.transform(trans);
-						fg.drawString(loc.getItemName(), 0, 0);
-						fg.dispose();
-					}
-				}
+				// For each junction j that is valid...
 				
 				double w = 5.0;
 				double h = 5.0;
@@ -272,6 +266,34 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 							 (int) (y * yScale - h / 2.0) + 0,
 							 (int) (w), (int) (h));
 			}
+		}
+	}
+	
+	private void paintJunctionsText(Graphics2D _g2) {
+		for (Location loc : locList.getList()) {
+			int x = loc.getX();
+			int y = loc.getY();
+			
+			if (map.getJunction(x, y) == null)
+				continue;
+			
+			Graphics2D fg = (Graphics2D) _g2.create();
+			if (loc.getItemName().equals(gui.selectedItemName)) {
+				Font f = fg.getFont();
+				f = f.deriveFont(Font.BOLD, (float) (f.getSize() * 1.5));
+				fg.setFont(f);
+			}
+			fg.setColor(Color.RED);
+			AffineTransform trans = new AffineTransform();
+			trans.scale(1.0, -1.0);
+			trans.scale(xScale * 0.015, yScale * 0.015);
+			
+			int nameW = (int) (fg.getFontMetrics().stringWidth(loc.getItemName()) * xScale * 0.015);
+			fg.translate(-nameW / 2.0, 14.0);
+			fg.translate(x * xScale, y * yScale);
+			fg.transform(trans);
+			fg.drawString(loc.getItemName(), 0, 0);
+			fg.dispose();
 		}
 	}
 	

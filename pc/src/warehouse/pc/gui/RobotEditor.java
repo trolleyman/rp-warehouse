@@ -55,8 +55,8 @@ public class RobotEditor extends JPanel {
 		isPaused = true;
 		
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		selectedRobotLabel = new JLabel("", JLabel.LEADING);
-		robotIDLabel = new JLabel("", JLabel.LEADING);
+		selectedRobotLabel = new JLabel("Selected Robot: None", JLabel.LEADING);
+		robotIDLabel = new JLabel("ID: ?", JLabel.LEADING);
 		selectedRobotLabel.setAlignmentX(RIGHT_ALIGNMENT);
 		robotIDLabel.setAlignmentX(RIGHT_ALIGNMENT);
 		
@@ -131,14 +131,15 @@ public class RobotEditor extends JPanel {
 		layout.putConstraint(SpringLayout.NORTH, headingButton, 6, SpringLayout.SOUTH, headingSpinner);
 		//layout.putConstraint(SpringLayout.HEIGHT, this, 6, SpringLayout.SOUTH, headingButton);
 		
+		update();
 		doLayout();
 		
 	    //this.setPreferredSize(this.getPreferredSize());
 		setPreferredSize(new Dimension(width, (int)
-				(headingButton.getY() + headingButton.getPreferredSize().getHeight() + 30)));
+				(headingButton.getY() + headingButton.getHeight() * 1)));
 		setMinimumSize(getPreferredSize());
 		setMaximumSize(getPreferredSize());
-	    
+		
 		update();
 	}
 	
