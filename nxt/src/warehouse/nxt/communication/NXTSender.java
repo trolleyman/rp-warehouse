@@ -50,13 +50,15 @@ public class NXTSender extends Thread {
 				this.updateCheck();
 
 				if (this.stateChange) {
-					this.toPC.writeUTF("Ready");
-					this.toPC.writeUTF("" + this.robotMotion.getDistance());
+					this.toPC.writeUTF("ready");
+					this.toPC.writeUTF("Distance:" + this.robotMotion.getDistance());
+					this.toPC.flush();
 					this.myself.ready = false;
 					this.stateChange = false;
 				}
 				if (this.statusChange) {
 					this.toPC.writeUTF(this.myself.status);
+					this.toPC.flush();
 					this.statusChange = false;
 				}
 				if (this.positionChange) {

@@ -37,17 +37,15 @@ public class NXTReceiver extends Thread {
 	private Robot myself; // Robot Object Instance for this robot
 	private NXTMotion robotMotion; // Robot Motion Control Object
 	private NXTInterface robotInterface; // Robot Interface Control Object
-	private NXTSender sender;
 
 	public NXTReceiver(DataInputStream _fromPC, BTConnection _connection, Robot _myself,
-		NXTMotion _rMotion, NXTInterface _rInterface, NXTSender _sender) {
+		NXTMotion _rMotion, NXTInterface _rInterface) {
 
 		this.fromPC = _fromPC;
 		this.connection = _connection;
 		this.myself = _myself;
 		this.robotMotion = _rMotion;
 		this.robotInterface = _rInterface;
-		this.sender = _sender;
 
 	}
 
