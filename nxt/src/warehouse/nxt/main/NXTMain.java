@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import lejos.nxt.Button;
+import lejos.nxt.Sound;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
 import lejos.util.Delay;
@@ -52,6 +53,7 @@ public class NXTMain {
 		this.robotInterface.drawWaitForConnection(false);
 		this.connection = Bluetooth.waitForConnection();
 		this.robotInterface.drawWaitForConnection(true);
+		Sound.beepSequenceUp();
 		Delay.msDelay(1000);
 		
 		this.startStreams();
