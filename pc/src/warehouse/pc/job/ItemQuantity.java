@@ -20,4 +20,9 @@ public class ItemQuantity {
 	public int getQuantity() {
 		return this.quantity;
 	}
+	
+	@Override
+	public String toString() {
+		return quantity + " " + item;
+	}
 }

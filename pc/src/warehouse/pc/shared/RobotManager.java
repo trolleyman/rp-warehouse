@@ -193,7 +193,7 @@ public class RobotManager implements Runnable, RobotListener {
 	 */
 	private void step() {
 		//HashMap<Robot, Direction> newRobotDirections = new HashMap<>();
-
+		
 		ArrayList<Robot> readyRobots = new ArrayList<>();
 		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
 			CommandQueue q = e.getValue();
@@ -247,6 +247,9 @@ public class RobotManager implements Runnable, RobotListener {
 		return robotJobs.get(_r);
 	}
 	
+	/**
+	 * Pauses the RobotManager gracefully, i.e. it waits for all robots to reach the next junction, then it starts.
+	 */
 	public void pause() {
 		synchronized (this) {
 			System.out.println("Robot Manager: Pausing.");
@@ -254,6 +257,9 @@ public class RobotManager implements Runnable, RobotListener {
 		}
 	}
 	
+	/**
+	 * Resumes the RobotManager.
+	 */
 	public void resume() {
 		synchronized (this) {
 			System.out.println("Robot Manager: Resuming.");
@@ -264,6 +270,18 @@ public class RobotManager implements Runnable, RobotListener {
 		}
 	}
 	
+	/**
+	 * Gets the jobs that have been completed by the RobotManager.
+	 */
+	public ArrayList<Job> getCompletedJobs() {
+		synchronized (this) {
+			return new ArrayList<>(completedJobs);
+		}
+	}
+	
+	/**
+	 * Triggers the RobotManager to reallocate jobs to robots with no jobs.
+	 */
 	public void recalculate() {
 		nextStepRecalculate = true;
 	}

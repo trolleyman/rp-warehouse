@@ -142,6 +142,7 @@ public class Gui implements Runnable, RobotListener {
 		panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		frame.add(panel);
 		frame.pack();
+		frame.setMinimumSize(new Dimension(1000, 700));
 		frame.setSize(1200, 800);
 		frame.setLocationRelativeTo(null);
 	}
@@ -236,12 +237,13 @@ public class Gui implements Runnable, RobotListener {
 			}
 		});
 		JScrollPane scrollpane = new JScrollPane(table,
-			JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		
+		scrollpane.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 		
 		info.setLayout(new BorderLayout());
 		info.add(table.getTableHeader(), BorderLayout.NORTH);
 		info.add(scrollpane, BorderLayout.CENTER);
-		//info.setMaximumSize(new Dimension(300, 10000000));
 		info.setPreferredSize(new Dimension(LEFT_WIDTH, (int) 300));
 		return info;
 	}
@@ -291,6 +293,12 @@ public class Gui implements Runnable, RobotListener {
 		return jobInfo;
 	}
 	
+	private JPanel createCompletedJobs() {
+		CompletedJobInfo completedJobInfo = new CompletedJobInfo();
+		completedJobInfo.setBorder(BorderFactory.createTitledBorder("Completed Jobs"));
+		return completedJobInfo;
+	}
+	
 	private JPanel createLeftToolbar() {
 		JPanel res = new JPanel();
 		res.setLayout(new SpringLayout());
@@ -307,7 +315,8 @@ public class Gui implements Runnable, RobotListener {
 		JPanel res = new JPanel();
 		res.setLayout(new SpringLayout());
 		res.add(createJobInfo());
-		res.add(Box.createHorizontalGlue());
+		res.add(createCompletedJobs());
+		//res.add(Box.createHorizontalGlue());
 		SpringUtilities.makeCompactGrid(res, 1, res.getComponentCount(), 0, 0, 6, 6);
 		return res;
 	}
@@ -320,6 +329,7 @@ public class Gui implements Runnable, RobotListener {
 	}
 
 	public void update() {
+		System.out.println("Size: " + frame.getSize());
 		if (!selector.isRunning()) {
 			connectionButton.setEnabled(false);
 		}

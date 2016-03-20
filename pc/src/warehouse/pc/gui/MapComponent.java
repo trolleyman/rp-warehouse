@@ -158,6 +158,8 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 					double size2 = size / 2.;
 					_g2.fillOval((int)(x * xScale - size2), (int)(y * yScale - size2),
 						size, size);
+					// Now exit, - for now only draw up to a PICKUP/DROPOFF etc to minimise spam.
+					break;
 				}
 			}
 		}
@@ -218,14 +220,18 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 	private void paintGrid(Graphics2D _g2) {
 		// Draw grid first
 		ArrayList<Line2D> lines = map.getGrid();
-		_g2.setColor(Color.BLACK);
+		Graphics2D g = (Graphics2D) _g2.create();
+		//g.setStroke(new BasicStroke(2.0f));
+		g.setColor(Color.BLACK);
 		for (Line2D line : lines) {
-			_g2.drawLine((int) (line.getX1() * xScale), (int) (line.getY1() * yScale),
+			g.drawLine((int) (line.getX1() * xScale), (int) (line.getY1() * yScale),
 						 (int) (line.getX2() * xScale), (int) (line.getY2() * yScale));
 		}
+		g.dispose();
 		
 		// Drink numbers along the side
 		Graphics2D fg = (Graphics2D) _g2.create();
+		fg.setColor(Color.BLACK);
 		// Scale text
 		fg.scale(xScale * 0.015, yScale * 0.015);
 		// Flip y-axis, to make text upright
