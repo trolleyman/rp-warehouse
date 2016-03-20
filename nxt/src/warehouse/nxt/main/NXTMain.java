@@ -3,9 +3,9 @@ package warehouse.nxt.main;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.Thread.UncaughtExceptionHandler;
-
 import lejos.nxt.Button;
+import lejos.nxt.LCD;
+import lejos.nxt.Sound;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
 import lejos.util.Delay;
@@ -54,11 +54,13 @@ public class NXTMain {
 		this.robotInterface.drawWaitForConnection(false);
 		this.connection = Bluetooth.waitForConnection();
 		this.robotInterface.drawWaitForConnection(true);
+		Sound.beepSequenceUp();
 		Delay.msDelay(1000);
 		
 		this.startStreams();
 		this.getMyself();
 		this.robotInterface.setRobotName(this.myself.name);
+		this.robotInterface.updatePosition(this.myself.x, this.myself.y);
 		
 		this.robotMotion = new NXTMotion( this.robotInterface, this.myself );
 		this.robotInterface.show();
@@ -106,6 +108,10 @@ public class NXTMain {
 	public static void main( String[] _arguments ) { new NXTMain(); }
 	
 	public static void error(String msg) {
-		// TODO: Something here
+		Sound.systemSound(true, 4);
+		LCD.clear();
+		LCD.drawString(msg, 0, 0);
+		Button.waitForAnyPress();
+		System.exit(1);
 	}
 }

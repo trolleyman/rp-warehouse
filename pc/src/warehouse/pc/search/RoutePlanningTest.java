@@ -1,5 +1,6 @@
 package warehouse.pc.search;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -24,11 +25,6 @@ public class RoutePlanningTest {
 	static Direction xn = Direction.X_NEG;
 	static Direction yp = Direction.Y_POS;
 	static Direction yn = Direction.Y_NEG;
-	
-	static Command r = Command.RIGHT;
-	static Command l = Command.LEFT;
-	static Command f = Command.FORWARD;
-	static Command b = Command.BACKWARD;
 	
 	static RoutePlanner plannerA;
 	
@@ -81,9 +77,9 @@ public class RoutePlanningTest {
 		plannerA.computeCommands();
 		
 		
-		LinkedList<Command> bearings = plannerA.getCommands(robotA).getCommands();
+		ArrayDeque<Command> commands = plannerA.getCommands(robotA).getCommands();
 		
-		System.out.println(bearings);
+		System.out.println(commands);
 		
 	}
 	

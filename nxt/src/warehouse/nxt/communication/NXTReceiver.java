@@ -3,7 +3,6 @@ package warehouse.nxt.communication;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import lejos.nxt.Button;
 import lejos.nxt.comm.BTConnection;
 import warehouse.nxt.display.NXTInterface;
 import warehouse.nxt.main.NXTMain;
@@ -68,60 +67,64 @@ public class NXTReceiver extends Thread {
 	}
 	
 	// Categorises commands into Go or Do
-	private void find( String _action ) throws IOException {
-		
-		String[] explosion = MyString.split( ":", _action );
-		String type = explosion[ 0 ];
-		
-		String[] data = MyString.split( "," , explosion[ 1 ] );
-		switch( type ) {
-			case "Do" :
-				this.action( data );
-				sender.sendReady();
-				break;
-			case "Go" :
-				this.move( data );
-				sender.sendReady();
-				break;
-			case "Cancel Job" : this.cancel( data );
-			default : NXTMain.error( "Protocol Error." ); break;
+	private void find(String _action) throws IOException {
+		String[] explosion = MyString.split(":", _action);
+		String type = explosion[0];
+
+		String[] data = MyString.split(",", explosion[1]);
+		switch (type) {
+		case "Do":
+			this.action(data);
+			sender.sendReady();
+			break;
+		case "Go":
+			this.move(data);
+			sender.sendReady();
+			break;
+		case "Cancel Job":
+			this.cancel(data);
+		default:
+			NXTMain.error("Protocol Error 1");
+			break;
 		}
 	}
 	
 	// Executes a cancel request
 	// Usage: "Cancel Job: Shut Down"
-	//    OR: "Cancel Job: <String: NextJobName>"
-	private void cancel( String[] _next ) {
-		if( _next[ 0 ].equals( "Shut Down" ) ) { this.connection.close(); NXTMain.error("Shut Down"); }
-		else {
-			this.robotInterface.setJobName( _next[ 0 ] );
-			this.myself.jobName = _next[ 0 ];
+	// OR: "Cancel Job: <String: NextJobName>"
+	private void cancel(String[] _next) {
+		if (_next[0].equals("Shut Down")) {
+			this.connection.close();
+			NXTMain.error("Shut Down");
+		} else {
+			this.robotInterface.setJobName(_next[0]);
+			this.myself.jobName = _next[0];
 			this.robotInterface.show();
 		}
 	}
 	
 	// Executes doable actions like "Shut Down" and "Pick Up"
 	// Usage: Do: Shut Down
-	//        Do: Pick Up, <int: quantity>, <double: weight>
-	//        Do: Drop Off
-	private void action( String[] _action ) {
-		switch( _action[ 0 ] ) {
-			case "Shut Down"  :
-				this.connection.close();
-				NXTMain.error("Shut Down.");
-				break;
-			case "Pick Up"	  :
-				this.myself.status = "Picking Items";
-				this.robotInterface.pickUp( Integer.parseInt( _action[ 1 ] ), Float.parseFloat( _action[ 2 ] ) );
-				this.myself.status = "Picked " + Integer.parseInt( _action[ 1 ] );
-				break;
-			case "Drop Off"   :
-				this.robotInterface.dropOff();
-				this.myself.status = "Finished";
-				break;
-			default           :
-				NXTMain.error( "NXTReceiver: Unknown data format received after 'Do: '." );
-				break;
+	// Do: Pick Up, <int: quantity>, <double: weight>
+	// Do: Drop Off
+	private void action(String[] _action) {
+		switch (_action[0]) {
+		case "Shut Down":
+			this.connection.close();
+			NXTMain.error("Shut Down.");
+			break;
+		case "Pick Up":
+			this.myself.status = "Picking Items";
+			this.robotInterface.pickUp(Integer.parseInt(_action[1]), Float.parseFloat(_action[2]));
+			this.myself.status = "Picked " + Integer.parseInt(_action[1]);
+			break;
+		case "Drop Off":
+			this.robotInterface.dropOff();
+			this.myself.status = "Finished";
+			break;
+		default:
+			NXTMain.error("Protocol Error 2");
+			break;
 		}
 	}
 	
@@ -152,8 +155,8 @@ public class NXTReceiver extends Thread {
 			this.myself.status = "Moving Backward";
 			this.robotMotion.go( "Backward", Integer.parseInt( _data[1] ), Integer.parseInt( _data[2] ) );
 			break;
-		default 		:
-			NXTMain.error( "Protocol Error." );
+		default:
+			NXTMain.error("Protocol Error 3");
 			break;
 		}
 	}

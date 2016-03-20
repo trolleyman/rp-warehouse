@@ -98,7 +98,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 			this.addItem(SEARCHING);
 		} else {
 			for (NXTInfo info : defaultInfos) {
-				this.addItem(info.name);
+				this.addItem(info.deviceAddress + " - " + info.name);
 			}
 		}
 		
@@ -122,16 +122,17 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 		if (!running)
 			return null;
 		
-		String name = this.getSelectedItem().toString();
-		// Check defaults first.
-		for (NXTInfo info : defaultInfos) {
-			if (info.name.equals(name)) {
-				return info;
-			}
-		}
+		String name = this.getSelectedItem().toString().split("-")[1].trim();
+		// Check found items first.
 		for (int i = 0; i < infos.length; i++) {
 			if (infos[i].name.equals(name)) {
 				return infos[i];
+			}
+		}
+		// Then check defaults
+		for (NXTInfo info : defaultInfos) {
+			if (info.name.equals(name)) {
+				return info;
 			}
 		}
 		return null;
@@ -197,13 +198,13 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 			
 			combined.sort(infoComparator);
 			
-			String selectedRobotName = this.getSelectedItem().toString();
+			String selectedRobotName = this.getSelectedRobot().name;
 			
 			// Add to combo box
 			int selectedIndex = 0;
 			this.removeAllItems();
 			for (int i = 0; i < combined.size(); i++) {
-				this.addItem(combined.get(i).name);
+				this.addItem(combined.get(i).deviceAddress + " - " + combined.get(i).name);
 				if (combined.get(i).name.equals(selectedRobotName)) {
 					selectedIndex = i;
 				}
@@ -264,6 +265,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 				updateOptions();
 				if (errorMessage.equals("Bluetooth stack not detected")) {
 					running = false;
+					gui.update();
 				}
 			}
 			

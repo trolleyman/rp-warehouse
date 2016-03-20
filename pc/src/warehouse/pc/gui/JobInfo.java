@@ -12,7 +12,6 @@ import java.util.Comparator;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.swing.event.ListSelectionEvent;
@@ -20,7 +19,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import rp.util.Pair;
-import sun.java2d.pipe.SpanClipRenderer;
 import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
 import warehouse.pc.shared.MainInterface;
@@ -76,21 +74,7 @@ public class JobInfo extends JPanel implements RobotListener {
 					if (j == null)
 						return "";
 					
-					ArrayList<ItemQuantity> iqs = j.getItems();
-					
-					StringBuilder b = new StringBuilder();
-					for (ItemQuantity iq : iqs) {
-						b.append(iq.getQuantity());
-						b.append(" ");
-						b.append(iq.getItem().getName());
-						b.append(", ");
-					}
-					if (iqs.size() > 0) {
-						// Delete last ", "
-						b.deleteCharAt(b.length() - 1);
-						b.deleteCharAt(b.length() - 1);
-					}
-					return b.toString();
+					return ItemQuantity.listToString(j.getItems());
 				}
 				default: return "";
 				}

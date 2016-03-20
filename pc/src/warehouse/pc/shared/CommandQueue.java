@@ -1,7 +1,6 @@
 package warehouse.pc.shared;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.ArrayDeque;
 
 /**
  * A queue of Bearings for the robot to follow
@@ -11,34 +10,33 @@ import java.util.List;
 
 public class CommandQueue{
 
-	private LinkedList<Command> commands;
+	private ArrayDeque<Command> commands;
 	
 	/**
 	 * Create a new CommandQueue
 	 */
 	
 	public CommandQueue(){
-		commands = new LinkedList<Command>();
+		commands = new ArrayDeque<Command>();
 	}
 	
 	/**
 	 * Add a single command to the queue
-	 * @param bearing the bearing
+	 * @param command the command
 	 */
 	
-	public void addCommand(Command bearing){
-		commands.add(bearing);
+	public void addCommand(Command command){
+		commands.add(command);
 	}
 	
 	/**
 	 * Add a list of commands to the queue
-	 * @param bearing the bearing
+	 * @param commands the commands
 	 */
 	
-	public void addCommandList(List<Command> bearing){
-		
-		for(int i = 0; i < bearing.size(); i++){
-			addCommand(bearing.get(i));
+	public void addCommandList(ArrayDeque<Command> commands){
+		for (Command c : commands) {
+			addCommand(c);
 		}
 	}
 	
@@ -49,7 +47,7 @@ public class CommandQueue{
 	
 	public Command getNextCommand(){
 		
-		return commands.pop();
+		return commands.pollFirst();
 	}
 	
 	/**
@@ -57,7 +55,7 @@ public class CommandQueue{
 	 * @return the list of commands
 	 */
 	
-	public LinkedList<Command> getCommands(){
+	public ArrayDeque<Command> getCommands(){
 		return commands;
 	}
 	

@@ -3,7 +3,7 @@ package warehouse.nxt.communication;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import lejos.nxt.Button;
+import lejos.nxt.Sound;
 import warehouse.nxt.display.NXTInterface;
 import warehouse.nxt.main.NXTMain;
 import warehouse.nxt.motion.NXTMotion;
@@ -51,21 +51,24 @@ public class NXTSender extends Thread {
 				catch( Exception _exception ) { /* I guess we dont care */ }
 				
 				if (System.currentTimeMillis() - lastDistance > 200) {
-					synchronized (this) {
-						this.toPC.writeUTF( "Distance:" + this.robotMotion.getDistance() );
-					}
 					lastDistance = System.currentTimeMillis();
 				}
 				
 				synchronized (this) {
-					if( this.statusUpdated() ) { this.toPC.writeUTF( this.myself.status ); this.updateOldRobot(); }
-					if( this.positionUpdated() ) { this.robotInterface.updatePosition( this.myself.x, this.myself.y ); this.updateOldRobot(); }
+					if (this.statusUpdated()) {
+						this.toPC.writeUTF(this.myself.status);
+						this.updateOldRobot();
+					}
+					if (this.positionUpdated()) {
+						this.robotInterface.updatePosition(this.myself.x, this.myself.y);
+						this.updateOldRobot();
+					}
 				}
-				
 			}
+		} catch (IOException _exception) {
+			NXTMain.error("Server closed.");
 		}
-		catch( IOException _exception ) { NXTMain.error("Server closed."); }
-		
+
 	}
 	
 	public void sendReady() throws IOException {
@@ -75,6 +78,7 @@ public class NXTSender extends Thread {
 	public void send(String msg) throws IOException {
 		synchronized (this) {
 			this.toPC.writeUTF(msg);
+			this.toPC.flush();
 		}
 	}
 	

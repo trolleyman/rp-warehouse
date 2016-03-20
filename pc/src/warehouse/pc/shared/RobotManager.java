@@ -86,14 +86,17 @@ public class RobotManager implements Runnable, RobotListener {
 					// Cancel every job in the queue
 					for (Job j : jq) {
 						mi.getJobList().getList().add(j);
+						System.out.println("Robot Manager: Cancelled job: " + j);
 					}
 					jq.clear();
 				}
 				robotJobsToCancel.clear();
 				
-				// If any robot doesn't have any commands but has a job, complete job & recalculate.
+				// If any robot's next command is Command.COMPLETE_JOB, complete job & recalculate.
 				for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
-					if (e.getValue().getCommands().isEmpty()) {
+					ArrayDeque<Command> coms = e.getValue().getCommands();
+					if (coms.peekFirst() != null && coms.peekFirst().equals(Command.COMPLETE_JOB)) {
+						coms.pollFirst();
 						ArrayDeque<Job> jobs = robotJobs.get(e.getKey());
 						if (jobs != null && !jobs.isEmpty()) {
 							// Complete first job in queue
@@ -186,29 +189,36 @@ public class RobotManager implements Runnable, RobotListener {
 	
 	/**
 	 * Run one step of the system.
-	 * i.e. Move robots and wait for their reply. TODO: Sort out localisation stuff as well.
+	 * i.e. Move robots and wait for their reply.
 	 */
 	private void step() {
-		// TODO: Update the position of the robots.
 		//HashMap<Robot, Direction> newRobotDirections = new HashMap<>();
-
+		
+		ArrayList<RobotUpdater> robotsToUpdate = new ArrayList<>();
+		
 		ArrayList<Robot> readyRobots = new ArrayList<>();
 		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
 			CommandQueue q = e.getValue();
+			Robot r = e.getKey();
 			Command com = q.getCommands().peekFirst();
 			if (com == null) {
 				com = Command.WAIT;
 			} else {
+				com.setFrom(r.getGridX(), r.getGridY());
+				r.setGridX(com.getX());
+				r.setGridY(com.getY());
 				q.getCommands().pop();
-				readyRobots.add(e.getKey());
+				readyRobots.add(r);
 			}
 			try {
 				System.out.println("Sending to " + e.getKey().getIdentity() + ": " + com);
-				mi.getServer().sendCommand(e.getKey(), com);
-				new RobotUpdater(e.getKey(), com).start();
+				mi.getServer().sendCommand(r, com);
+				RobotUpdater ru = new RobotUpdater(r, com);
+				robotsToUpdate.add(ru);
+				ru.start();
 			} catch (IOException ex) {
-				System.out.println(e.getKey().getIdentity() + " disconnected.");
-				mi.removeRobot(e.getKey());
+				System.out.println(r.getIdentity() + " disconnected.");
+				mi.removeRobot(r);
 				continue;
 			}
 		}
@@ -224,6 +234,10 @@ public class RobotManager implements Runnable, RobotListener {
 				mi.removeRobot(robot);
 				continue;
 			}
+		}
+		
+		for (RobotUpdater ru : robotsToUpdate) {
+			ru.end();
 		}
 	}
 	
@@ -241,6 +255,9 @@ public class RobotManager implements Runnable, RobotListener {
 		return robotJobs.get(_r);
 	}
 	
+	/**
+	 * Pauses the RobotManager gracefully, i.e. it waits for all robots to reach the next junction, then it starts.
+	 */
 	public void pause() {
 		synchronized (this) {
 			System.out.println("Robot Manager: Pausing.");
@@ -248,6 +265,9 @@ public class RobotManager implements Runnable, RobotListener {
 		}
 	}
 	
+	/**
+	 * Resumes the RobotManager.
+	 */
 	public void resume() {
 		synchronized (this) {
 			System.out.println("Robot Manager: Resuming.");
@@ -258,6 +278,18 @@ public class RobotManager implements Runnable, RobotListener {
 		}
 	}
 	
+	/**
+	 * Gets the jobs that have been completed by the RobotManager.
+	 */
+	public ArrayList<Job> getCompletedJobs() {
+		synchronized (this) {
+			return new ArrayList<>(completedJobs);
+		}
+	}
+	
+	/**
+	 * Triggers the RobotManager to reallocate jobs to robots with no jobs.
+	 */
 	public void recalculate() {
 		nextStepRecalculate = true;
 	}

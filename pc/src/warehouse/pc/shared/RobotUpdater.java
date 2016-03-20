@@ -1,8 +1,14 @@
 package warehouse.pc.shared;
 
+import java.util.Optional;
+
 import warehouse.shared.Constants;
 
 public class RobotUpdater extends Thread {
+	private volatile Object notifyStopped = new Object();
+	private volatile boolean stop = false;
+	private volatile boolean stopped = false;
+	
 	private Robot robot;
 	private Command com;
 	private MainInterface mi;
@@ -26,7 +32,7 @@ public class RobotUpdater extends Thread {
 		double percentDone = 0.0;
 		long start = System.currentTimeMillis();
 		long now = System.currentTimeMillis();
-		while (now < finishedTime) {
+		while (now < finishedTime && !stop) {
 			percentDone = ((double)(start - now)) / (start - finishedTime);
 			
 			double dx = travelX * percentDone;
@@ -56,7 +62,7 @@ public class RobotUpdater extends Thread {
 		double percentDone = 0.0;
 		long start = System.currentTimeMillis();
 		long now = System.currentTimeMillis();
-		while (now < finishedTime) {
+		while (now < finishedTime && !stop) {
 			percentDone = (start - now) / (double) (start - finishedTime);
 			
 			double dr = rotate * percentDone;
@@ -75,30 +81,64 @@ public class RobotUpdater extends Thread {
 	
 	@Override
 	public void run() {
-		double cellSize = MainInterface.get().getMap().getCellSize();
-		double speed = Constants.ROBOT_SPEED / cellSize;
-		double rotationSpeed = Constants.ROBOT_ROTATION_SPEED;
-		
-		double travel = 1.0;
-		double rotate = 0.0;
-		
-		switch (com) {
-		case FORWARD:
-			break;
-		case BACKWARD:
-			rotate = 180.0;
-			break;
-		case LEFT:
-			rotate = -90.0;
-			break;
-		case RIGHT:
-			rotate = 90.0;
-			break;
-		default:
+		try {
+			Optional<Direction> od = com.toDirection();
+			if (!od.isPresent())
+				return;
+			
+			Direction d = od.get();
+			RelativeDirection relDir = RelativeDirection.fromTo(robot.getDirection(), d);
+			
+			double cellSize = MainInterface.get().getMap().getCellSize();
+			double speed = Constants.ROBOT_SPEED / cellSize;
+			double rotationSpeed = Constants.ROBOT_ROTATION_SPEED;
+			
+			double travel = 1.0;
+			double rotate = 0.0;
+			
+			switch (relDir) {
+			case FORWARD:
+				break;
+			case BACKWARD:
+				rotate = 180.0;
+				break;
+			case LEFT:
+				rotate = -90.0;
+				break;
+			case RIGHT:
+				rotate = 90.0;
+				break;
+			default:
+				return;
+			}
+			
+			interpolateRotate(rotate, rotationSpeed);
+			interpolateTravel(travel, speed);
+		} finally {
+			synchronized (notifyStopped) {
+				stopped = true;
+				notifyStopped.notifyAll();
+			}
+		}
+	}
+	
+	/**
+	 * Ends the RobotUpdater gracefully, and waits for it to stop.
+	 */
+	public void end() {
+		if (stopped) {
 			return;
 		}
-		
-		interpolateRotate(rotate, rotationSpeed);
-		interpolateTravel(travel, speed);
+		stop = true;
+		synchronized (notifyStopped) {
+			try {
+				if (stopped) {
+					return;
+				}
+				notifyStopped.wait();
+			} catch (InterruptedException e) {
+				
+			}
+		}
 	}
 }
