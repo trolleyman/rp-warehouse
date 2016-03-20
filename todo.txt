@@ -1,4 +1,6 @@
 TODO
+ - Issues
+   - Robot requests wrong quantities
  - Communication
    - RobotManager should tell Robot what job it has regularly
      - Needs function in BTServer - sendRobotInfo(Robot r);
