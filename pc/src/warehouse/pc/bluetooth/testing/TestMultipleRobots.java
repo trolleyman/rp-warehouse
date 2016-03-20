@@ -1,7 +1,5 @@
 package warehouse.pc.bluetooth.testing;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;

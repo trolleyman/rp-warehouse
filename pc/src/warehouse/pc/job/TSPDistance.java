@@ -3,7 +3,6 @@ package warehouse.pc.job;
 import java.util.ArrayList;
 
 import warehouse.pc.search.RouteFinder;
-import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
 

@@ -3,8 +3,6 @@ package warehouse.nxt.main;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.Thread.UncaughtExceptionHandler;
-
 import lejos.nxt.Button;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;

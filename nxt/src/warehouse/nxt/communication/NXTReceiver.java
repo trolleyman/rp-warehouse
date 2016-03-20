@@ -3,7 +3,6 @@ package warehouse.nxt.communication;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import lejos.nxt.Button;
 import lejos.nxt.comm.BTConnection;
 import warehouse.nxt.display.NXTInterface;
 import warehouse.nxt.main.NXTMain;
