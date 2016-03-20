@@ -172,11 +172,6 @@ public class Gui implements Runnable, RobotListener {
 		connectBox.add(inner);
 		inner.doLayout();
 		
-		System.out.println("Inner");
-		SpringUtilities.printSizes(inner);
-		System.out.println("Connect Box");
-		SpringUtilities.printSizes(connectBox);
-		
 		inner.setPreferredSize(new Dimension(LEFT_WIDTH, connectionButton.getY() + connectionButton.getHeight()));
 		inner.doLayout();
 		connectBox.doLayout();
