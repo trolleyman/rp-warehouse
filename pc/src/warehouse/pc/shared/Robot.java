@@ -23,7 +23,7 @@ public class Robot implements Comparable<Robot> {
 	private int gridX;
 	private int gridY;
 	
-	private Color color;
+	private Color colour;
 	
 	public Robot(String _name, String _id, double _xPos, double _yPos, double _facing) {
 		this.identity = new RobotIdentity( _name, _id);
@@ -41,7 +41,7 @@ public class Robot implements Comparable<Robot> {
 		float s = (r.nextInt(3000) + 5000) / 10_000f;
 		// Brightness, 1.0
 		float b = 1.0f;
-		this.color = Color.getHSBColor(h, s, b);
+		this.colour = Color.getHSBColor(h, s, b);
 	}
 	/**
 	 * Gets the robot's name
@@ -176,6 +176,6 @@ public class Robot implements Comparable<Robot> {
 		return gridY;
 	}
 	public Color getColor() {
-		return color;
+		return colour;
 	}
 }
