@@ -112,10 +112,16 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 			if (cq == null)
 				return;
 			ArrayDeque<Command> coms = new ArrayDeque<>(cq.getCommands());
-			double prevX = robot.getX();
-			double prevY = robot.getY();
-			double x = robot.getGridX();
-			double y = robot.getGridY();
+			double prevX = robot.getGridX();
+			double prevY = robot.getGridY();
+			double x = prevX;
+			double y = prevY;
+			
+			_g2.drawLine(
+				(int)(robot.getX() * xScale),
+				(int)(robot.getY() * yScale),
+				(int)(x * xScale),
+				(int)(y * yScale));
 			
 			for (Command c : coms) {
 				if (c.toDirection().isPresent()) {
