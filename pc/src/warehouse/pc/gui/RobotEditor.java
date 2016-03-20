@@ -27,6 +27,8 @@ public class RobotEditor extends JPanel {
 	
 	private static String DEGREE_SYMBOL = "\u00B0";
 	
+	private int width;
+	
 	private Robot selectedRobot = null;
 	
 	private JLabel selectedRobotLabel;
@@ -44,8 +46,9 @@ public class RobotEditor extends JPanel {
 	/** true if the RobotManager is paused (allows robot editing!) */
 	private volatile boolean isPaused;
 	
-	public RobotEditor() {
+	public RobotEditor(int _w) {
 		super();
+		this.width = _w;
 		
 		map = MainInterface.get().getMap();
 		
@@ -128,19 +131,15 @@ public class RobotEditor extends JPanel {
 		layout.putConstraint(SpringLayout.NORTH, headingButton, 6, SpringLayout.SOUTH, headingSpinner);
 		//layout.putConstraint(SpringLayout.HEIGHT, this, 6, SpringLayout.SOUTH, headingButton);
 		
+		doLayout();
+		
 	    //this.setPreferredSize(this.getPreferredSize());
-		setPreferredSize(new Dimension(200, 180));
+		setPreferredSize(new Dimension(width, (int)
+				(headingButton.getY() + headingButton.getPreferredSize().getHeight() + 30)));
+		setMinimumSize(getPreferredSize());
+		setMaximumSize(getPreferredSize());
 	    
 		update();
-	}
-	
-	@Override
-	public void doLayout() {
-		super.doLayout();
-		
-		setPreferredSize(new Dimension(200, (int)
-			(headingButton.getY() + headingButton.getPreferredSize().getHeight())));
-		setMinimumSize(getPreferredSize());
 	}
 	
 	/**
