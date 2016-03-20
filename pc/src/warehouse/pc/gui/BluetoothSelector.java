@@ -264,6 +264,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 				updateOptions();
 				if (errorMessage.equals("Bluetooth stack not detected")) {
 					running = false;
+					gui.update();
 				}
 			}
 			

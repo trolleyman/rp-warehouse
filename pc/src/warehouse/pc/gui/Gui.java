@@ -147,7 +147,7 @@ public class Gui implements Runnable, RobotListener {
 		panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		frame.add(panel);
 		frame.pack();
-		frame.setSize(1300, 800);
+		frame.setSize(1200, 800);
 		frame.setLocationRelativeTo(null);
 	}
 	
