@@ -14,6 +14,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.JComponent;
 
@@ -54,6 +56,8 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 
 	@Override
 	public void paintComponent(Graphics _g) {
+		super.paintComponent(_g);
+		
 		Toolkit.getDefaultToolkit().sync();
 		Graphics2D g2 = (Graphics2D) _g.create();
 		double sf = Math.min((double) getWidth() / map.getBounds().getWidth(),
@@ -104,8 +108,8 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 	private Robot selected;
 	
 	private void paintRobotTrails(Graphics2D _g2) {
-		_g2.setColor(Color.GREEN);
 		for (Robot robot : mi.getRobots()) {
+			_g2.setColor(robot.getColor());
 			CommandQueue cq = mi.getRobotManager().getCommands(robot);
 			if (cq == null)
 				return;
@@ -149,8 +153,8 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 	}
 	
 	private void paintRobots(Graphics2D _g2) {
-		_g2.setColor(Color.BLUE);
 		for (Robot robot : mi.getRobots()) {
+			_g2.setColor(robot.getColor());
 			Graphics2D g = (Graphics2D) _g2.create();
 			if (robot == selected) {
 				g.setStroke(new BasicStroke(2));

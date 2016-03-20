@@ -1,5 +1,9 @@
 package warehouse.pc.shared;
 
+import java.awt.Color;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
 
@@ -19,6 +23,8 @@ public class Robot implements Comparable<Robot> {
 	private int gridX;
 	private int gridY;
 	
+	private Color color;
+	
 	public Robot(String _name, String _id, double _xPos, double _yPos, double _facing) {
 		this.identity = new RobotIdentity( _name, _id);
 		this.xPos = _xPos;
@@ -27,6 +33,15 @@ public class Robot implements Comparable<Robot> {
 		this.direction = Direction.fromFacing(facing);
 		this.gridX = (int) xPos;
 		this.gridY = (int) yPos;
+		
+		Random r = ThreadLocalRandom.current();
+		// Hue, a random float 0.0-1.0
+		float h = r.nextFloat();
+		// Saturation, from 0.5-0.8
+		float s = (r.nextInt(3000) + 5000) / 10_000f;
+		// Brightness, 1.0
+		float b = 1.0f;
+		this.color = Color.getHSBColor(h, s, b);
 	}
 	/**
 	 * Gets the robot's name
@@ -159,5 +174,8 @@ public class Robot implements Comparable<Robot> {
 	 */
 	public int getGridY() {
 		return gridY;
+	}
+	public Color getColor() {
+		return color;
 	}
 }
