@@ -86,6 +86,7 @@ public class RobotManager implements Runnable, RobotListener {
 					// Cancel every job in the queue
 					for (Job j : jq) {
 						mi.getJobList().getList().add(j);
+						System.out.println("Robot Manager: Cancelled job: " + j);
 					}
 					jq.clear();
 				}
