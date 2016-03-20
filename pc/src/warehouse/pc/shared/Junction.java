@@ -1,5 +1,7 @@
 package warehouse.pc.shared;
 
+import warehouse.shared.Direction;
+
 public class Junction {
 	private int x;
 	private int y;
@@ -8,7 +10,7 @@ public class Junction {
 	public Junction(int _x, int _y) {
 		this.x = _x;
 		this.y = _y;
-		js = new Junction[Direction.values().length];
+		js = new Junction[4];
 	}
 	
 	public int getX() {

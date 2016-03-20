@@ -11,10 +11,9 @@ import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
 import warehouse.pc.shared.Command;
-import warehouse.pc.shared.Direction;
-import warehouse.pc.shared.MainInterface;
-import warehouse.pc.shared.RelativeDirection;
 import warehouse.pc.shared.Robot;
+import warehouse.shared.Direction;
+import warehouse.shared.RelativeDirection;
 
 /**
  * The BT communication "server". Can create new thread pairs for NXTs.
@@ -176,7 +175,7 @@ public class BTServer {
 		String msg = null;
 		while (msg == null || !msg.equalsIgnoreCase("ready")) {
 			msg = listen(robotName);
-			System.out.println("Recv from " + robotName + ": Wanted 'ready', got: " + msg);
+			System.out.println("waitForReady: " + robotName + ": " + msg);
 		}
 	}
 	

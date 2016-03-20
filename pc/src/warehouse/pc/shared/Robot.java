@@ -7,6 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
+import warehouse.shared.Direction;
 
 public class Robot implements Comparable<Robot> {
 	public static final float MAX_WEIGHT = 50.0f;

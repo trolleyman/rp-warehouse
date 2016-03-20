@@ -4,6 +4,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import warehouse.shared.Direction;
+
 /**
  * Commands the robot can execute in the field
  */
@@ -32,6 +34,20 @@ public enum Command {
 		default:    return Optional.empty();
 		}
 	}
+	
+	/**
+	 * Converts a direction into a command
+	 */
+	public static Command fromDirection(Direction dir) {
+		switch (dir) {
+		case Y_POS: return Command.Y_POS;
+		case X_POS: return Command.X_POS;
+		case Y_NEG: return Command.Y_NEG;
+		case X_NEG: return Command.X_NEG;
+		default: return Command.WAIT;
+		}
+	}
+	
 	
 	public static Command pickUp(int _quantity, float _weight) {
 		Command com = Command.PICK;
@@ -67,7 +83,7 @@ public enum Command {
 	public static ArrayDeque<Command> fromDirections(ArrayList<Direction> route) {
 		ArrayDeque<Command> commands = new ArrayDeque<>(route.size());
 		for (Direction d : route) {
-			commands.add(d.toCommand());
+			commands.add(Command.fromDirection(d));
 		}
 		return commands;
 	}

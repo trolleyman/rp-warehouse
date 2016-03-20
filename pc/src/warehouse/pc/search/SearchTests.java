@@ -11,10 +11,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import warehouse.pc.shared.Command;
-import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.TestMaps;
+import warehouse.shared.Direction;
 
 /**
  * Tests to check how optimal and successful the route finding algorithm is:

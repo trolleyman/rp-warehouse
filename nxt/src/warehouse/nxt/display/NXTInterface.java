@@ -60,7 +60,6 @@ public class NXTInterface {
 	 */
 	// For testing with client info (like the final design)
 	public NXTInterface(String _robotName, int _x, int _y) {
-		Sound.setVolume(Sound.VOL_MAX / 4);
 		this.robotName = _robotName;
 		this.jobName = "None";
 		this.x = _x;

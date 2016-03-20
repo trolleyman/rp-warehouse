@@ -3,6 +3,8 @@ package warehouse.pc.shared;
 import java.util.Optional;
 
 import warehouse.shared.Constants;
+import warehouse.shared.Direction;
+import warehouse.shared.RelativeDirection;
 
 public class RobotUpdater extends Thread {
 	private volatile Object notifyStopped = new Object();
@@ -11,12 +13,10 @@ public class RobotUpdater extends Thread {
 	
 	private Robot robot;
 	private Command com;
-	private MainInterface mi;
 
 	public RobotUpdater(Robot _robot, Command _com) {
 		this.robot = _robot;
 		this.com = _com;
-		mi = MainInterface.get();
 	}
 	
 	private void interpolateTravel(double travel, double speed) {

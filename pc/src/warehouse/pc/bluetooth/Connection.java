@@ -44,16 +44,11 @@ public class Connection {
 	}
 
 	public void send(String command) throws IOException {
-		System.out.println("Sending " + command + " to " + nxt.name);
 		toRobot.writeUTF(command);
 		toRobot.flush();
 	}
 
 	public String listen() throws IOException {
-		String reply = null;
-		System.out.println("Listening to " + nxt.name + " (" + nxt.deviceAddress + ")");
-
-		reply = fromRobot.readUTF();
-		return reply;
+		return fromRobot.readUTF();
 	}
 }

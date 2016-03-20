@@ -3,9 +3,9 @@ package warehouse.pc.search;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import warehouse.pc.shared.Command;
-import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.TestMaps;
+import warehouse.shared.Direction;
 
 /**
  * Test class for route planning

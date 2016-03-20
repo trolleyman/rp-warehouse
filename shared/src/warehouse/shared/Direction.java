@@ -1,8 +1,4 @@
-package warehouse.pc.shared;
-
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
+package warehouse.shared;
 
 /**
  * Directions relative to the x and y axes of the map
@@ -18,26 +14,12 @@ public enum Direction {
 		test();
 	}
 	
-	@Test
 	public static void test() {
 		// applyCommands relies on these assertions.
-		assertTrue((Direction.Y_POS.ordinal() + 1) % 4 == Direction.X_POS.ordinal());
-		assertTrue((Direction.X_POS.ordinal() + 1) % 4 == Direction.Y_NEG.ordinal());
-		assertTrue((Direction.Y_NEG.ordinal() + 1) % 4 == Direction.X_NEG.ordinal());
-		assertTrue((Direction.X_NEG.ordinal() + 1) % 4 == Direction.Y_POS.ordinal());
-	}
-	
-	/**
-	 * Converts a direction into a command
-	 */
-	public Command toCommand() {
-		switch (this) {
-		case Y_POS: return Command.Y_POS;
-		case X_POS: return Command.X_POS;
-		case Y_NEG: return Command.Y_NEG;
-		case X_NEG: return Command.X_NEG;
-		default: return Command.WAIT;
-		}
+		assert((Direction.Y_POS.ordinal() + 1) % 4 == Direction.X_POS.ordinal());
+		assert((Direction.X_POS.ordinal() + 1) % 4 == Direction.Y_NEG.ordinal());
+		assert((Direction.Y_NEG.ordinal() + 1) % 4 == Direction.X_NEG.ordinal());
+		assert((Direction.X_NEG.ordinal() + 1) % 4 == Direction.Y_POS.ordinal());
 	}
 	
 	/**

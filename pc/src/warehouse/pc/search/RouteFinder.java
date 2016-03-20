@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
+import warehouse.shared.Direction;
 
 /**
  * Class to find a route between two nodes and return directions
