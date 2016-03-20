@@ -10,11 +10,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
 import warehouse.pc.shared.MainInterface;
 import warehouse.pc.shared.Robot;
 import warehouse.pc.shared.RobotListener;
 
+@SuppressWarnings("serial")
 public class CompletedJobInfo extends JPanel implements RobotListener {
 	private final MainInterface mi;
 	
@@ -23,7 +25,6 @@ public class CompletedJobInfo extends JPanel implements RobotListener {
 	private AbstractTableModel model;
 	private JTable table;
 	
-	@SuppressWarnings("serial")
 	public CompletedJobInfo() {
 		mi = MainInterface.get();
 		
@@ -34,7 +35,7 @@ public class CompletedJobInfo extends JPanel implements RobotListener {
 			public Object getValueAt(int row, int col) {
 				switch (col) {
 				case 0: return jobs.get(row).getId();
-				case 1: return jobs.get(row).getItems();
+				case 1: return ItemQuantity.listToString(jobs.get(row).getItems());
 				}
 				return "";
 			}
@@ -76,13 +77,6 @@ public class CompletedJobInfo extends JPanel implements RobotListener {
 		mi.addRobotListener(this);
 		
 		update();
-	}
-	
-	@Override
-	public void doLayout() {
-		super.doLayout();
-		
-		
 	}
 	
 	public void update() {

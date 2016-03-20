@@ -74,21 +74,7 @@ public class JobInfo extends JPanel implements RobotListener {
 					if (j == null)
 						return "";
 					
-					ArrayList<ItemQuantity> iqs = j.getItems();
-					
-					StringBuilder b = new StringBuilder();
-					for (ItemQuantity iq : iqs) {
-						b.append(iq.getQuantity());
-						b.append(" ");
-						b.append(iq.getItem().getName());
-						b.append(", ");
-					}
-					if (iqs.size() > 0) {
-						// Delete last ", "
-						b.deleteCharAt(b.length() - 1);
-						b.deleteCharAt(b.length() - 1);
-					}
-					return b.toString();
+					return ItemQuantity.listToString(j.getItems());
 				}
 				default: return "";
 				}

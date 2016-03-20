@@ -329,7 +329,6 @@ public class Gui implements Runnable, RobotListener {
 	}
 
 	public void update() {
-		System.out.println("Size: " + frame.getSize());
 		if (!selector.isRunning()) {
 			connectionButton.setEnabled(false);
 		}
