@@ -73,6 +73,8 @@ public class CompletedJobInfo extends JPanel implements RobotListener {
 			new Dimension((int)scrollpane.getViewport().getPreferredSize().getWidth(), 100));
 		scrollpane.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 		
+		mi.addRobotListener(this);
+		
 		update();
 	}
 	
