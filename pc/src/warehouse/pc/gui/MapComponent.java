@@ -95,9 +95,9 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 		// 		(int) (bounds.getHeight() * yScale));
 		
 		paintGrid(g2);
+		paintRobotTrails(g2);
 		paintJunctions(g2);
 		paintWalls(g2);
-		paintRobotTrails(g2);
 		paintRobots(g2);
 	}
 
@@ -179,11 +179,9 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 			fg.transform(trans);
 			int nameW = g.getFontMetrics().stringWidth(robot.getName());
 			fg.translate(- nameW / 2.0, 14.0);
-			fg.drawString(robot.getName(), 0, 0);
-			fg.dispose();
 			
 			g.rotate(-Math.toRadians(robot.getFacing()));
-			g.drawRect(-(int)(w / 2.0), -(int)(h / 2.0), (int)w, (int)h);
+			g.fillRect(-(int)(w / 2.0), -(int)(h / 2.0), (int)w, (int)h);
 			
 			double robotEndY = h / 2.0;
 			double arrowLength = h * 0.4;
@@ -202,6 +200,9 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 				(int) (-arrowHeadEndX), (int) (arrowHeadEndY));
 			
 			g.dispose();
+			
+			fg.drawString(robot.getName(), 0, 0);
+			fg.dispose();
 		}
 	}
 
