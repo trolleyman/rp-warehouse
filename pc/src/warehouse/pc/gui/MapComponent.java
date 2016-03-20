@@ -12,12 +12,15 @@ import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
 
 import warehouse.pc.job.Location;
 import warehouse.pc.job.LocationList;
+import warehouse.pc.shared.Command;
+import warehouse.pc.shared.CommandQueue;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.MainInterface;
 import warehouse.pc.shared.Map;
@@ -103,7 +106,45 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 	private void paintRobotTrails(Graphics2D _g2) {
 		_g2.setColor(Color.GREEN);
 		for (Robot robot : mi.getRobots()) {
-			mi.getRobotManager().getCommands(robot);
+			CommandQueue cq = mi.getRobotManager().getCommands(robot);
+			if (cq == null)
+				return;
+			ArrayDeque<Command> coms = new ArrayDeque<>(cq.getCommands());
+			double prevX = robot.getX();
+			double prevY = robot.getY();
+			double x = robot.getGridX();
+			double y = robot.getGridY();
+			
+			for (Command c : coms) {
+				if (c.toDirection().isPresent()) {
+					// Update x & y
+					switch (c.toDirection().get()) {
+					case Y_POS:
+						y += 1;
+						break;
+					case Y_NEG:
+						y -= 1;
+						break;
+					case X_POS:
+						x += 1;
+						break;
+					case X_NEG:
+						x -= 1;
+						break;
+					}
+					
+					// Draw line
+					_g2.drawLine(
+						(int)(prevX * xScale),
+						(int)(prevY * yScale),
+						(int)(x * xScale),
+						(int)(y * yScale));
+					
+					// Update prev
+					prevX = x;
+					prevY = y;
+				}
+			}
 		}
 	}
 	

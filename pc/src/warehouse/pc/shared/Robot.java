@@ -16,12 +16,17 @@ public class Robot implements Comparable<Robot> {
 	// Direction the robot is facing in a Direction
 	private Direction direction;
 	
+	private int gridX;
+	private int gridY;
+	
 	public Robot(String _name, String _id, double _xPos, double _yPos, double _facing) {
 		this.identity = new RobotIdentity( _name, _id);
 		this.xPos = _xPos;
 		this.yPos = _yPos;
 		this.facing = _facing;
 		this.direction = Direction.fromFacing(facing);
+		this.gridX = (int) xPos;
+		this.gridY = (int) yPos;
 	}
 	/**
 	 * Gets the robot's name
@@ -134,5 +139,25 @@ public class Robot implements Comparable<Robot> {
 	@Override
 	public Robot clone() {
 		return new Robot(identity.name, identity.id, xPos, yPos, facing);
+	}
+	
+	public void setGridX(int _gridX) {
+		this.gridX = _gridX;
+	}
+	public void setGridY(int _gridY) {
+		this.gridY = _gridY;
+	}
+	
+	/**
+	 * Get the next grid x-coordinate that the robot is travelling to
+	 */
+	public int getGridX() {
+		return gridX;
+	}
+	/**
+	 * Get the next grid y-coordinate that the robot is travelling to
+	 */
+	public int getGridY() {
+		return gridY;
 	}
 }

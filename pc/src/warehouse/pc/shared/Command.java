@@ -71,4 +71,29 @@ public enum Command {
 		}
 		return commands;
 	}
+
+	public void setFrom(int _x, int _y) {
+		switch (this) {
+		case Y_POS:
+			x = _x;
+			y = _y + 1;
+			break;
+		case Y_NEG:
+			x = _x;
+			y = _y - 1;
+			break;
+		case X_POS:
+			x = _x + 1;
+			y = _y;
+			break;
+		case X_NEG:
+			x = _x - 1;
+			y = _y;
+			break;
+		default:
+			x = _x;
+			y = _y;
+			break;
+		}
+	}
 }

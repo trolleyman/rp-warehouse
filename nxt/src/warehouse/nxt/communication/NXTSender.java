@@ -52,7 +52,7 @@ public class NXTSender extends Thread {
 				
 				if (System.currentTimeMillis() - lastDistance > 200) {
 					synchronized (this) {
-						this.toPC.writeUTF( "Distance:" + this.robotMotion.getDistance() );
+						//this.toPC.writeUTF( "Distance:" + this.robotMotion.getDistance() );
 					}
 					lastDistance = System.currentTimeMillis();
 				}

@@ -196,20 +196,24 @@ public class RobotManager implements Runnable, RobotListener {
 		ArrayList<Robot> readyRobots = new ArrayList<>();
 		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
 			CommandQueue q = e.getValue();
+			Robot r = e.getKey();
 			Command com = q.getCommands().peekFirst();
 			if (com == null) {
 				com = Command.WAIT;
 			} else {
+				com.setFrom(r.getGridX(), r.getGridY());
+				r.setGridX(com.getX());
+				r.setGridY(com.getY());
 				q.getCommands().pop();
-				readyRobots.add(e.getKey());
+				readyRobots.add(r);
 			}
 			try {
 				System.out.println("Sending to " + e.getKey().getIdentity() + ": " + com);
-				mi.getServer().sendCommand(e.getKey(), com);
-				new RobotUpdater(e.getKey(), com).start();
+				mi.getServer().sendCommand(r, com);
+				new RobotUpdater(r, com).start();
 			} catch (IOException ex) {
-				System.out.println(e.getKey().getIdentity() + " disconnected.");
-				mi.removeRobot(e.getKey());
+				System.out.println(r.getIdentity() + " disconnected.");
+				mi.removeRobot(r);
 				continue;
 			}
 		}
