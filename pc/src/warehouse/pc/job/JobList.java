@@ -26,7 +26,7 @@ public class JobList implements FileList {
 	
 	/**
 	 * Takes a csv file and reads it into an ArrayList of jobs.
-	 * @throws ItemNotInListException 
+	 * @throws ItemNotInListException
 	 */
 	private void parseFile(String _fileLocation) {
 		//Initialise variables.
@@ -87,8 +87,10 @@ public class JobList implements FileList {
 			}
 		} catch (FileNotFoundException e) {
 			System.err.println("Job file not found: " + e);
+			System.exit(1);
 		} catch (IOException e) {
 			System.err.println("Problem reading job file: " + e);
+			System.exit(1);
 		} finally {
 			try {
 				br.close();

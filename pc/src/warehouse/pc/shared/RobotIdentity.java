@@ -1,6 +1,6 @@
 package warehouse.pc.shared;
 
-public class RobotIdentity {
+public class RobotIdentity implements Comparable<RobotIdentity> {
 	public final String name;	// Name of the Robot
 	public final String id;		// ID of the Robot
 	
@@ -24,5 +24,13 @@ public class RobotIdentity {
 	@Override
 	public String toString() {
 		return name + " (" + id + ")";
+	}
+
+	@Override
+	public int compareTo(RobotIdentity o) {
+		int res = this.name.compareToIgnoreCase(o.name);
+		if (res == 0)
+			return this.id.compareToIgnoreCase(o.id);
+		return res;
 	}
 }

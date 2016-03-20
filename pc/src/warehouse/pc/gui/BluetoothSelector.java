@@ -2,15 +2,11 @@ package warehouse.pc.gui;
 
 import java.awt.Point;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 
 import javax.swing.JComboBox;
@@ -39,15 +35,17 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 		}
 	};
 	
-	private volatile boolean openingConnection;
+	private Gui gui;
 	
 	private NXTInfo[] infos;
 	private ArrayList<NXTInfo> defaultInfos;
 	
+	private volatile boolean running;
+	
 	private boolean error;
 	private String errorMessage;
 	
-	private volatile boolean running;
+	private volatile boolean openingConnection;
 	
 	private static ArrayList<NXTInfo> readDefaultRobots() {
 		BufferedReader br = null;
@@ -83,8 +81,9 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 		}
 	}
 	
-	public BluetoothSelector() {
+	public BluetoothSelector(Gui _gui) {
 		super();
+		gui = _gui;
 		
 		defaultInfos = readDefaultRobots();
 		
@@ -99,7 +98,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 			this.addItem(SEARCHING);
 		} else {
 			for (NXTInfo info : defaultInfos) {
-				this.addItem(info.name);
+				this.addItem(info.deviceAddress + " - " + info.name);
 			}
 		}
 		
@@ -109,19 +108,31 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	}
 	
 	/**
+	 * Returns false if there was an error opening Bluetooth so bad that there is no point
+	 * in trying anymore. (i.e. if there was no bluetooth installed.)
+	 */
+	public boolean isRunning() {
+		return running;
+	}
+	
+	/**
 	 * Returns the currently selected robot, or null if no robot is eelected.
 	 */
 	public NXTInfo getSelectedRobot() {
-		String name = this.getSelectedItem().toString();
-		// Check defaults first.
-		for (NXTInfo info : defaultInfos) {
-			if (info.name.equals(name)) {
-				return info;
-			}
-		}
+		if (!running)
+			return null;
+		
+		String name = this.getSelectedItem().toString().split("-")[1].trim();
+		// Check found items first.
 		for (int i = 0; i < infos.length; i++) {
 			if (infos[i].name.equals(name)) {
 				return infos[i];
+			}
+		}
+		// Then check defaults
+		for (NXTInfo info : defaultInfos) {
+			if (info.name.equals(name)) {
+				return info;
 			}
 		}
 		return null;
@@ -139,6 +150,11 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 			
 			// Call open() in communication module to connect to a new robot.
 			Thread t = new Thread(() -> {
+				Optional<Point> op = StartingLocation.getFromUser(MainInterface.get().getMap());
+				if (!op.isPresent()) {
+					return;
+				}
+				
 				boolean result = MainInterface.get().getServer().open(info);
 				openingConnection = false;
 				if (!result) {
@@ -147,13 +163,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 						"Connection Error",
 						JOptionPane.WARNING_MESSAGE);
 				} else {
-					Optional<Point> op = StartingLocation.getFromUser(MainInterface.get().getMap());
-					if (!op.isPresent()) {
-						MainInterface.get().getServer().close(info);
-						return;
-					}
 					Point p = op.get();
-					
 					MainInterface.get().updateRobot(new Robot(info.name, info.deviceAddress, p.getX(), p.getY(), 0));
 				}
 			});
@@ -188,13 +198,13 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 			
 			combined.sort(infoComparator);
 			
-			String selectedRobotName = this.getSelectedItem().toString();
+			String selectedRobotName = this.getSelectedRobot().name;
 			
 			// Add to combo box
 			int selectedIndex = 0;
 			this.removeAllItems();
 			for (int i = 0; i < combined.size(); i++) {
-				this.addItem(combined.get(i).name);
+				this.addItem(combined.get(i).deviceAddress + " - " + combined.get(i).name);
 				if (combined.get(i).name.equals(selectedRobotName)) {
 					selectedIndex = i;
 				}
@@ -205,8 +215,8 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 			
 			if (error) {
 				this.removeAllItems();
-				this.setSelectedIndex(0);
 				this.addItem("Error: " + errorMessage);
+				this.setSelectedIndex(0);
 			} else if (combined.size() == 0) {
 				this.addItem(NO_ROBOTS_DETECTED);
 			}
@@ -255,6 +265,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 				updateOptions();
 				if (errorMessage.equals("Bluetooth stack not detected")) {
 					running = false;
+					gui.update();
 				}
 			}
 			
@@ -264,5 +275,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 				
 			}
 		}
+		
+		gui.update();
 	}
 }

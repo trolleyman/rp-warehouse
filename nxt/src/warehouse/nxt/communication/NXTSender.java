@@ -3,9 +3,8 @@ package warehouse.nxt.communication;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import lejos.nxt.Button;
-import lejos.nxt.Sound;
 import warehouse.nxt.display.NXTInterface;
+import warehouse.nxt.main.NXTMain;
 import warehouse.nxt.motion.NXTMotion;
 import warehouse.nxt.utils.Robot;
 
@@ -70,7 +69,7 @@ public class NXTSender extends Thread {
 				}
 			}
 		} catch (IOException _exception) {
-			this.throwError("NXTSender:" + _exception.getMessage());
+			NXTMain.error("Server closed.");
 		}
 
 	}
@@ -89,12 +88,4 @@ public class NXTSender extends Thread {
 
 		this.myself_old = new Robot(this.myself);
 	}
-
-	// Helper Method to throw errors
-	private void throwError(String _message) {
-		System.err.print("\n" + _message);
-		Button.waitForAnyPress();
-		System.exit(0);
-	}
-
 }

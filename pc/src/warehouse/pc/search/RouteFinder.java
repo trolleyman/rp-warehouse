@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map.Entry;
 
-import warehouse.pc.shared.Command;
 import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
@@ -20,6 +18,30 @@ import warehouse.pc.shared.Map;
  */
 
 public class RouteFinder {
+	private class RouteStartEnd {
+		public final Junction start;
+		public final Junction end;
+		
+		public RouteStartEnd(Junction _start, Junction _end) {
+			this.start = _start;
+			this.end = _end;
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof RouteStartEnd
+				&& ((RouteStartEnd) o).start.equals(start)
+				&& ((RouteStartEnd) o).end.equals(end);
+		}
+		
+		@Override
+		public int hashCode() {
+			// Cantor pairing function. Should be good enough
+			return ((start.hashCode() + end.hashCode())
+				* ((start.hashCode() + end.hashCode() + 1) / 2)
+				+ end.hashCode());
+		}
+	}
 
 	private ArrayList<Junction> nodes; // Stores all junction data from current
 										// map
@@ -31,6 +53,9 @@ public class RouteFinder {
 													// path is found
 
 	private Map map;
+	
+	private HashMap<RouteStartEnd, ArrayList<Direction>> cache;
+	
 	/**
 	 * Create a new RouteFinder object for a given map
 	 * 
@@ -48,6 +73,8 @@ public class RouteFinder {
 				nodes.add(_map.getJunction(i, j));
 			}
 		}
+		
+		cache = new HashMap<RouteStartEnd, ArrayList<Direction>>();
 	}
 
 	/**
@@ -62,8 +89,7 @@ public class RouteFinder {
 	 * @return the ArrayList of directions
 	 */
 
-	public ArrayList<Direction> findRoute(Junction start, Junction goal, Direction direction) {
-
+	public ArrayList<Direction> findRoute(Junction start, Junction goal) {
 		// if the goal or start is not on the map return null
 
 		start = map.getJunction(start.getX(), start.getY());
@@ -73,7 +99,12 @@ public class RouteFinder {
 		if (!nodes.contains(start) || !nodes.contains(goal)) {
 			return null;
 		}
-
+		
+		// If route is in the cache, return that.
+		RouteStartEnd rse = new RouteStartEnd(start, goal);
+		ArrayList<Direction> cachedRoute = cache.get(rse);
+		if (cachedRoute != null)
+			return cachedRoute;
 		
 		searched = new ArrayList<Junction>();
 		frontier = new LinkedHashMap<Junction, Integer>();
@@ -106,6 +137,8 @@ public class RouteFinder {
 			if ((currentJunct.getX() == goal.getX()) && (currentJunct.getY() == goal.getY())) {
 				ArrayList<Direction> directionList = makePath(start, goal);
 				//return getActualDirections(directionList, direction);
+				// Cache route
+				cache.put(rse, directionList);
 				return directionList;
 			}
 
@@ -208,103 +241,5 @@ public class RouteFinder {
 
 	public int getHeuristic(Junction current, Junction goal) {
 		return (Math.abs(current.getX() - goal.getX()) + Math.abs(current.getY() - goal.getY()));
-	}
-	
-	/**
-	 * Get the directions relative to the robot for a list of directions
-	 * @param oldList the original list of directions relative to north
-	 * @param direction the direction the robot is facing
-	 * @return a list of directions relative to the robot
-	 */
-
-	LinkedList<Command> getActualDirections(ArrayList<Direction> oldList, Direction direction) {
-
-		LinkedList<Command> newList = new LinkedList<Command>();
-
-		for (int i = 0; i < oldList.size(); i++) {
-
-			Direction currentDirection = oldList.get(i);
-			Command bearing = null;
-
-			switch (direction) {
-			case Y_POS:
-				switch (currentDirection) {
-				case Y_POS:
-					bearing = Command.FORWARD;
-					break;
-				case Y_NEG:
-					bearing = Command.BACKWARD;
-					break;
-				case X_POS:
-					bearing = Command.RIGHT;
-					break;
-				case X_NEG:
-					bearing = Command.LEFT;
-					break;
-
-				}
-				break;
-
-			case Y_NEG:
-				switch (currentDirection) {
-				case Y_NEG:
-					bearing = Command.FORWARD;
-					break;
-				case Y_POS:
-					bearing = Command.BACKWARD;
-					break;
-				case X_NEG:
-					bearing = Command.RIGHT;
-					break;
-				case X_POS:
-					bearing = Command.LEFT;
-					break;
-				}
-				break;
-
-			case X_POS:
-				switch (currentDirection) {
-				case X_POS:
-					bearing = Command.FORWARD;
-					break;
-				case X_NEG:
-					bearing = Command.BACKWARD;
-					break;
-				case Y_NEG:
-					bearing = Command.RIGHT;
-					break;
-				case Y_POS:
-					bearing = Command.LEFT;
-					break;
-
-				}
-				break;
-
-			case X_NEG:
-				switch (currentDirection) {
-				case X_NEG:
-					bearing = Command.FORWARD;
-					break;
-				case X_POS:
-					bearing = Command.BACKWARD;
-					break;
-				case Y_POS:
-					bearing = Command.RIGHT;
-					break;
-				case Y_NEG:
-					bearing = Command.LEFT;
-					break;
-
-				}
-			
-				break;
-			}
-
-			direction = currentDirection;
-			newList.add(bearing);
-
-		}
-
-		return newList;
 	}
 }

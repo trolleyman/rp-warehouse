@@ -9,7 +9,6 @@ import java.awt.event.WindowListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -91,9 +90,16 @@ public class Gui implements Runnable, RobotListener {
 		ExampleGridMapVisualisation.displayVisualisation(mapVis);
 	}
 	
+	private static final int LEFT_WIDTH = 250;
+	
 	public String selectedItemName;
 	private JFrame frame;
 	private RobotEditor editor;
+	
+	private BluetoothSelector selector;
+	private JButton connectionButton;
+	
+	private JobInfo jobInfo;
 	
 	public Gui() {
 		selectedItemName = "";
@@ -117,25 +123,27 @@ public class Gui implements Runnable, RobotListener {
 			}
 		});
 		
-		JPanel panel = new JPanel();
-		//panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
-		//panel.add(createToolbar());
-		//panel.add(Box.createHorizontalStrut(10));
-		//panel.add(new MapComponent());
-		
 		JPanel map = new JPanel();
 		map.setLayout(new BorderLayout());
 		MapComponent mapComponent = new MapComponent(this);
 		map.add(mapComponent, BorderLayout.CENTER);
 		map.setBorder(BorderFactory.createTitledBorder("Map View"));
+		
+		JPanel inner = new JPanel();
+		inner.setLayout(new BorderLayout());
+		inner.add(map, BorderLayout.CENTER);
+		inner.add(createBottomToolbar(), BorderLayout.PAGE_END);
+		
+		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		panel.add(createLeftToolbar(), BorderLayout.LINE_START);
-		panel.add(map, BorderLayout.CENTER);
-		panel.add(createRightToolbar(), BorderLayout.LINE_END);
+		panel.add(inner, BorderLayout.CENTER);
+		
 		panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		frame.add(panel);
 		frame.pack();
-		frame.setSize(1300, 800);
+		frame.setMinimumSize(new Dimension(1000, 700));
+		frame.setSize(1200, 800);
 		frame.setLocationRelativeTo(null);
 	}
 	
@@ -144,43 +152,50 @@ public class Gui implements Runnable, RobotListener {
 		JPanel inner = new JPanel();
 		connectBox.setBorder(BorderFactory.createTitledBorder("Bluetooth Connection"));
 		
-		inner.setLayout(new BoxLayout(inner, BoxLayout.PAGE_AXIS));
+		SpringLayout layout = new SpringLayout();
+		inner.setLayout(layout);
 		inner.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-		JButton connect = new JButton("Connect");
-		BluetoothSelector select = new BluetoothSelector();
-		select.setAlignmentX(BluetoothSelector.RIGHT_ALIGNMENT);
-		connect.setAlignmentX(JButton.RIGHT_ALIGNMENT);
-		connect.addActionListener(new ActionListener() {
+		connectionButton = new JButton("Connect");
+		selector = new BluetoothSelector(this);
+		connectionButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				select.connect();
+				selector.connect();
 			}
 		});
 		
-		inner.add(select);
-		inner.add(Box.createVerticalStrut(5));
-		inner.add(connect);
+		inner.add(selector);
+		inner.add(connectionButton);
+		selector.setPreferredSize(new Dimension(LEFT_WIDTH, selector.getPreferredSize().height));
+		layout.putConstraint(SpringLayout.EAST, connectionButton, 0, SpringLayout.EAST, selector);
+		layout.putConstraint(SpringLayout.NORTH, connectionButton, 6, SpringLayout.SOUTH, selector);
+		
 		connectBox.add(inner);
-		Dimension min = connectBox.getMinimumSize();
-		Dimension max = connectBox.getMinimumSize();
-		connectBox.setMaximumSize(new Dimension(max.width, min.height));
+		inner.doLayout();
+		
+		inner.setPreferredSize(new Dimension(LEFT_WIDTH, connectionButton.getY() + connectionButton.getHeight()));
+		inner.doLayout();
+		connectBox.doLayout();
+		connectBox.setMinimumSize(connectBox.getPreferredSize());
+		connectBox.setMaximumSize(connectBox.getPreferredSize());
 		return connectBox;
 	}
 	
 	private JPanel createRobotEditor() {
 		JPanel editorBox = new JPanel();
 		editorBox.setBorder(BorderFactory.createTitledBorder("Robot Editor"));
-		editor = new RobotEditor();
+		editor = new RobotEditor(LEFT_WIDTH);
 		editorBox.add(editor);
-		Dimension min = editorBox.getMinimumSize();
-		Dimension max = editorBox.getMinimumSize();
-		editorBox.setMaximumSize(new Dimension(max.width, min.height));
+		editorBox.doLayout();
+		editorBox.setMinimumSize(editorBox.getPreferredSize());
+		editorBox.setMaximumSize(editorBox.getPreferredSize());
+		//editorBox.setPreferredSize(new Dimension(LEFT_WIDTH, max.height));
 		return editorBox;
 	}
 	
 	private JPanel createItemInfo() {
 		JPanel info = new JPanel();
-		info.setBorder(BorderFactory.createTitledBorder("Item Info"));
+		info.setBorder(BorderFactory.createTitledBorder("Item Information"));
 		ItemList items = MainInterface.get().getItemList();
 		@SuppressWarnings("serial")
 		TableModel dataModel = new AbstractTableModel() {
@@ -222,29 +237,20 @@ public class Gui implements Runnable, RobotListener {
 			}
 		});
 		JScrollPane scrollpane = new JScrollPane(table,
-			JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		
+		scrollpane.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 		
 		info.setLayout(new BorderLayout());
 		info.add(table.getTableHeader(), BorderLayout.NORTH);
 		info.add(scrollpane, BorderLayout.CENTER);
-		info.setPreferredSize(new Dimension(200, (int) info.getPreferredSize().getHeight()));
+		info.setPreferredSize(new Dimension(LEFT_WIDTH, (int) 300));
 		return info;
-	}
-	
-	private JPanel createLeftToolbar() {
-		JPanel res = new JPanel();
-		res.setLayout(new SpringLayout());
-		res.add(createConnect());
-		res.add(createRobotEditor());
-		res.add(createItemInfo());
-		//res.add(Box.createVerticalGlue());
-		SpringUtilities.makeCompactGrid(res, res.getComponentCount(), 1, 6, 6, 6, 6);
-		return res;
 	}
 	
 	private JPanel createManagerControls() {
 		JPanel res = new JPanel();
-		res.setBorder(BorderFactory.createTitledBorder("Robot Manager"));
+		res.setBorder(BorderFactory.createTitledBorder("Robot Manager Controls"));
 		JButton pause = new JButton("Pause");
 		JButton resume = new JButton("Resume");
 		pause.setEnabled(false);
@@ -256,6 +262,7 @@ public class Gui implements Runnable, RobotListener {
 				man.pause();
 				pause.setEnabled(false);
 				resume.setEnabled(true);
+				editor.setIsPaused(true);
 			}
 		});
 		resume.addActionListener(new ActionListener() {
@@ -265,6 +272,7 @@ public class Gui implements Runnable, RobotListener {
 				man.resume();
 				pause.setEnabled(true);
 				resume.setEnabled(false);
+				editor.setIsPaused(false);
 			}
 		});
 		res.add(pause);
@@ -273,15 +281,43 @@ public class Gui implements Runnable, RobotListener {
 		SpringLayout layout = new SpringLayout();
 		res.setLayout(layout);
 		SpringUtilities.makeCompactGrid(res, 1, 2, 6, 6, 6, 6);
+		res.doLayout();
+		res.setMinimumSize(res.getPreferredSize());
+		res.setMaximumSize(res.getPreferredSize());
 		return res;
 	}
 	
-	private JPanel createRightToolbar() {
+	private JPanel createJobInfo() {
+		jobInfo = new JobInfo();
+		jobInfo.setBorder(BorderFactory.createTitledBorder("Job Information"));
+		return jobInfo;
+	}
+	
+	private JPanel createCompletedJobs() {
+		CompletedJobInfo completedJobInfo = new CompletedJobInfo();
+		completedJobInfo.setBorder(BorderFactory.createTitledBorder("Completed Jobs"));
+		return completedJobInfo;
+	}
+	
+	private JPanel createLeftToolbar() {
 		JPanel res = new JPanel();
 		res.setLayout(new SpringLayout());
+		res.add(createConnect());
+		res.add(createRobotEditor());
 		res.add(createManagerControls());
+		res.add(createItemInfo());
 		//res.add(Box.createVerticalGlue());
-		SpringUtilities.makeCompactGrid(res, res.getComponentCount(), 1, 6, 6, 6, 6);
+		SpringUtilities.makeCompactGrid(res, res.getComponentCount(), 1, 0, 0, 6, 6);
+		return res;
+	}
+	
+	private JPanel createBottomToolbar() {
+		JPanel res = new JPanel();
+		res.setLayout(new SpringLayout());
+		res.add(createJobInfo());
+		res.add(createCompletedJobs());
+		//res.add(Box.createHorizontalGlue());
+		SpringUtilities.makeCompactGrid(res, 1, res.getComponentCount(), 0, 0, 6, 6);
 		return res;
 	}
 	
@@ -293,8 +329,12 @@ public class Gui implements Runnable, RobotListener {
 	}
 
 	public void update() {
+		if (!selector.isRunning()) {
+			connectionButton.setEnabled(false);
+		}
 		frame.repaint();
 	}
+	
 	@Override
 	public void robotChanged(Robot _r) {
 		update();

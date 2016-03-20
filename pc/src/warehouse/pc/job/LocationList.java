@@ -55,8 +55,10 @@ public class LocationList implements FileList {
 			}
 		} catch (FileNotFoundException e) {
 			System.err.println("Location file not found: " + e);
+			System.exit(1);
 		} catch (IOException e) {
 			System.err.println("Problem reading Location file: " + e);
+			System.exit(1);
 		} finally {
 			try {
 				br.close();

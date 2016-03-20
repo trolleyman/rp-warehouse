@@ -1,5 +1,6 @@
 package warehouse.pc.search;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -161,20 +162,15 @@ public class RoutePlanner {
 					
 					Junction start = map.getJunction((int)robot.getX(), (int)robot.getY());
 					Junction goal = null;
-					Direction facing = robot.getDirection();
 					ArrayList<Direction> directList = new ArrayList<Direction>();
-					LinkedList<Command> list = new LinkedList<Command>();
+					ArrayDeque<Command> list = new ArrayDeque<Command>();
 					
 					// if adding that item would make the robot carry more than the max weight
 					// go to the nearest base instead and repeat this iteration
 					
 					if (weights.get(robot) + quantity * item.getWeight() > maxWeight) {
-
-						facing = robot.getDirection();
-						goal = findClosestBase(start, facing);
-						directList = finder.findRoute(start, goal, facing);
-						list = finder.getActualDirections(directList, facing);
-						
+						goal = findClosestBase(start);
+						directList = finder.findRoute(start, goal);
 						
 						weights.put(robot, 0f);
 						/*System.out.println("base: " + start + " to " + goal);
@@ -189,19 +185,13 @@ public class RoutePlanner {
 						robot.setY(goal.getY());
 						
 						if(directList.size() != 0){
-						robot.setDirection(directList.get(directList.size() - 1));
+							robot.setDirection(directList.get(directList.size() - 1));
 						}
-										
-						
 						start = goal;
-						
-						
 					}
-					
-					facing = robot.getDirection();
 					goal = item.getJunction();
-					directList = finder.findRoute(start, goal, facing);
-					list = finder.getActualDirections(directList, facing);
+					directList = finder.findRoute(start, goal);
+					list = Command.fromDirections(directList);
 					
 					Float newWeight = weights.get(robot) + quantity * item.getWeight();
 					weights.put(robot, newWeight);
@@ -228,19 +218,17 @@ public class RoutePlanner {
 
 			// robot has done its last job and must go home
 			
-			Direction facing = robot.getDirection();
-			
 			Junction start = map.getJunction((int)robot.getX(), (int)robot.getY());
-			Junction goal = findClosestBase(start, facing);
-			ArrayList<Direction> directList = finder.findRoute(start, goal, facing);
-			LinkedList<Command> list = finder.getActualDirections(directList, facing);
+			Junction goal = findClosestBase(start);
+			ArrayList<Direction> directList = finder.findRoute(start, goal);
+			ArrayDeque<Command> list = Command.fromDirections(directList);
 			
 			/*System.out.println("home: " + start + " to " + goal);
 			System.out.println(directList);
 			System.out.println(list);*/
 			pairedCommands.get(robot).addCommandList(list);
 			pairedCommands.get(robot).addCommand(Command.DROP);
-			
+			pairedCommands.get(robot).addCommand(Command.COMPLETE_JOB); // Completes the job
 			
 			robot.setX(goal.getX());
 			robot.setY(goal.getY());
@@ -255,14 +243,14 @@ public class RoutePlanner {
 	}
 
 
-		private Junction findClosestBase(Junction start, Direction facing){
+		private Junction findClosestBase(Junction start){
 			Junction closestBase = bases.get(0);
 			int steps = map.getHeight() + map.getWidth();
 			ArrayList<Direction> list = new ArrayList<Direction>();
 			
 			for (int l = 0; l < bases.size(); l++){
 				
-				list = finder.findRoute(start, bases.get(l), facing);
+				list = finder.findRoute(start, bases.get(l));
 				
 				if(list.size() < steps){
 					closestBase = bases.get(l);

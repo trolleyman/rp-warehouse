@@ -2,12 +2,11 @@ package warehouse.pc.search;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,13 +44,14 @@ public class PlanningTests {
 	Direction yp = Direction.Y_POS;
 	Direction yn = Direction.Y_NEG;
 
-	Command r = Command.RIGHT;
-	Command l = Command.LEFT;
-	Command f = Command.FORWARD;
-	Command b = Command.BACKWARD;
-	Command d = Command.DROP;
+	Command u = Command.Y_POS;
+	Command d = Command.Y_NEG;
+	Command l = Command.X_NEG;
+	Command r = Command.X_POS;
+	Command dp = Command.DROP;
 	Command w = Command.WAIT;
 	Command p = Command.PICK;
+	Command cj = Command.COMPLETE_JOB;
 
 	RoutePlanner plannerA;
 
@@ -62,8 +62,8 @@ public class PlanningTests {
 	ArrayList<Junction> bases;
 	HashMap<Robot, LinkedList<Job>> map;
 	
-	LinkedList<Command> bearingsA;
-	LinkedList<Command> bearingsB;
+	ArrayDeque<Command> bearingsA;
+	ArrayDeque<Command> bearingsB;
 
 	@Before
 	public void setUp() throws Exception {
@@ -123,178 +123,7 @@ public class PlanningTests {
 
 	@Test
 	public void test() {
-		assertTrue(bearingsA.equals(Arrays.asList(f, l, f, l, p, b, f, d, b, l, f, f, f, f, p, l, r, d, r, r, f, f, f, f, f, l, p, b, f, r, f, p, b, f, d)));
-		assertTrue(bearingsB.equals(Arrays.asList(f, l, f, l, p, b, f, d, b, l, f, f, f, f, p, l, r, d, r, r, f, f, f, f, f, l, p, b, f, r, f, p, b, f, d, b, f, p, b, f, d, l, f, p, b, f, d)));
-
-		//locationTest(bearings, bearings1, robot1, robot2, Direction.Y_POS, Direction.Y_POS);
-
+		assertTrue(bearingsA.equals(Arrays.asList(d, r, r, u, p, d, d, dp, u, l, l, l, l, l, p, d, l, dp, u, r, r, r, r, r, r, u, p, d, d, l, l, p, r, r, dp, cj)));
+		assertTrue(bearingsB.equals(Arrays.asList(d, r, r, u, p, d, d, dp, u, l, l, l, l, l, p, d, l, dp, u, r, r, r, r, r, r, u, p, d, d, l, l, p, r, r, dp, l, l, p, r, r, dp, u, u, p, d, d, dp, cj)));
 	}
-
-	private void locationTest(List<Command> bearings1, List<Command> bearings2, Robot robot1, Robot robot2,
-			Direction dir1, Direction dir2) {
-
-		for (int i = 0; i < bearings1.size(); i++) {
-
-			switch (bearings1.get(i)) {
-
-			case FORWARD:
-				switch (dir1) {
-				case Y_POS:
-					robot1.setY(robot1.getY() + 1);
-					break;
-				case Y_NEG:
-					robot1.setY(robot1.getY() - 1);
-					break;
-				case X_POS:
-					robot1.setX(robot1.getX() + 1);
-					break;
-				case X_NEG:
-					robot1.setX(robot1.getX() - 1);
-					break;
-				}
-
-				break;
-
-			case LEFT:
-
-				switch (dir1) {
-				case X_POS:
-					robot1.setY(robot1.getY() + 1);
-					break;
-				case X_NEG:
-					robot1.setY(robot1.getY() - 1);
-					break;
-				case Y_POS:
-					robot1.setX(robot1.getX() + 1);
-					break;
-				case Y_NEG:
-					robot1.setX(robot1.getX() - 1);
-					break;
-				}
-
-				break;
-			case RIGHT:
-				switch (dir1) {
-				case X_NEG:
-					robot1.setY(robot1.getY() + 1);
-					break;
-				case X_POS:
-					robot1.setY(robot1.getY() - 1);
-					break;
-				case Y_NEG:
-					robot1.setX(robot1.getX() + 1);
-					break;
-				case Y_POS:
-					robot1.setX(robot1.getX() - 1);
-					break;
-
-				}
-
-				break;
-			case BACKWARD:
-				switch (dir1) {
-				case Y_NEG:
-					robot1.setY(robot1.getY() + 1);
-					break;
-				case Y_POS:
-					robot1.setY(robot1.getY() - 1);
-					break;
-				case X_NEG:
-					robot1.setX(robot1.getX() + 1);
-					break;
-				case X_POS:
-					robot1.setX(robot1.getX() - 1);
-					break;
-				}
-
-				break;
-			default:
-				break;
-
-			}
-
-			switch (bearings2.get(i)) {
-
-			case FORWARD:
-				switch (dir1) {
-				case Y_POS:
-					robot1.setY(robot1.getY() + 1);
-					break;
-				case Y_NEG:
-					robot1.setY(robot1.getY() - 1);
-					break;
-				case X_POS:
-					robot1.setX(robot1.getX() + 1);
-					break;
-				case X_NEG:
-					robot1.setX(robot1.getX() - 1);
-					break;
-				}
-
-				break;
-
-			case LEFT:
-
-				switch (dir1) {
-				case X_POS:
-					robot1.setY(robot1.getY() + 1);
-					break;
-				case X_NEG:
-					robot1.setY(robot1.getY() - 1);
-					break;
-				case Y_POS:
-					robot1.setX(robot1.getX() + 1);
-					break;
-				case Y_NEG:
-					robot1.setX(robot1.getX() - 1);
-					break;
-				}
-
-				break;
-			case RIGHT:
-				switch (dir1) {
-				case X_NEG:
-					robot1.setY(robot1.getY() + 1);
-					break;
-				case X_POS:
-					robot1.setY(robot1.getY() - 1);
-					break;
-				case Y_NEG:
-					robot1.setX(robot1.getX() + 1);
-					break;
-				case Y_POS:
-					robot1.setX(robot1.getX() - 1);
-					break;
-
-				}
-
-				break;
-			case BACKWARD:
-				switch (dir1) {
-				case Y_NEG:
-					robot1.setY(robot1.getY() + 1);
-					break;
-				case Y_POS:
-					robot1.setY(robot1.getY() - 1);
-					break;
-				case X_NEG:
-					robot1.setX(robot1.getX() + 1);
-					break;
-				case X_POS:
-					robot1.setX(robot1.getX() - 1);
-					break;
-				}
-
-				break;
-			default:
-				break;
-
-			}
-
-			assertTrue(!(robot1.getX() == robot2.getX() && robot1.getY() == robot2.getY()));
-
-		}
-
-	}
-
 }

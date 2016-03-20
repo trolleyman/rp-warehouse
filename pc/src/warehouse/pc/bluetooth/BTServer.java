@@ -11,7 +11,9 @@ import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
 import warehouse.pc.shared.Command;
+import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.MainInterface;
+import warehouse.pc.shared.RelativeDirection;
 import warehouse.pc.shared.Robot;
 
 /**
@@ -82,7 +84,6 @@ public class BTServer {
 				fromRobot = new DataInputStream(comm.getInputStream());
 			}
 		} catch (NXTCommException e) {
-			e.printStackTrace();
 			return false;
 		}
 		
@@ -94,7 +95,6 @@ public class BTServer {
 			sendToRobot(nxt.name, Format.robot(nxt.name, 0, 0, ""));
 			waitForReady(nxt.name);
 		} catch (IOException e) {
-			e.printStackTrace();
 			return false;
 		}
 
@@ -107,28 +107,42 @@ public class BTServer {
 	}
 	
 	public void sendCommand(Robot robot, Command com) throws IOException {
-		// TODO: com.getX().get()
-		switch (com) {
-		case LEFT:
-			sendToRobot(robot.getName(), Format.goLeft(0, 0));
-			break;
-		case RIGHT:
-			sendToRobot(robot.getName(), Format.goRight(0, 0));
-			break;
-		case FORWARD:
-			sendToRobot(robot.getName(), Format.goForward(0, 0));
-			break;
-		case BACKWARD:
-			sendToRobot(robot.getName(), Format.goBackward(0, 0));
-			break;
-		case PICK:
-			sendToRobot(robot.getName(), Format.pickUp(com.getQuantity().get(), com.getWeight().get()));
-			break;
-		case DROP:
-			sendToRobot(robot.getName(), Format.dropOff());
-			break;
-		case WAIT:
-			break;
+		if (com.toDirection().isPresent()) {
+			Direction d = com.toDirection().get();
+			RelativeDirection rel = RelativeDirection.fromTo(robot.getDirection(), d);
+			int x = com.getX();
+			int y = com.getY();
+			
+			switch (rel) {
+			case LEFT:
+				sendToRobot(robot.getName(), Format.goLeft(x, y));
+				break;
+			case RIGHT:
+				sendToRobot(robot.getName(), Format.goRight(x, y));
+				break;
+			case FORWARD:
+				sendToRobot(robot.getName(), Format.goForward(x, y));
+				break;
+			case BACKWARD:
+				sendToRobot(robot.getName(), Format.goBackward(x, y));
+				break;
+			}
+		} else {
+			switch (com) {
+			case PICK:
+				sendToRobot(robot.getName(), Format.pickUp(com.getQuantity(), com.getWeight()));
+				break;
+			case DROP:
+				sendToRobot(robot.getName(), Format.dropOff());
+				break;
+			case Y_POS:
+			case X_POS:
+			case Y_NEG:
+			case X_NEG:
+			case COMPLETE_JOB:
+			case WAIT:
+				break;
+			}
 		}
 	}
 
@@ -163,26 +177,6 @@ public class BTServer {
 		while (msg == null || !msg.equalsIgnoreCase("ready")) {
 			msg = listen(robotName);
 			System.out.println("Recv from " + robotName + ": Wanted 'ready', got: " + msg);
-		}
-	}
-	
-	public void waitForReady(Robot robot) throws IOException {
-		String msg = null;
-		while (msg == null || !msg.equalsIgnoreCase("ready")) {
-			msg = listen(robot.getName());
-			String dist = "Distance:";
-			if (msg.startsWith(dist)) {
-				String distString = msg.substring(dist.length(), msg.length() - 1);
-				try {
-					int d = Integer.parseInt(distString);
-					MainInterface.get().distanceRecieved(robot, d);
-					// Ignore message: don't print out debug message
-					continue;
-				} catch (NumberFormatException e) {
-					// Ignore.
-				}
-			}
-			System.out.println("Recv from " + robot.getName() + ": Wanted 'ready', got: " + msg);
 		}
 	}
 	

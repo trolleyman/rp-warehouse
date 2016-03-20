@@ -3,9 +3,8 @@ package warehouse.nxt.main;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.Thread.UncaughtExceptionHandler;
-
 import lejos.nxt.Button;
+import lejos.nxt.LCD;
 import lejos.nxt.Sound;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
@@ -47,37 +46,26 @@ public class NXTMain {
 	private NXTInterface robotInterface;
 
 	public NXTMain() {
-		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-			@Override
-			public void uncaughtException(Thread _t, Throwable _e) {
-				System.err.println("Exception");
-				_e.printStackTrace();
-				Button.waitForAnyPress();
-				System.exit(1);
-			}
-		});
-
 		this.connect();
-
 	}
 
 	// Waits for a Connection, when one is succeeded, calls .startStreams and .startThreads
 	private void connect() {
-		this.robotInterface = new NXTInterface("", "None", 0.0f, 0, 0, 0);
-
+		this.robotInterface = new NXTInterface( "", 0, 0 );
+		
 		this.robotInterface.drawWaitForConnection(false);
 		this.connection = Bluetooth.waitForConnection();
 		this.robotInterface.drawWaitForConnection(true);
+		Sound.beepSequenceUp();
 		Delay.msDelay(1000);
 
 		this.startStreams();
 		this.getMyself();
 		this.robotInterface.setRobotName(this.myself.name);
+		this.robotInterface.updatePosition(this.myself.x, this.myself.y);
 		
 		this.robotMotion = new NXTMotion(this.robotInterface, this.myself);
-		
-		Sound.buzz();
-		Button.waitForAnyPress();
+		this.robotInterface.show();
 		this.startThreads();
 	}
 
@@ -122,9 +110,16 @@ public class NXTMain {
 		this.sender.start();
 		this.receiver.start();
 	}
-
+	
 	public static void main(String[] _arguments) {
 		new NXTMain();
 	}
-
+	
+	public static void error(String msg) {
+		Sound.systemSound(true, 4);
+		LCD.clear();
+		LCD.drawString(msg, 0, 0);
+		Button.waitForAnyPress();
+		System.exit(1);
+	}
 }
