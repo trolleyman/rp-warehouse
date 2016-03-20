@@ -277,26 +277,35 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 	
 	private void paintWalls(Graphics2D _g2) {
 		Rectangle2D.Double[] walls = map.getWalls();
-		_g2.setColor(Color.RED);
+		Graphics2D g = (Graphics2D) _g2.create();
+		g.setColor(Color.RED);
+		g.setStroke(new BasicStroke(2f));
 		
 		for (Rectangle.Double wall : walls) {
-			double minX = wall.getMinX();
-			double minY = wall.getMinY();
-			double maxX = wall.getMaxX();
-			double maxY = wall.getMaxY();
-			// Left
-			_g2.drawLine((int) (minX * xScale), (int) (minY * yScale),
-						 (int) (minX * xScale), (int) (maxY * yScale));
-			// Right
-			_g2.drawLine((int) (maxX * xScale), (int) (minY * yScale),
-						 (int) (maxX * xScale), (int) (maxY * yScale));
-			// Top
-			_g2.drawLine((int) (minX * xScale), (int) (minY * yScale),
-						 (int) (maxX * xScale), (int) (minY * yScale));
-			// Bottom
-			_g2.drawLine((int) (minX * xScale), (int) (maxY * yScale),
-						 (int) (maxX * xScale), (int) (maxY * yScale));
+			int x = (int) (wall.getX() * xScale);
+			int y = (int) (wall.getY() * yScale);
+			int w = (int) (wall.getWidth() * xScale);
+			int h = (int) (wall.getHeight() * yScale);
+			
+			if (w == 0) {
+				x -= 1;
+				w  = 2;
+				
+				y -= 1;
+				h += 2;
+			}
+			if (h <= 2) {
+				y -= 1;
+				h  = 2;
+				
+				x -= 1;
+				w += 2;
+			}
+			
+			g.fillRect(x, y, w, h);
 		}
+		
+		g.dispose();
 	}
 
 	@Override
