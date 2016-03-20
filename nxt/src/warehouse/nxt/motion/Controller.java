@@ -10,7 +10,6 @@ import lejos.util.Delay;
  *
  */
 public class Controller {
-
 	public void doMove() {
 		System.out.println("Doing a move");
 		Delay.msDelay(3000);
