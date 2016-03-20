@@ -180,26 +180,6 @@ public class BTServer {
 		}
 	}
 	
-	public void waitForReady(Robot robot) throws IOException {
-		String msg = null;
-		while (msg == null || !msg.equalsIgnoreCase("ready")) {
-			msg = listen(robot.getName());
-			String dist = "Distance:";
-			if (msg.startsWith(dist)) {
-				String distString = msg.substring(dist.length(), msg.length() - 1);
-				try {
-					int d = Integer.parseInt(distString);
-					MainInterface.get().distanceRecieved(robot, d);
-					// Ignore message: don't print out debug message
-					continue;
-				} catch (NumberFormatException e) {
-					// Ignore.
-				}
-			}
-			System.out.println("Recv from " + robot.getName() + ": Wanted 'ready', got: " + msg);
-		}
-	}
-	
 	public String listen(String robotName) throws IOException {
 		return connections.get(robotName).listen();
 	}

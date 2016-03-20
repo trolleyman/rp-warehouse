@@ -194,6 +194,8 @@ public class RobotManager implements Runnable, RobotListener {
 	private void step() {
 		//HashMap<Robot, Direction> newRobotDirections = new HashMap<>();
 		
+		ArrayList<RobotUpdater> robotsToUpdate = new ArrayList<>();
+		
 		ArrayList<Robot> readyRobots = new ArrayList<>();
 		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
 			CommandQueue q = e.getValue();
@@ -211,7 +213,9 @@ public class RobotManager implements Runnable, RobotListener {
 			try {
 				System.out.println("Sending to " + e.getKey().getIdentity() + ": " + com);
 				mi.getServer().sendCommand(r, com);
-				new RobotUpdater(r, com).start();
+				RobotUpdater ru = new RobotUpdater(r, com);
+				robotsToUpdate.add(ru);
+				ru.start();
 			} catch (IOException ex) {
 				System.out.println(r.getIdentity() + " disconnected.");
 				mi.removeRobot(r);
@@ -230,6 +234,10 @@ public class RobotManager implements Runnable, RobotListener {
 				mi.removeRobot(robot);
 				continue;
 			}
+		}
+		
+		for (RobotUpdater ru : robotsToUpdate) {
+			ru.end();
 		}
 	}
 	
