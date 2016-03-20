@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 import lejos.nxt.Button;
+import lejos.nxt.Sound;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
 import lejos.util.Delay;
@@ -72,8 +73,11 @@ public class NXTMain {
 		this.startStreams();
 		this.getMyself();
 		this.robotInterface.setRobotName(this.myself.name);
-
+		
 		this.robotMotion = new NXTMotion(this.robotInterface, this.myself);
+		
+		Sound.buzz();
+		Button.waitForAnyPress();
 		this.startThreads();
 	}
 

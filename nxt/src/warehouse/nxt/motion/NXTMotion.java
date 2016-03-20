@@ -54,8 +54,13 @@ public class NXTMotion {
 		this.waitingBehaviour = new WaitingBehaviour( calibration, this.provider, this.myself );
 		
 		this.arbitrator = new Arbitrator( ( new Behavior[] { this.trackingBehaviour, this.junctionBehaviour, this.waitingBehaviour } ), true );
-		this.arbitrator.start();
 		
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				arbitrator.start();
+			}
+		}).start();
 	}
 	
 	public void go( String _direction, int _x, int _y ) {

@@ -4,6 +4,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import lejos.nxt.Button;
+import lejos.nxt.Sound;
 import warehouse.nxt.display.NXTInterface;
 import warehouse.nxt.motion.NXTMotion;
 import warehouse.nxt.utils.Robot;
@@ -45,6 +46,8 @@ public class NXTSender extends Thread {
 	public void run() {
 
 		try {
+			this.toPC.writeUTF("ready");
+			this.toPC.flush();
 			while (true) {
 
 				this.updateCheck();
