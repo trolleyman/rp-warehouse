@@ -4,6 +4,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import javax.bluetooth.BluetoothStateException;
+import javax.bluetooth.LocalDevice;
+
 import lejos.nxt.Sound;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
@@ -25,7 +28,7 @@ public class NXTCommunication implements Runnable {
 	private NXTMotion motion;
 	private NXTInterface in;
 	
-	public NXTCommunication(NXTInterface _in) {
+	public NXTCommunication(NXTInterface _in) throws BluetoothStateException {
 		this.in = _in;
 		this.in.drawWaitForConnection(false);
 		this.connection = Bluetooth.waitForConnection();
@@ -36,7 +39,7 @@ public class NXTCommunication implements Runnable {
 		Sound.beepSequenceUp();
 		Delay.msDelay(1000);
 		
-		this.motion = new NXTMotion(in);
+		this.motion = new NXTMotion(in, LocalDevice.getLocalDevice().getFriendlyName());
 		
 		in.show();
 	}

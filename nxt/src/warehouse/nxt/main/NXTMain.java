@@ -1,5 +1,7 @@
 package warehouse.nxt.main;
 
+import javax.bluetooth.BluetoothStateException;
+
 import warehouse.nxt.communication.NXTCommunication;
 import warehouse.nxt.display.NXTInterface;
 
@@ -23,8 +25,14 @@ public class NXTMain {
 	private void connect() {
 		NXTInterface in = new NXTInterface( "", 0, 0 );
 		
-		NXTCommunication comm = new NXTCommunication(in);
-		comm.run();
+		NXTCommunication comm;
+		try {
+			comm = new NXTCommunication(in);
+			comm.run();
+		} catch (BluetoothStateException e) {
+			in.errorMenu("Could not get friendly name.");
+		}
+		
 	}
 	
 	public static void main(String[] _arguments) {

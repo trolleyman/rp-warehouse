@@ -1,5 +1,7 @@
 package warehouse.nxt.motion;
 
+import javax.bluetooth.LocalDevice;
+
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
@@ -13,9 +15,16 @@ import warehouse.shared.Constants;
 import warehouse.shared.RelativeDirection;
 
 public class NXTMotion {
-	private static final double THRESHOLD = 70.0;
 	private static final double TURNING_OFFSET = 0.07;
-	private static final double K = 5.0;
+	
+	private static final double THRESHOLD_DEFAULT = 70.0;
+	private static final double K_DEFAULT = 5.0;
+	
+	private static final double THRESHOLD_BOT_LEE = 30.0;
+	private static final double K_BOT_LEE = 3.0;
+	
+	private final double THRESHOLD;
+	private final double K;
 	
 	private NXTInterface in;
 	
@@ -24,7 +33,17 @@ public class NXTMotion {
 	
 	private final UltrasonicSensor eyes;
 
-	public NXTMotion( NXTInterface _in ) {
+	public NXTMotion( NXTInterface _in, String friendlyName ) {
+		switch (friendlyName) {
+		case "Bot Lee":
+			THRESHOLD = THRESHOLD_BOT_LEE;
+			K = K_BOT_LEE;
+			break;
+		default:
+			THRESHOLD = THRESHOLD_DEFAULT;
+			K = K_DEFAULT;
+		}
+		
 		this.in = _in;
 		WheeledRobotConfiguration config = new WheeledRobotConfiguration( 0.056f, 0.111f, 0.111f, Motor.C, Motor.B );
 		DifferentialDriveRobot robot = new DifferentialDriveRobot( config );
