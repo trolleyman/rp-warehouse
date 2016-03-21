@@ -72,21 +72,36 @@ public class MultiPlanningTests {
 		ArrayList<ItemQuantity> listA = new ArrayList<>();
 		ArrayList<ItemQuantity> listB = new ArrayList<>();
 		ArrayList<ItemQuantity> listC = new ArrayList<>();
-
+		ArrayList<ItemQuantity> listD = new ArrayList<>();
+		ArrayList<ItemQuantity> listE = new ArrayList<>();
+		ArrayList<ItemQuantity> listF = new ArrayList<>();
+		
 		listA.add(new ItemQuantity(yazoo, 2));
 		listA.add(new ItemQuantity(lego, 4));
 		// listA.add(new ItemQuantity(yazoo, 1));
 		// listA.add(new ItemQuantity(crackers, 5));
 
+		listD.add(new ItemQuantity(crackers, 3));
+		listE.add(new ItemQuantity(lego, 5));
+		listF.add(new ItemQuantity(yazoo, 1));
+		listF.add(new ItemQuantity(crackers, 1));
+		listF.add(new ItemQuantity(yazoo, 2));
+		
 		jobA.add(new Job(0, listA, 50, 0));
+		jobA.add(new Job(3, listD, 15, 0));
 
+		
 		listB.add(new ItemQuantity(crackers, 10));
+		
+		
 		// listB.add(new ItemQuantity(yazoo, 1));
 
 		listC.add(new ItemQuantity(lego, 2));
 
 		jobB.add(new Job(1, listB, 75, 0));
-		jobC.add(new Job(1, listC, 20, 0));
+		jobC.add(new Job(2, listC, 20, 0));
+		jobC.add(new Job(4, listE, 50, 0));
+		jobB.add(new Job(5, listF, 30, 0));
 
 		map1.put(robotA, jobA);
 		map1.put(robotB, jobB);
@@ -125,11 +140,13 @@ public class MultiPlanningTests {
 		LinkedList<Junction> junctionsC = plannerA.getCommands(robotC).getJunctions();
 
 		double longestList = Math.max(junctionsA.size(), Math.max(junctionsB.size(), junctionsC.size()));
-
+		
 		Junction A = junctionsA.get(0);
 		Junction B = junctionsB.get(0);
 		Junction C = junctionsC.get(0);
 
+		boolean fail = false;
+		
 		for (int i = 0; i < longestList; i++) {
 
 			try {
@@ -148,11 +165,32 @@ public class MultiPlanningTests {
 			}
 
 			
+			if(A.getX() == B.getX() && A.getY() == B.getY()){
+				System.out.println("A and B clash: " + A + ", " + B);
+				fail = true;
+			}
+			
+			if(A.getX() == C.getX() && A.getY() == C.getY()){
+				System.out.println("A and C clash: " + A + ", " + C);
+				fail = true;
+			}
+			
+			if(C.getX() == B.getX() && C.getY() == B.getY()){
+				System.out.println("B and C clash: " + B + ", " + C);
+				fail = true;
+			}
+			
 			System.out.println("timestep: " + i + " - " + A + " " + B + " " + C);
 
 		}
 
+		if(!fail){
 		System.out.println("pass!");
+		}
+		else
+		{
+			System.out.println("failed...");
+		}
 		System.exit(0);
 
 	}

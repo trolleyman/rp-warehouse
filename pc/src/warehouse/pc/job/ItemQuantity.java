@@ -24,4 +24,21 @@ public class ItemQuantity {
 	public String toString(){
 		return item.getName() + ": " + quantity;
 	}
+	
+	public boolean equals(Object obj){
+		if(obj == null){
+			return false;
+		}
+		if(((ItemQuantity)obj).getItem().getName().equals(this.getItem().getName())){
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	public int hashCode(){
+		return item.getName().hashCode();
+	}
 }
