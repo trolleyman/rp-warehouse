@@ -146,7 +146,7 @@ public class RoutePlanner {
 
 			LinkedList<Job> queue = entry.getValue(); // getting the queue of jobs
 
-			// this assumes the queue is already in the order we
+			// this assumes the queue is already in the order wez
 			// want the robot to pick them up in
 
 			for (int j = 0; j < queue.size(); j++) {
@@ -160,7 +160,7 @@ public class RoutePlanner {
 					Item item = items.get(k).getItem(); // get the kth item from the job
 					int quantity = items.get(k).getQuantity();
 					
-					Junction start = map.getJunction((int)robot.getX(), (int)robot.getY());
+					Junction start = map.getJunction(robot.getGridX(), robot.getGridY());
 					Junction goal = null;
 					ArrayList<Direction> directList = new ArrayList<Direction>();
 					ArrayDeque<Command> list = new ArrayDeque<Command>();
@@ -181,6 +181,8 @@ public class RoutePlanner {
 						
 						// this should be updated by the robot, here for testing purposes
 						
+						robot.setGridX(goal.getX());
+						robot.setGridY(goal.getY());
 						robot.setX(goal.getX());
 						robot.setY(goal.getY());
 						
@@ -202,7 +204,8 @@ public class RoutePlanner {
 					pairedCommands.get(robot).addCommand(Command.pickUp(quantity, item.getWeight()));
 					
 					// this should be updated by the robot, here for testing purposes
-					
+					robot.setGridX(goal.getX());
+					robot.setGridY(goal.getY());
 					robot.setX(goal.getX());
 					robot.setY(goal.getY());
 					
@@ -218,7 +221,7 @@ public class RoutePlanner {
 
 			// robot has done its last job and must go home
 			
-			Junction start = map.getJunction((int)robot.getX(), (int)robot.getY());
+			Junction start = map.getJunction(robot.getGridX(), robot.getGridY());
 			Junction goal = findClosestBase(start);
 			ArrayList<Direction> directList = finder.findRoute(start, goal);
 			ArrayDeque<Command> list = Command.fromDirections(directList);

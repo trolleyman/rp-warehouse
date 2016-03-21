@@ -45,6 +45,24 @@ public class Robot implements Comparable<Robot> {
 		float b = 1.0f;
 		this.colour = Color.getHSBColor(h, s, b);
 	}
+	public Robot(String _name, String _id, double _xPos, double _yPos, double _facing, int _gridX, int _gridY) {
+		this.identity = new RobotIdentity( _name, _id);
+		this.xPos = _xPos;
+		this.yPos = _yPos;
+		this.facing = _facing;
+		this.direction = Direction.fromFacing(facing);
+		this.gridX = _gridX;
+		this.gridY = _gridY;
+		
+		Random r = ThreadLocalRandom.current();
+		// Hue, a random float 0.0-1.0
+		float h = r.nextFloat();
+		// Saturation, from 0.5-0.8
+		float s = (r.nextInt(3000) + 5000) / 10_000f;
+		// Brightness, 1.0
+		float b = 1.0f;
+		this.colour = Color.getHSBColor(h, s, b);
+	}
 	/**
 	 * Gets the robot's name
 	 */
@@ -157,7 +175,7 @@ public class Robot implements Comparable<Robot> {
 	 */
 	@Override
 	public Robot clone() {
-		return new Robot(identity.name, identity.id, xPos, yPos, facing);
+		return new Robot(identity.name, identity.id, xPos, yPos, facing, gridX, gridY);
 	}
 	
 	public void setGridX(int _gridX) {
