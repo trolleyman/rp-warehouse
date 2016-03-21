@@ -71,6 +71,7 @@ public class NXTCommunication implements Runnable {
 				String fromServer = this.fromPC.readUTF();
 				// System.out.println(fromServer);
 				this.find(fromServer);
+				in.show();
 			}
 		} catch(IOException e) {
 			in.errorMenu("Server closed.");
