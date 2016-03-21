@@ -427,11 +427,13 @@ public class NXTInterface {
 
 	public void errorMenu(String message) {
 		g.clear();
-		g.drawRect(5, 10, 70, 40);
-		g.drawString("Error Occurred:", 10, 12, 0);
-		g.drawString(message, 10, 22, 0);
-		g.drawString("Press Enter", 10, 32, 0);
-		g.drawString("to Exit", 10, 42, 0);
+		g.drawRect(0, 0, 99, 10);
+		//g.drawRect(5, 10, 70, 40);
+		g.drawString("Error Occurred", 49, 2, Graphics.HCENTER);
+		//g.drawString("Error Occurred:", 10, 12, 0);
+		g.drawString(message, 10, 22, Graphics.HCENTER);
+		g.drawString("Press Enter", 10, 42, Graphics.HCENTER);
+		g.drawString("to Exit", 10, 52, Graphics.HCENTER);
 		while (!Button.ENTER.isDown())) {
 			Thread.yield();
 		}
