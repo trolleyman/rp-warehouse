@@ -6,16 +6,16 @@ import warehouse.pc.shared.Map;
  *Class to represent localisation
  *
  *Still need :
- *  some sort of procedure to follow when "lost". Maybe rotate 360 degrees, read distance every 90 degrees 
+ *  some sort of procedure to follow when "lost". Maybe rotate 360 degrees, read distance every 90 degrees
  *  and call distance recieved to update the probabilities matrix.
  *  if finished() returns true after this (should be unlikely, need to move around to get good probability),
  *  then we should use getLikelyX / getLikelyY as our new accepted x,y coords. If finished returns false,
  *  then we need to carry on with a (recursive?) procedure until we get enough information to determine location.
- *  
+ * 
  *  This means this class should be able to send commands to the robot(s), or at least invoke another class to tell
  *  the robots to follow the localise procedure.
- *  
- *  
+ * 
+ * 
  */
 public class Localisation {
 	private static final double THRESHOLD = 0.9;
@@ -28,7 +28,7 @@ public class Localisation {
 
 	public Localisation(Map _map) {
 		this.map = _map;
-		this.probabilities = new Float[map.getHeight()][map.getWidth()];
+		this.probabilities = new Double[map.getHeight()][map.getWidth()];
 		numValidLocations = 0;
 		for (int y = 0; y < map.getHeight(); y++) {
 			for (int x = 0; x < map.getWidth(); x++) {
@@ -60,9 +60,9 @@ public class Localisation {
 	
 	public boolean isFinished() {
 		// If one location is above THRESHOLD
-		for (int y = 0;y < map.getHeight();y++)
+		for (int y = 0; y < map.getHeight(); y++)
 		{
-			for (int x = 0;x < width;x++)
+			for (int x = 0; x < map.getWidth(); x++)
 			{
 				if (probabilities[y][x] > THRESHOLD)
 				{
@@ -84,7 +84,7 @@ public class Localisation {
 				if (probabilities[y][x] > max)
 				{
 					max = probabilities[y][x];
-					likelyX = x;		
+					likelyX = x;
 				}
 			}
 		}
@@ -101,7 +101,7 @@ public class Localisation {
 				if (probabilities[y][x] > max)
 				{
 					max = probabilities[y][x];
-					likelyY = y;		
+					likelyY = y;
 				}
 			}
 		}
