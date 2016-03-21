@@ -52,14 +52,14 @@ public class NXTCommunication implements Runnable {
 			String[] explosion = MyString.split(":", input);
 			
 			if (!explosion[0].equals("Robot")) {
-				NXTMain.error("Protocol Error: Robot needs to be initialized.");
+				in.errorMenu("Protocol Error: Robot needs to be initialized.");
 			} else {
 				String[] data = MyString.split(",", explosion[1]);
 				this.me = new Robot(data[0], Integer.parseInt(data[1]), Integer.parseInt(data[2]));
 				this.me.jobName = data[3];
 			}
 		} catch (IOException e) {
-			NXTMain.error("Server closed.");
+			in.errorMenu("Server closed.");
 		}
 	}
 
@@ -73,7 +73,7 @@ public class NXTCommunication implements Runnable {
 				this.find(fromServer);
 			}
 		} catch(IOException e) {
-			NXTMain.error("Server closed.");
+			in.errorMenu("Server closed.");
 		}
 	}
 	
@@ -96,7 +96,7 @@ public class NXTCommunication implements Runnable {
 		case "Cancel Job":
 			this.cancel(data);
 		default:
-			NXTMain.error("Protocol Error 1");
+			in.errorMenu("Protocol Error 1");
 			break;
 		}
 	}
@@ -117,7 +117,7 @@ public class NXTCommunication implements Runnable {
 	private void cancel(String[] _next) {
 		if (_next[0].equals("Shut Down")) {
 			this.connection.close();
-			NXTMain.error("Shut Down");
+			in.errorMenu("Shut Down");
 		} else {
 			this.in.setJobName(_next[0]);
 			this.in.show();
@@ -132,7 +132,7 @@ public class NXTCommunication implements Runnable {
 		switch (_action[0]) {
 		case "Shut Down":
 			this.connection.close();
-			NXTMain.error("Shut Down.");
+			in.errorMenu("Shut Down.");
 			break;
 		case "Pick Up":
 			in.pickUp(Integer.parseInt(_action[1]), Float.parseFloat(_action[2]));
@@ -141,7 +141,7 @@ public class NXTCommunication implements Runnable {
 			in.dropOff();
 			break;
 		default:
-			NXTMain.error("Protocol Error 2: Unknown data format received after 'Do: '");
+			in.errorMenu("Protocol Error 2: Unknown data format received after 'Do: '");
 			break;
 		}
 	}
@@ -170,7 +170,7 @@ public class NXTCommunication implements Runnable {
 			this.motion.go("Backward", Integer.parseInt(_data[1]), Integer.parseInt(_data[2]));
 			break;
 		default:
-			NXTMain.error("Protocol Error 3: Unknown data format received after 'Go: '");
+			in.errorMenu("Protocol Error 3: Unknown data format received after 'Go: '");
 			break;
 		}
 	}

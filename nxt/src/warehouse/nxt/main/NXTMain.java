@@ -36,11 +36,11 @@ public class NXTMain {
 		new NXTMain();
 	}
 	
-	public static void error(String msg) {
+	/*public static void error(String msg) {
 		Sound.systemSound(true, 4);
 		LCD.clear();
 		LCD.drawString(msg, 0, 0);
 		Button.waitForAnyPress();
 		System.exit(1);
-	}
+	}*/
 }

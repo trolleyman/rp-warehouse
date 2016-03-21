@@ -56,8 +56,11 @@ public class NXTMotion {
 	 * @param dir the direction, one of "Backward", "Left", "Right", "Forward"
 	 */
 	private void turn(String dir) {
+		this.pilot.setTravelSpeed(Constants.ROBOT_SPEED);
+		this.pilot.setRotateSpeed(Constants.ROBOT_ROTATION_SPEED);
+		
 		switch( dir ) {
-		case "Backward": this.rotate(RelativeDirection.BACKWARD); break;
+		case "Backward": pilot.travel(TURNING_OFFSET); this.rotate(RelativeDirection.BACKWARD); break;
 		case "Left"    : pilot.travel(TURNING_OFFSET); this.rotate(RelativeDirection.LEFT); break;
 		case "Right"   : pilot.travel(TURNING_OFFSET); this.rotate(RelativeDirection.RIGHT); break;
 		case "Forward" : pilot.travel(TURNING_OFFSET); break;
@@ -122,9 +125,7 @@ public class NXTMotion {
 	private void trackToJunction() {
 		this.pilot.setTravelSpeed(Constants.ROBOT_SPEED);
 		this.pilot.setRotateSpeed(Constants.ROBOT_ROTATION_SPEED);
-		
-		Sound.setVolume( 100 );
-		
+				
 		while(!atJunction()) {
 			double left = this.calibration.leftSensor.getLightValue();
 			double right = this.calibration.rightSensor.getLightValue();
@@ -139,6 +140,8 @@ public class NXTMotion {
 			try { Thread.sleep( 10 ); }
 			catch (InterruptedException e) { /* Don't care. */ }
 		}
+		
+		Sound.beep();
 		
 		this.pilot.stop();
 	}
