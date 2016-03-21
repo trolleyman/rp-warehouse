@@ -1,12 +1,7 @@
 package warehouse.nxt.main;
 
-import lejos.nxt.Button;
-import lejos.nxt.LCD;
-import lejos.nxt.Sound;
-import lejos.nxt.comm.BTConnection;
 import warehouse.nxt.communication.NXTCommunication;
 import warehouse.nxt.display.NXTInterface;
-import warehouse.nxt.motion.NXTMotion;
 
 /**
  * 

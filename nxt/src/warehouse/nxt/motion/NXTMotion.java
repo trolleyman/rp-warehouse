@@ -9,13 +9,13 @@ import lejos.robotics.navigation.DifferentialPilot;
 import rp.config.WheeledRobotConfiguration;
 import rp.robotics.DifferentialDriveRobot;
 import warehouse.nxt.display.NXTInterface;
-import warehouse.nxt.utils.Robot;
 import warehouse.shared.Constants;
 import warehouse.shared.RelativeDirection;
 
 public class NXTMotion {
-	private static final double THRESHOLD = 62.0;
+	private static final double THRESHOLD = 70.0;
 	private static final double TURNING_OFFSET = 0.07;
+	private static final double K = 5.0;
 	
 	private NXTInterface in;
 	
@@ -80,6 +80,7 @@ public class NXTMotion {
 		case LEFT:     pilot.rotate(90.0);  break;
 		case RIGHT:    pilot.rotate(-90.0); break;
 		case BACKWARD: pilot.rotate(180.0); break;
+		default:
 		}
 		if (true)
 			return;
@@ -141,12 +142,11 @@ public class NXTMotion {
 			double left = calibration.readLeftValue();
 			double right = calibration.readRightValue();
 			double error = right - left;
-			final double k = 5.0;
 			
 			//System.out.println("e:" + error);
 			//System.out.println("o:" + ( 1 / error ) * k);
 			
-			this.pilot.travelArc( ( 1 / error ) * k, 0.1, true );
+			this.pilot.travelArc( ( 1 / error ) * K, 0.1, true );
 			
 			try { Thread.sleep( 10 ); }
 			catch (InterruptedException e) { /* Don't care. */ }
@@ -161,7 +161,6 @@ public class NXTMotion {
 	
 	/**
 	 * Returns true if the robot sensors have detected a junction
-	 * @return
 	 */
 	private boolean atJunction() {
 		return leftOnLine() && rightOnLine();
