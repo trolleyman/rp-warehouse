@@ -19,6 +19,16 @@ public class Connection {
 		this.fromRobot = fromRobot;
 		this.toRobot = toRobot;
 	}
+	
+	public void close() {
+		try {
+			send("Do: Shut Down");
+			this.toRobot.close();
+			this.fromRobot.close();
+		} catch (IOException e) {
+			
+		}
+	}
 
 	public boolean open(NXTComm comm) {
 		try {
@@ -34,16 +44,11 @@ public class Connection {
 	}
 
 	public void send(String command) throws IOException {
-		System.out.println("Sending " + command + " to " + nxt.name);
 		toRobot.writeUTF(command);
 		toRobot.flush();
 	}
 
 	public String listen() throws IOException {
-		String reply = null;
-		System.out.println("Robot " + nxt.name + " is listening");
-
-		reply = fromRobot.readUTF();
-		return reply;
+		return fromRobot.readUTF();
 	}
 }

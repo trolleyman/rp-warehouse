@@ -1,7 +1,13 @@
 package warehouse.pc.gui;
 
+import java.awt.Point;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Optional;
 
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -15,46 +21,86 @@ import warehouse.pc.shared.Robot;
 
 @SuppressWarnings("serial")
 public class BluetoothSelector extends JComboBox<String> implements Runnable {
-	private final String SEARCHING = "Searching...";
-	private final String NO_ROBOTS_DETECTED = "No robots detected.";
+	private static final String SEARCHING = "Searching...";
+	private static final String NO_ROBOTS_DETECTED = "No robots detected.";
+	private static final Comparator<NXTInfo> infoComparator = new Comparator<NXTInfo>() {
+		@Override
+		public int compare(NXTInfo o1, NXTInfo o2) {
+			int res = o1.name.compareToIgnoreCase(o2.name);
+			if (res == 0) {
+				return o1.deviceAddress.compareToIgnoreCase(o2.deviceAddress);
+			} else {
+				return res;
+			}
+		}
+	};
+	
+	private Gui gui;
+	
+	private NXTInfo[] infos;
+	private ArrayList<NXTInfo> defaultInfos;
+	
+	private volatile boolean running;
+	
+	private boolean error;
+	private String errorMessage;
 	
 	private volatile boolean openingConnection;
 	
-	private NXTInfo[] oldInfos;
-	private NXTInfo[] infos;
-	private String errorMessage;
-	private boolean error;
-	private boolean running;
+	private static ArrayList<NXTInfo> readDefaultRobots() {
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new FileReader("robots.csv"));
+			
+			ArrayList<NXTInfo> robots = new ArrayList<>();
+			
+			String line = br.readLine();
+			while (line != null) {
+				String[] split = line.split(",");
+				if (split.length != 2) {
+					continue;
+				}
+				String name = split[0];
+				String address = split[1];
+				robots.add(new NXTInfo(NXTCommFactory.BLUETOOTH, name, address));
+				
+				line = br.readLine();
+			}
+			
+			robots.sort(infoComparator);
+			return robots;
+		} catch (IOException e) {
+			return new ArrayList<>();
+		} finally {
+			try {
+				if (br != null)
+					br.close();
+			} catch (IOException e) {
+				
+			}
+		}
+	}
 	
-	public BluetoothSelector() {
+	public BluetoothSelector(Gui _gui) {
 		super();
+		gui = _gui;
+		
+		defaultInfos = readDefaultRobots();
 		
 		openingConnection = false;
 		running = true;
 		errorMessage = "";
 		error = false;
-		oldInfos = new NXTInfo[0];
 		infos = new NXTInfo[0];
 		
 		//setMaximumSize(new Dimension(100, 10));
-		this.addItem(SEARCHING);
-		
-		// Debugging stuff so I don't
-		// Bot Lee - 001653155F9C
-		// Obama - 0016531B550D
-		//*
-		NXTInfo info = new NXTInfo(NXTCommFactory.BLUETOOTH, "Bot Lee", "001653155F9C");
-		{boolean result = MainInterface.get().getServer().open(info);
-		openingConnection = false;
-		if (!result) {
-			JOptionPane.showMessageDialog(null,
-				"Could not connect to " + info.name + " (" + info.deviceAddress + ").",
-				"Connection Error",
-				JOptionPane.WARNING_MESSAGE);
+		if (defaultInfos.size() == 0) {
+			this.addItem(SEARCHING);
 		} else {
-			MainInterface.get().updateRobot(new Robot(info.name, info.deviceAddress, 0, 0, 0));
-		}}
-		//*/
+			for (NXTInfo info : defaultInfos) {
+				this.addItem(info.deviceAddress + " - " + info.name);
+			}
+		}
 		
 		Thread t = new Thread(this);
 		t.setDaemon(true);
@@ -62,14 +108,34 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	}
 	
 	/**
+	 * Returns false if there was an error opening Bluetooth so bad that there is no point
+	 * in trying anymore. (i.e. if there was no bluetooth installed.)
+	 */
+	public boolean isRunning() {
+		return running;
+	}
+	
+	/**
 	 * Returns the currently selected robot, or null if no robot is eelected.
 	 */
 	public NXTInfo getSelectedRobot() {
-		int i = this.getSelectedIndex();
-		if (i == -1 || infos.length == 0 || i >= infos.length)
+		if (!running)
 			return null;
 		
-		return infos[i];
+		String name = this.getSelectedItem().toString().split("-")[1].trim();
+		// Check found items first.
+		for (int i = 0; i < infos.length; i++) {
+			if (infos[i].name.equals(name)) {
+				return infos[i];
+			}
+		}
+		// Then check defaults
+		for (NXTInfo info : defaultInfos) {
+			if (info.name.equals(name)) {
+				return info;
+			}
+		}
+		return null;
 	}
 	
 	/**
@@ -78,14 +144,17 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 	public void connect() {
 		synchronized (this) {
 			openingConnection = true;
-			int i = this.getSelectedIndex();
-			if (i == -1 || infos.length == 0 || i >= infos.length)
+			NXTInfo info = getSelectedRobot();
+			if (info == null)
 				return;
-			
-			NXTInfo info = infos[i];
 			
 			// Call open() in communication module to connect to a new robot.
 			Thread t = new Thread(() -> {
+				Optional<Point> op = StartingLocation.getFromUser(MainInterface.get().getMap());
+				if (!op.isPresent()) {
+					return;
+				}
+				
 				boolean result = MainInterface.get().getServer().open(info);
 				openingConnection = false;
 				if (!result) {
@@ -94,7 +163,8 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 						"Connection Error",
 						JOptionPane.WARNING_MESSAGE);
 				} else {
-					MainInterface.get().updateRobot(new Robot(info.name, info.deviceAddress, 0, 0, 0));
+					Point p = op.get();
+					MainInterface.get().updateRobot(new Robot(info.name, info.deviceAddress, p.getX(), p.getY(), 0));
 				}
 			});
 			t.start();
@@ -112,54 +182,46 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 				return;
 			}
 			// If infos hasn't changed, return.
-			if (infos.length != 0 && oldInfos.length == infos.length) {
-				boolean equal = true;
-				for (int i = 0; i < infos.length; i++) {
-					if (!infos[i].name.equals(oldInfos[i].name)) {
-						equal = false;
-						break;
+			ArrayList<NXTInfo> combined = new ArrayList<>();
+			combined.addAll(defaultInfos);
+			for (int i = 0; i < infos.length; i++) {
+				boolean defaultContains = false;
+				for (NXTInfo info : defaultInfos) {
+					if (info.name.equals(infos[i].name) && info.deviceAddress.equalsIgnoreCase(infos[i].deviceAddress)) {
+						defaultContains = true;
 					}
 				}
-				if (equal)
-					return;
-			}
-			
-			Arrays.sort(infos, new Comparator<NXTInfo>() {
-				@Override
-				public int compare(NXTInfo o1, NXTInfo o2) {
-					return o1.name.compareToIgnoreCase(o2.name);
+				if (!defaultContains) {
+					combined.add(infos[i]);
 				}
-			});
-			
-			// Calculate new selection
-			String selectedName = null;
-			if (this.getSelectedIndex() != -1) {
-				selectedName = (String) this.getSelectedItem();
 			}
+			
+			combined.sort(infoComparator);
+			
+			String selectedRobotName = this.getSelectedRobot().name;
 			
 			// Add to combo box
+			int selectedIndex = 0;
 			this.removeAllItems();
-			for (NXTInfo i : infos)
-				this.addItem(i.name);
-			
-			if (selectedName != null) {
-				for (int i = 0; i < infos.length; i++) {
-					if (selectedName.equals(infos[i].name)) {
-						this.setSelectedIndex(i);
-						break;
-					}
+			for (int i = 0; i < combined.size(); i++) {
+				this.addItem(combined.get(i).deviceAddress + " - " + combined.get(i).name);
+				if (combined.get(i).name.equals(selectedRobotName)) {
+					selectedIndex = i;
 				}
 			}
 			
+			// Keep selection across updates
+			this.setSelectedIndex(selectedIndex);
+			
 			if (error) {
+				this.removeAllItems();
 				this.addItem("Error: " + errorMessage);
-			} else if (infos.length == 0) {
+				this.setSelectedIndex(0);
+			} else if (combined.size() == 0) {
 				this.addItem(NO_ROBOTS_DETECTED);
 			}
 			
 			repaint();
-			
-			oldInfos = infos;
 		}
 	}
 	
@@ -203,6 +265,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 				updateOptions();
 				if (errorMessage.equals("Bluetooth stack not detected")) {
 					running = false;
+					gui.update();
 				}
 			}
 			
@@ -212,5 +275,7 @@ public class BluetoothSelector extends JComboBox<String> implements Runnable {
 				
 			}
 		}
+		
+		gui.update();
 	}
 }

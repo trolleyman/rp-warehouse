@@ -1,5 +1,6 @@
 package warehouse.pc.search;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -8,11 +9,11 @@ import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
 import warehouse.pc.shared.Command;
-import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.Robot;
 import warehouse.pc.shared.TestMaps;
+import warehouse.shared.Direction;
 
 public class RoutePlanningTest {
 
@@ -24,11 +25,6 @@ public class RoutePlanningTest {
 	static Direction xn = Direction.X_NEG;
 	static Direction yp = Direction.Y_POS;
 	static Direction yn = Direction.Y_NEG;
-	
-	static Command r = Command.RIGHT;
-	static Command l = Command.LEFT;
-	static Command f = Command.FORWARD;
-	static Command b = Command.BACKWARD;
 	
 	static RoutePlanner plannerA;
 	
@@ -81,9 +77,9 @@ public class RoutePlanningTest {
 		plannerA.computeCommands();
 		
 		
-		LinkedList<Command> bearings = plannerA.getCommands(robotA).getCommands();
+		ArrayDeque<Command> commands = plannerA.getCommands(robotA).getCommands();
 		
-		System.out.println(bearings);
+		System.out.println(commands);
 		
 	}
 	

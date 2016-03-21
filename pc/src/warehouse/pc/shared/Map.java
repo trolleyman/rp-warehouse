@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import lejos.geom.Line;
 import lejos.geom.Point;
 import rp.robotics.mapping.GridMap;
+import warehouse.shared.Direction;
 
 /**
  * A map that represents a grid of junctions.

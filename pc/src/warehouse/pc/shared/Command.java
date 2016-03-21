@@ -1,24 +1,53 @@
 package warehouse.pc.shared;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Optional;
+
+import warehouse.shared.Direction;
 
 /**
  * Commands the robot can execute in the field
  */
 
 public enum Command {
-	LEFT,
-	RIGHT,
-	FORWARD,
-	BACKWARD,
+	Y_POS,
+	X_POS,
+	Y_NEG,
+	X_NEG,
 	PICK,
 	DROP,
+	COMPLETE_JOB,
 	WAIT;
 	
-	private Integer x;
-	private Integer y;
-	private Integer quantity;
-	private Float weight;
+	private int x;
+	private int y;
+	private int quantity;
+	private float weight;
+	
+	public Optional<Direction> toDirection() {
+		switch (this) {
+		case Y_POS: return Optional.of(Direction.Y_POS);
+		case X_POS: return Optional.of(Direction.X_POS);
+		case Y_NEG: return Optional.of(Direction.Y_NEG);
+		case X_NEG: return Optional.of(Direction.X_NEG);
+		default:    return Optional.empty();
+		}
+	}
+	
+	/**
+	 * Converts a direction into a command
+	 */
+	public static Command fromDirection(Direction dir) {
+		switch (dir) {
+		case Y_POS: return Command.Y_POS;
+		case X_POS: return Command.X_POS;
+		case Y_NEG: return Command.Y_NEG;
+		case X_NEG: return Command.X_NEG;
+		default: return Command.WAIT;
+		}
+	}
+	
 	
 	public static Command pickUp(int _quantity, float _weight) {
 		Command com = Command.PICK;
@@ -35,19 +64,52 @@ public enum Command {
 		this.y = _y;
 	}
 	
-	public Optional<Integer> getX() {
-		return Optional.ofNullable(x);
+	public int getX() {
+		return x;
 	}
 	
-	public Optional<Integer> getY() {
-		return Optional.ofNullable(y);
+	public int getY() {
+		return y;
 	}
 	
-	public Optional<Integer> getQuantity() {
-		return Optional.ofNullable(quantity);
+	public int getQuantity() {
+		return quantity;
 	}
 	
-	public Optional<Float> getWeight() {
-		return Optional.ofNullable(weight);
+	public float getWeight() {
+		return weight;
+	}
+
+	public static ArrayDeque<Command> fromDirections(ArrayList<Direction> route) {
+		ArrayDeque<Command> commands = new ArrayDeque<>(route.size());
+		for (Direction d : route) {
+			commands.add(Command.fromDirection(d));
+		}
+		return commands;
+	}
+
+	public void setFrom(int _x, int _y) {
+		switch (this) {
+		case Y_POS:
+			x = _x;
+			y = _y + 1;
+			break;
+		case Y_NEG:
+			x = _x;
+			y = _y - 1;
+			break;
+		case X_POS:
+			x = _x + 1;
+			y = _y;
+			break;
+		case X_NEG:
+			x = _x - 1;
+			y = _y;
+			break;
+		default:
+			x = _x;
+			y = _y;
+			break;
+		}
 	}
 }

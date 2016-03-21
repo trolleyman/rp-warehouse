@@ -17,7 +17,7 @@ public class JobHandlerTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		handler = new JobHandler("locations.csv", "items.csv", "jobs.csv", "drops.csv");
+		//handler = new JobHandler("locations.csv", "items.csv", "jobs.csv", "drops.csv");
 	}
 
 	@After

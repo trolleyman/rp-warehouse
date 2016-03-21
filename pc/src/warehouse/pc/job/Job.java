@@ -35,12 +35,14 @@ public class Job {
 		return this.totalReward;
 	}
 	
+	@Override
 	public String toString() {
 		String result = String.valueOf(id);
+		result += ": ";
 		for(int i = 0; i < items.size(); i++) {
-			result += ", " + items.get(i).getItem().getName() + ", " + items.get(i).getQuantity();
+			result += items.get(i).getQuantity() + " " + items.get(i).getItem().getName() + ", ";
 		}
-		result += ", " + totalWeight + ", " + totalReward;
+		result += " weight:" + totalWeight + " reward:" + totalReward;
 		
 		return result;
 	}

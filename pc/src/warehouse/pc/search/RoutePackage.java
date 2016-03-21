@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import warehouse.pc.shared.Command;
-import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Junction;
+import warehouse.shared.Direction;
 
 public class RoutePackage {
 

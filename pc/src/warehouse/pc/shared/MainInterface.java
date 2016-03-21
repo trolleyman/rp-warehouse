@@ -2,6 +2,7 @@ package warehouse.pc.shared;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Optional;
 
 import warehouse.pc.bluetooth.BTServer;
 import warehouse.pc.job.DropList;
@@ -24,12 +25,25 @@ public class MainInterface {
 	private volatile static Object interfaceInitLock = new Object();
 	private volatile static MainInterface mainInterface = null;
 	
+	/**
+	 * Gets the MainInterface global instance. Constructs MainInterface if necessary.
+	 */
 	public static MainInterface get() {
 		synchronized (interfaceInitLock) {
 			if (mainInterface == null) {
 				mainInterface = new MainInterface();
 			}
 			return mainInterface;
+		}
+	}
+	
+	/**
+	 * Gets the MainInterface global instance if it has been constructed.
+	 * Returns Optional.empty() if it hasn't.
+	 */
+	public static Optional<MainInterface> getLazy() {
+		synchronized (interfaceInitLock) {
+			return Optional.ofNullable(mainInterface);
 		}
 	}
 	
@@ -55,7 +69,7 @@ public class MainInterface {
 		distanceListeners = new ArrayList<>();
 		
 		// map = new Map(new GridMap(10, 7, 14, 31, 30, MapUtils.create2014Map2()));
-		map = TestMaps.TEST_MAP4;
+		map = TestMaps.REAL_WAREHOUSE;
 		robots = new HashSet<>();
 		
 		locList = new LocationList("locations.csv");
@@ -67,7 +81,7 @@ public class MainInterface {
 		jobList = new JobList("jobs.csv", itemList);
 		dropList = new DropList("drops.csv");
 		
-		jobSelector = new JobSelector(locList, itemList, jobList, dropList);
+		jobSelector = new JobSelector(locList, itemList, jobList, dropList, map);
 		
 		robotManager = new RobotManager();
 		this.addRobotListener(robotManager);
@@ -76,7 +90,7 @@ public class MainInterface {
 	/**
 	 * Returns the robot manager that is in control of all the robots.
 	 */
-	public IRobotManager getRobotManager() {
+	public RobotManager getRobotManager() {
 		return robotManager;
 	}
 	
@@ -132,7 +146,7 @@ public class MainInterface {
 	/**
 	 * Notifies all distance listeners that a distance has been recieved from a robot.
 	 */
-	public synchronized void distanceRecieved(Robot _robot, int _dist) {
+	public void distanceRecieved(Robot _robot, int _dist) {
 		for (DistanceListener l : distanceListeners) {
 			l.distanceRecieved(_robot, _dist);
 		}
@@ -148,7 +162,7 @@ public class MainInterface {
 	/**
 	 * Gets the current map
 	 */
-	public synchronized Map getMap() {
+	public Map getMap() {
 		return map;
 	}
 	
@@ -156,7 +170,7 @@ public class MainInterface {
 	 * Gets all the current robots and their statuses.
 	 * ***Don't modify this directly*** - Use MainInterface.updateRobot / MainInterface.removeRobot.
 	 */
-	public synchronized HashSet<Robot> getRobots() {
+	public HashSet<Robot> getRobots() {
 		return robots;
 	}
 	
@@ -164,11 +178,13 @@ public class MainInterface {
 	 * Updated a robot {@code _r} with new information. If the robot is not recognized, a new robot is
 	 * inserted into the array.
 	 */
-	public synchronized void updateRobot(Robot _r) {
+	public void updateRobot(Robot _r) {
 		boolean added = false;
-		if (!robots.contains(_r)) {
-			robots.add(_r);
-			added = true;
+		synchronized (this) {
+			if (!robots.contains(_r)) {
+				robots.add(_r);
+				added = true;
+			}
 		}
 		if (added) {
 			for (RobotListener l : robotListeners) {
@@ -185,11 +201,16 @@ public class MainInterface {
 	 * Removes a robot if it exists
 	 * @param _r the robot
 	 */
-	public synchronized void removeRobot(Robot _r) {
-		if (robots.remove(_r)) {
+	public void removeRobot(Robot _r) {
+		boolean removed = false;
+		synchronized (this) {
+			removed = robots.remove(_r);
+		}
+		if (removed) {
 			for (RobotListener l : robotListeners) {
 				l.robotRemoved(_r);
 			}
+			server.close(_r.getNXTInfo());
 		}
 	}
 	
@@ -198,11 +219,11 @@ public class MainInterface {
 	 * e.g. telling all robots to shut down.
 	 */
 	public void close() {
-		synchronized (interfaceInitLock) {
-			synchronized (this) {
-				mainInterface = null;
-				System.exit(0);
+		synchronized (this) {
+			for (Robot r : robots) {
+				server.close(r.getNXTInfo());
 			}
+			System.exit(0);
 		}
 	}
 }

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import warehouse.pc.shared.Command;
-import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.TestMaps;
+import warehouse.shared.Direction;
 
 /**
  * Test class for route planning
@@ -32,11 +32,9 @@ public class RouteTest {
 
 		// prints a list of bearings
 		
-		for (int i = 0; i < testArray.size(); i++) {
-			System.out.println("[" + directions.get(i) + "], ");
-
+		for (Command c : commands) {
+			System.out.println("[" + c + "], ");
 		}
-
 	}
 
 }

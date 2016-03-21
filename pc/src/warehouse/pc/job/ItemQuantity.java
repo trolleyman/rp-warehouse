@@ -1,5 +1,7 @@
 package warehouse.pc.job;
 
+import java.util.List;
+
 /**
  * The name of an item paired with the quantity of the item
  */
@@ -21,10 +23,6 @@ public class ItemQuantity {
 		return this.quantity;
 	}
 	
-	public String toString(){
-		return item.getName() + ": " + quantity;
-	}
-	
 	public boolean equals(Object obj){
 		if(obj == null){
 			return false;
@@ -40,5 +38,26 @@ public class ItemQuantity {
 	
 	public int hashCode(){
 		return item.getName().hashCode();
+	}
+
+	public static String listToString(List<ItemQuantity> iqs) {
+		StringBuilder b = new StringBuilder();
+		for (ItemQuantity iq : iqs) {
+			b.append(iq.getQuantity());
+			b.append(" ");
+			b.append(iq.getItem().getName());
+			b.append(", ");
+		}
+		if (iqs.size() > 0) {
+			// Delete last ", "
+			b.deleteCharAt(b.length() - 1);
+			b.deleteCharAt(b.length() - 1);
+		}
+		return b.toString();
+	}
+	
+	@Override
+	public String toString() {
+		return quantity + " " + item;
 	}
 }
