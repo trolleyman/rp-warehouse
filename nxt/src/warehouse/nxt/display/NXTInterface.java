@@ -403,6 +403,19 @@ public class NXTInterface {
 		this.robotName = _name;
 	}
 
+	public void errorMenu(String message) {
+		while (!Button.ENTER.isPressed()) {
+			g.clear();
+			g.drawRect(15, 10, 70, 40);
+			g.drawString("Error Occurred:", 20, 20, 0);
+			g.drawString(message, 20, 25, 0);
+			g.drawString("Press Enter", 20, 30, 0);
+			g.drawString("to Exit", 20, 35, 0);
+			Thread.yield();
+		}
+		g.drawString("Goodbye!", 20, 25, 0);
+	}
+	
 }
 
 /*
