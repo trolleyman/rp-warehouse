@@ -338,7 +338,7 @@ public class NXTInterface {
 		g.clear();
 
 		g.drawRect(5, 5, 90, 45); // Draws a box containing the information
-		g.drawString("Required : " + String.valueOf(quantity), 10, 10, 0); // How
+		g.drawString("Required :" + String.valueOf(quantity), 10, 10, 0); // How
 																			// many
 																			// items
 																			// are
@@ -346,7 +346,7 @@ public class NXTInterface {
 																			// to
 																			// be
 																			// loaded
-		g.drawString("Loaded   : " + String.valueOf(_counter), 10, 20, 0); // How
+		g.drawString("Loaded   :" + String.valueOf(_counter), 10, 20, 0); // How
 																			// many
 																			// items
 																			// are
@@ -363,10 +363,10 @@ public class NXTInterface {
 	}
 
 	private void drawPickUpUpdate(int _counter) {
-		g.drawString("Required : " + String.valueOf(quantity), 10, 10, 0);
-		g.drawString("Loaded   : " + String.valueOf(_counter), 10, 20, 0);
-		g.drawString("W / item : " + String.valueOf(weight), 10, 30, 0);
-		g.drawString("MaxLoad  : " + String.valueOf(50 / weight), 10, 40, 0);
+		g.drawString("Required :" + String.valueOf(quantity), 10, 10, 0);
+		g.drawString("Loaded   :" + String.valueOf(_counter), 10, 20, 0);
+		g.drawString("W / item :" + String.valueOf(weight), 10, 30, 0);
+		g.drawString("MaxLoad  :" + String.valueOf(50 / weight), 10, 40, 0);
 		g.drawString("+", 75, 54, 0);
 		g.drawString("-", 20, 54, 0);
 		g.drawString(" ->", 80, 54, 0);
