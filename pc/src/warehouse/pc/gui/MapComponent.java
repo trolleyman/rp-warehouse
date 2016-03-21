@@ -107,8 +107,10 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 	private Robot selected;
 	
 	private void paintRobotTrails(Graphics2D _g2) {
+		Graphics2D g = (Graphics2D) _g2.create();
+		g.setStroke(new BasicStroke(2.0f));
 		for (Robot robot : mi.getRobots()) {
-			_g2.setColor(robot.getColor());
+			g.setColor(robot.getColor());
 			CommandQueue cq = mi.getRobotManager().getCommands(robot);
 			if (cq == null)
 				return;
@@ -118,7 +120,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 			double x = prevX;
 			double y = prevY;
 			
-			_g2.drawLine(
+			g.drawLine(
 				(int)(robot.getX() * xScale),
 				(int)(robot.getY() * yScale),
 				(int)(x * xScale),
@@ -143,7 +145,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 					}
 					
 					// Draw line from prev to updated pos
-					_g2.drawLine(
+					g.drawLine(
 						(int)(prevX * xScale),
 						(int)(prevY * yScale),
 						(int)(x * xScale),
@@ -156,13 +158,14 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 					// Draw circle at junction to signify PICKUP/DROPOFF etc.
 					int size = 8;
 					double size2 = size / 2.;
-					_g2.fillOval((int)(x * xScale - size2), (int)(y * yScale - size2),
+					g.fillOval((int)(x * xScale - size2), (int)(y * yScale - size2),
 						size, size);
 					// Now exit, - for now only draw up to a PICKUP/DROPOFF etc to minimise spam.
 					break;
 				}
 			}
 		}
+		g.dispose();
 	}
 	
 	private void paintRobots(Graphics2D _g2) {
