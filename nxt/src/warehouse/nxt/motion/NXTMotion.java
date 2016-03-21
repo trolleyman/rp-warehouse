@@ -1,7 +1,5 @@
 package warehouse.nxt.motion;
 
-import javax.bluetooth.LocalDevice;
-
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
@@ -23,6 +21,9 @@ public class NXTMotion {
 	private static final double THRESHOLD_BOT_LEE = 30.0;
 	private static final double K_BOT_LEE = 3.0;
 	
+	private static final double THRESHOLD_DOBOT = 15.0;
+	private static final double K_DOBOT = K_DEFAULT;
+	
 	private final double THRESHOLD;
 	private final double K;
 	
@@ -38,6 +39,10 @@ public class NXTMotion {
 		case "Bot Lee":
 			THRESHOLD = THRESHOLD_BOT_LEE;
 			K = K_BOT_LEE;
+			break;
+		case "Dobot":
+			THRESHOLD = THRESHOLD_DOBOT;
+			K = K_DOBOT;
 			break;
 		default:
 			THRESHOLD = THRESHOLD_DEFAULT;
