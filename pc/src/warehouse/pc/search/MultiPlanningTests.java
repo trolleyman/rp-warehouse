@@ -47,23 +47,22 @@ public class MultiPlanningTests {
 	public static void main(String[] args) {
 
 		robotA = new Robot("george", "george", 0, 0, 0);
-		robotB = new Robot("jason", "jason", 1, 0, 0);
-		robotC = new Robot("lenka", "lenka", 2, 0, 0);
+		robotB = new Robot("jason", "jason", 0, 1, 0);
+		robotC = new Robot("lenka", "lenka", 0, 5, 0);
 		
 		mapA = TestMaps.TEST_MAP2;
 
-		yazoo = new Item("yazoo", 50, 25f, 6, 2);
+		yazoo = new Item("yazoo", 50, 25f, 3, 1);
 		lego = new Item("lego", 20, 10f, 1, 1);
 		crackers = new Item("crackers", 1, 5f, 4, 0);
 
 		map1 = new HashMap<Robot, LinkedList<Job>>();
-		map2 = new HashMap<Robot, LinkedList<Job>>();
-		map3 = new HashMap<Robot, LinkedList<Job>>();
 		
 		bases = new ArrayList<Junction>();
 
 		bases.add(mapA.getJunction(0, 0));
-		bases.add(mapA.getJunction(6, 0));
+		bases.add(mapA.getJunction(0, 1));
+		bases.add(mapA.getJunction(0, 2));
 
 		LinkedList<Job> jobA = new LinkedList<>();
 		LinkedList<Job> jobB = new LinkedList<>();
@@ -74,16 +73,16 @@ public class MultiPlanningTests {
 		ArrayList<ItemQuantity> listC = new ArrayList<>();
 
 		listA.add(new ItemQuantity(yazoo, 2));
-		listA.add(new ItemQuantity(lego, 4));
-		listA.add(new ItemQuantity(yazoo, 1));
-		listA.add(new ItemQuantity(crackers, 5));
+		//listA.add(new ItemQuantity(lego, 4));
+		//listA.add(new ItemQuantity(yazoo, 1));
+		//listA.add(new ItemQuantity(crackers, 5));
 
-		jobA.add(new Job(0, listA, 140, 0));
+		jobA.add(new Job(0, listA, 50, 0));
 
 		listB.add(new ItemQuantity(crackers, 10));
-		listB.add(new ItemQuantity(yazoo, 1));
+		//listB.add(new ItemQuantity(yazoo, 1));
 
-		jobA.add(new Job(1, listB, 75, 0));
+		//jobB.add(new Job(1, listB, 75, 0));
 
 		map1.put(robotA, jobA);
 		map1.put(robotB, jobB);
@@ -95,6 +94,7 @@ public class MultiPlanningTests {
 		
 		System.out.println(plannerA.getCommands(robotA));
 		
+		System.exit(0);
 
 	}
 

@@ -155,11 +155,13 @@ public class MultiRouteFinder {
 		}
 
 		if ((start.getX() == goal.getX()) && (start.getY() == goal.getY())) {
-
+			
 			while (timeStep < reserveTable.length) {
 
 				reserveTable[timeStep].add(start);
+				timeStep++;
 			}
+			
 			return null;
 		}
 
@@ -210,7 +212,6 @@ public class MultiRouteFinder {
 		// reverse the list (it currently goes goal -> start)
 
 		Collections.reverse(revPath);
-		System.out.println(revPath);
 
 		// convert the list of nodes into a list of directions (relative to
 		// north)
@@ -240,8 +241,6 @@ public class MultiRouteFinder {
 		}
 
 		rPackage.setJunctionList(revPath);
-
-		System.out.println(moveList);
 		
 		return moveList;
 	}

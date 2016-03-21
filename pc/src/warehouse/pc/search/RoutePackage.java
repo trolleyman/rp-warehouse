@@ -49,7 +49,9 @@ public class RoutePackage {
 		this.junctionList = junctionList;
 	}
 	
-	
+	public String toString(){
+		return directionList.toString();
+	}
 	
 	
 	
