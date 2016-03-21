@@ -31,6 +31,7 @@ public class MultiRoutePlanner {
 	private Robot robot2;
 	private Robot robot3;
 	private MultiRouteFinder finder;
+	private RouteFinder oneFinder;
 	private Map map;
 	private Float maxWeight;
 	private HashMap<Robot, Float> weights;
@@ -64,6 +65,7 @@ public class MultiRoutePlanner {
 			ArrayList<Junction> _dropList, int _timeWindow) {
 
 		finder = new MultiRouteFinder(_map);
+		oneFinder = new RouteFinder(_map);
 		maxWeight = _maxWeight;
 		pairedJobs = _jobs;
 		map = _map;
@@ -86,6 +88,7 @@ public class MultiRoutePlanner {
 
 		for (Junction base : bases) {
 			baseStatus.put(base, null);
+			System.out.println(base + " is a base");
 		}
 
 		weights = new HashMap<Robot, Float>();
@@ -240,6 +243,30 @@ public class MultiRoutePlanner {
 	}
 
 	/**
+	 * Get the junction for an item
+	 * 
+	 * @param item
+	 *            the item
+	 * @return the junction
+	 */
+
+	public Junction getJunction(Item item) {
+		return map.getJunction((int) item.getX(), (int) item.getY());
+	}
+
+	/**
+	 * Get the junction for a robot
+	 * 
+	 * @param robot
+	 *            the robot
+	 * @return the junction
+	 */
+
+	public Junction getJunction(Robot robot) {
+		return map.getJunction((int) robot.getX(), (int) robot.getY());
+	}
+
+	/**
 	 * Makes lists of commands for the robots
 	 */
 
@@ -255,6 +282,10 @@ public class MultiRoutePlanner {
 		ArrayList<ItemCollection> queue1 = weightedJobs.get(robot1);
 		ArrayList<ItemCollection> queue2 = weightedJobs.get(robot2);
 		ArrayList<ItemCollection> queue3 = weightedJobs.get(robot3);
+		
+		pairedCommands.get(robot1).addJunction(getJunction(robot1));
+		pairedCommands.get(robot2).addJunction(getJunction(robot2));
+		pairedCommands.get(robot3).addJunction(getJunction(robot3));
 
 		// this is such a ghetto arrayList
 		// there's probably a better way to do this
@@ -290,12 +321,20 @@ public class MultiRoutePlanner {
 
 		double longestList = Math.max(queue1.size(), Math.max(queue2.size(), queue3.size()));
 
+		System.out.println("the longest list is " + longestList);
+
 		for (int j = 0; j < longestList * 2; j++) {
+
+			System.out.println("iteration " + j);
 
 			// every other iteration will be a picking iteration
 			// every other iteration will be a base iteration
 
 			if (j % 2 == 0) {
+
+				idle1 = false;
+				idle2 = false;
+				idle3 = false;
 
 				base1 = false;
 				base2 = false;
@@ -311,19 +350,19 @@ public class MultiRoutePlanner {
 				// if there is a jth collection, get it!
 				// if not flag that robot as completed
 
-				if (j < queue1.size()) {
+				if (j / 2 < queue1.size()) {
 					job1 = queue1.get(j);
 				} else {
 					idle1 = true;
 				}
 
-				if (j < queue2.size()) {
-					job2 = queue2.get(j);
+				if (j / 2 < queue2.size()) {
+					job2 = queue2.get(j / 2);
 				} else {
 					idle2 = true;
 				}
 
-				if (j < queue3.size()) {
+				if (j / 2 < queue3.size()) {
 					job3 = queue3.get(j); // get the jth for robot3
 				} else {
 					idle3 = true;
@@ -391,14 +430,15 @@ public class MultiRoutePlanner {
 
 						if (!idle1) {
 
-							findTheRoute(map.getJunction((int) robot1.getX(), (int) robot1.getY()),
-									map.getJunction((int) item1.getX(), (int) item1.getY()), reserveTable, robot1,
-									idle1, base1);
+							System.out.println(robot1.getName() + " (1) - ITEM: (" + robot1.getX() + ", "
+									+ robot1.getY() + ") to (" + item1.getX() + ", " + item1.getY() + ")");
+							findTheRoute(getJunction(robot1), getJunction(item1), reserveTable, robot1, idle1, base1);
 
 						} else {
 							for (int wait = 0; wait < timeWindow - 1; wait++) {
 								pairedCommands.get(robot1).addCommand(Command.WAIT);
-								reserveTable[wait].add(map.getJunction((int) robot1.getX(), (int) robot1.getY()));
+								pairedCommands.get(robot1).addJunction(getJunction(robot1));
+								reserveTable[wait].add(getJunction(robot1));
 
 							}
 						}
@@ -407,29 +447,31 @@ public class MultiRoutePlanner {
 
 						if (!idle2) {
 
-							System.out.println("ITEM: (" + robot2.getX() + ", " + robot2.getY() + ") to ("
-									+ item2.getX() + ", " + item2.getY() + ")");
-							findTheRoute(map.getJunction((int) robot2.getX(), (int) robot2.getY()),
-									map.getJunction((int) item2.getX(), (int) item2.getY()), reserveTable, robot2,
-									idle2, base2);
+							System.out.println(robot2.getName() + " (2) - ITEM: (" + robot2.getX() + ", "
+									+ robot2.getY() + ") to (" + item2.getX() + ", " + item2.getY() + ")");
+
+							findTheRoute(getJunction(robot2), getJunction(item2), reserveTable, robot2, idle2, base2);
 
 						} else {
 							for (int wait = 0; wait < timeWindow - 1; wait++) {
 								pairedCommands.get(robot2).addCommand(Command.WAIT);
-								reserveTable[wait].add(map.getJunction((int) robot2.getX(), (int) robot2.getY()));
+								pairedCommands.get(robot2).addJunction(getJunction(robot2));
+								reserveTable[wait].add(getJunction(robot2));
 							}
 						}
 						// robot3 - lowest priority
 
 						if (!idle3) {
 
-							findTheRoute(map.getJunction((int) robot3.getX(), (int) robot3.getY()),
-									map.getJunction((int) item3.getX(), (int) item3.getY()), reserveTable, robot3,
-									idle3, base3);
+							System.out.println(robot3.getName() + " (3) - ITEM: (" + robot3.getX() + ", "
+									+ robot3.getY() + ") to (" + item3.getX() + ", " + item3.getY() + ")");
+
+							findTheRoute(getJunction(robot3), getJunction(item3), reserveTable, robot3, idle3, base3);
 						} else {
 							for (int wait = 0; wait < timeWindow - 1; wait++) {
 								pairedCommands.get(robot3).addCommand(Command.WAIT);
-								reserveTable[wait].add(map.getJunction((int) robot3.getX(), (int) robot3.getY()));
+								pairedCommands.get(robot3).addJunction(getJunction(robot3));
+								reserveTable[wait].add(getJunction(robot3));
 							}
 						}
 
@@ -443,6 +485,12 @@ public class MultiRoutePlanner {
 				}
 			} else {
 
+				for (Entry<Junction, Robot> entry : baseStatus.entrySet()) {
+
+					baseStatus.put(entry.getKey(), null);
+
+				}
+
 				base1 = true;
 				base2 = true;
 				base3 = true;
@@ -451,9 +499,21 @@ public class MultiRoutePlanner {
 				idle2 = false;
 				idle3 = false;
 
-				Junction baseJ1 = findBase(map.getJunction((int) robot1.getX(), (int) robot1.getY()), robot1);
-				Junction baseJ2 = findBase(map.getJunction((int) robot2.getX(), (int) robot2.getY()), robot2);
-				Junction baseJ3 = findBase(map.getJunction((int) robot3.getX(), (int) robot3.getY()), robot3);
+				Junction baseJ1 = findBase(getJunction(robot1), robot1);
+				Junction baseJ2 = findBase(getJunction(robot2), robot2);
+				Junction baseJ3 = findBase(getJunction(robot3), robot3);
+
+				if (robot1.getX() == baseJ1.getX() && robot1.getY() == baseJ1.getY()) {
+					idle1 = true;
+				}
+
+				if (robot2.getX() == baseJ2.getX() && robot2.getY() == baseJ2.getY()) {
+					idle2 = true;
+				}
+
+				if (robot3.getX() == baseJ3.getX() && robot3.getY() == baseJ3.getY()) {
+					idle3 = true;
+				}
 
 				// time to go to a base
 				// currently just doing based on heuristic
@@ -463,46 +523,56 @@ public class MultiRoutePlanner {
 
 					if (!idle1) {
 
-						findTheRoute(map.getJunction((int) robot1.getX(), (int) robot1.getY()), baseJ1, reserveTable,
-								robot1, idle1, base1);
+						System.out.println(robot1.getName() + " (1) - BASE: (" + robot1.getX() + ", " + robot1.getY()
+								+ ") to (" + baseJ1.getX() + ", " + baseJ1.getY() + ")");
+
+						findTheRoute(getJunction(robot1), baseJ1, reserveTable, robot1, idle1, base1);
 
 					} else {
 						for (int wait = 0; wait < timeWindow - 1; wait++) {
 							pairedCommands.get(robot1).addCommand(Command.WAIT);
-							reserveTable[wait].add(map.getJunction((int) robot1.getX(), (int) robot1.getY()));
+							pairedCommands.get(robot1).addJunction(getJunction(robot1));
+							reserveTable[wait].add(getJunction(robot1));
 
 						}
 					}
 
 					if (!idle2) {
 
-						System.out.println("BASE: (" + robot2.getX() + ", " + robot2.getY() + ") to (" + baseJ2 + ")");
-						findTheRoute(map.getJunction((int) robot2.getX(), (int) robot2.getY()), baseJ2, reserveTable,
-								robot2, idle2, base2);
+						System.out.println(robot2.getName() + " (2) - BASE: (" + robot2.getX() + ", " + robot2.getY()
+								+ ") to (" + baseJ2.getX() + ", " + baseJ2.getY() + ")");
+
+						findTheRoute(getJunction(robot2), baseJ2, reserveTable, robot2, idle2, base2);
 
 					} else {
 						for (int wait = 0; wait < timeWindow - 1; wait++) {
 							pairedCommands.get(robot2).addCommand(Command.WAIT);
-							reserveTable[wait].add(map.getJunction((int) robot2.getX(), (int) robot2.getY()));
+							pairedCommands.get(robot2).addJunction(getJunction(robot2));
+							reserveTable[wait].add(getJunction(robot2));
 
 						}
 					}
 
 					if (!idle3) {
 
-						findTheRoute(map.getJunction((int) robot3.getX(), (int) robot3.getY()), baseJ3, reserveTable,
-								robot3, idle3, base3);
+						System.out.println(robot3.getName() + " (3) - BASE: (" + robot3.getX() + ", " + robot3.getY()
+								+ ") to (" + baseJ3.getX() + ", " + baseJ3.getY() + ")");
+
+						findTheRoute(getJunction(robot3), baseJ3, reserveTable, robot3, idle3, base3);
 
 					} else {
 						for (int wait = 0; wait < timeWindow - 1; wait++) {
 							pairedCommands.get(robot3).addCommand(Command.WAIT);
-							reserveTable[wait].add(map.getJunction((int) robot3.getX(), (int) robot3.getY()));
+							pairedCommands.get(robot3).addJunction(getJunction(robot3));
+							reserveTable[wait].add(getJunction(robot3));
 
 						}
 					}
 
 					rekt++;
 
+					// change the priorities of the robots
+					// hopefully this will avoid deadlock
 				}
 
 			}
@@ -535,17 +605,20 @@ public class MultiRoutePlanner {
 
 			if (!base) {
 				pairedCommands.get(robot).addCommand(Command.PICK);
+				pairedCommands.get(robot).addJunction(getJunction(robot));
 			} else {
 				pairedCommands.get(robot).addCommand(Command.DROP);
+				pairedCommands.get(robot).addJunction(getJunction(robot));
 			}
 
 			for (int wait = 0; wait < timeWindow - 1; wait++) {
 
 				if (wait != 0) {
 					pairedCommands.get(robot).addCommand(Command.WAIT);
+					pairedCommands.get(robot).addJunction(getJunction(robot));
 				}
 
-				reserveTable[wait].add(map.getJunction((int) robot.getX(), (int) robot.getY()));
+				reserveTable[wait].add(getJunction(robot));
 			}
 
 		} else {
@@ -554,6 +627,7 @@ public class MultiRoutePlanner {
 			ArrayList<Junction> junctionList = rPackage.getJunctionList();
 
 			pairedCommands.get(robot).addCommandList(list);
+			pairedCommands.get(robot).addJunctionList(junctionList);
 
 			Junction end = null;
 
@@ -562,7 +636,7 @@ public class MultiRoutePlanner {
 			} catch (ArrayIndexOutOfBoundsException e) {
 				end = start;
 			}
-			
+
 			robot.setX(end.getX());
 			robot.setY(end.getY());
 
@@ -571,13 +645,14 @@ public class MultiRoutePlanner {
 			} catch (ArrayIndexOutOfBoundsException e) {
 				robot.setDirection(direction);
 			}
-			
+
 			if (junctionList.size() < timeWindow - 1) {
 				for (int len = junctionList.size() - 1; len < timeWindow; len++) {
 					pairedCommands.get(robot).addCommand(Command.WAIT);
-					
-					if(len != -1){
-					reserveTable[len].add(map.getJunction((int) robot.getX(), (int) robot.getY()));
+					pairedCommands.get(robot).addJunction(getJunction(robot));
+
+					if (len != -1) {
+						reserveTable[len].add(getJunction(robot));
 					}
 				}
 			}
@@ -599,15 +674,16 @@ public class MultiRoutePlanner {
 
 		for (Entry<Junction, Robot> entry : baseStatus.entrySet()) {
 			if (entry.getValue() == null) {
-				int heury = 0;
-				if ((heury = finder.getHeuristic(map.getJunction((int) start.getX(), (int) start.getY()),
-						entry.getKey())) < lowest) {
+				int heury = oneFinder.findRoute(map.getJunction((int) start.getX(), (int) start.getY()), entry.getKey(),
+						robot.getDirection()).getDirectionList().size();
+				if (heury < lowest) {
 					closest = entry.getKey();
 					lowest = heury;
 				}
 			}
 		}
 
+		System.out.println(robot.getName() + " is going to " + closest);
 		baseStatus.put(closest, robot);
 		return closest;
 	}
