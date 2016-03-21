@@ -412,7 +412,7 @@ public class NXTInterface {
 		g.drawString(message, 10, 22, Graphics.HCENTER);
 		g.drawString("Press Enter", 10, 42, Graphics.HCENTER);
 		g.drawString("to Exit", 10, 52, Graphics.HCENTER);
-		while (!Button.ENTER.isDown())) {
+		while (!Button.ENTER.isDown()) {
 			Thread.yield();
 		}
 		g.clear();
