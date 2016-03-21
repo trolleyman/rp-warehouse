@@ -60,10 +60,10 @@ public class NXTMotion {
 		this.pilot.setRotateSpeed(Constants.ROBOT_ROTATION_SPEED);
 		
 		switch( dir ) {
-		case "Backward": pilot.travel(TURNING_OFFSET); this.rotate(RelativeDirection.BACKWARD); break;
-		case "Left"    : pilot.travel(TURNING_OFFSET); this.rotate(RelativeDirection.LEFT); break;
-		case "Right"   : pilot.travel(TURNING_OFFSET); this.rotate(RelativeDirection.RIGHT); break;
-		case "Forward" : pilot.travel(TURNING_OFFSET); break;
+		case "Backward": this.rotate(RelativeDirection.BACKWARD); break;
+		case "Left"    : this.rotate(RelativeDirection.LEFT); break;
+		case "Right"   : this.rotate(RelativeDirection.RIGHT); break;
+		case "Forward" : break;
 		default        : return;
 		}
 	}
@@ -73,6 +73,17 @@ public class NXTMotion {
 	 * @param dir the direction
 	 */
 	private void rotate(RelativeDirection dir) {
+		this.pilot.setTravelSpeed(Constants.ROBOT_SPEED);
+		this.pilot.setRotateSpeed(Constants.ROBOT_ROTATION_SPEED);
+		
+		switch (dir) {
+		case LEFT:     pilot.rotate(90.0);  break;
+		case RIGHT:    pilot.rotate(-90.0); break;
+		case BACKWARD: pilot.rotate(180.0); break;
+		}
+		if (true)
+			return;
+		
 		boolean right = false, left = false, back = false, rotating = false, decreased = false;
 		int counter = 0;
 		
@@ -142,6 +153,8 @@ public class NXTMotion {
 		}
 		
 		Sound.beep();
+		
+		pilot.travel(TURNING_OFFSET);
 		
 		this.pilot.stop();
 	}
