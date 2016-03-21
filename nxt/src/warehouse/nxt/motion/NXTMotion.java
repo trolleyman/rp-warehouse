@@ -124,10 +124,10 @@ public class NXTMotion {
 	}
 	
 	private boolean rightOnLine() {
-		return this.calibration.rightSensor.readValue() < THRESHOLD;
+		return calibration.readRightValue() < THRESHOLD;
 	}
 	private boolean leftOnLine() {
-		return this.calibration.leftSensor .readValue() < THRESHOLD;
+		return calibration.readLeftValue() < THRESHOLD;
 	}
 
 	/**
@@ -138,8 +138,8 @@ public class NXTMotion {
 		this.pilot.setRotateSpeed(Constants.ROBOT_ROTATION_SPEED);
 				
 		while(!atJunction()) {
-			double left = this.calibration.leftSensor.getLightValue();
-			double right = this.calibration.rightSensor.getLightValue();
+			double left = calibration.readLeftValue();
+			double right = calibration.readRightValue();
 			double error = right - left;
 			final double k = 5.0;
 			
