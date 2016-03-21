@@ -21,8 +21,8 @@ public class NXTMotion {
 	private static final double THRESHOLD_BOT_LEE = 30.0;
 	private static final double K_BOT_LEE = 3.0;
 	
-	private static final double THRESHOLD_DOBOT = 15.0;
-	private static final double K_DOBOT = K_DEFAULT;
+	private static final double THRESHOLD_DOBOT = 17.0;
+	private static final double K_DOBOT = 3.0;
 	
 	private final double THRESHOLD;
 	private final double K;
