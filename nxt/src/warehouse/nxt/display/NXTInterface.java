@@ -316,7 +316,7 @@ public class NXTInterface {
 		g.clear();
 
 		g.drawRect(5, 5, 90, 45); // Draws a box containing the information
-		g.drawString("Required : " + String.valueOf(quantity), 10, 10, 0); // How
+		g.drawString("Required :" + String.valueOf(quantity), 10, 10, 0); // How
 																			// many
 																			// items
 																			// are
@@ -324,7 +324,7 @@ public class NXTInterface {
 																			// to
 																			// be
 																			// loaded
-		g.drawString("Loaded   : " + String.valueOf(_counter), 10, 20, 0); // How
+		g.drawString("Loaded   :" + String.valueOf(_counter), 10, 20, 0); // How
 																			// many
 																			// items
 																			// are
@@ -341,10 +341,10 @@ public class NXTInterface {
 	}
 
 	private void drawPickUpUpdate(int _counter) {
-		g.drawString("Required : " + String.valueOf(quantity), 10, 10, 0);
-		g.drawString("Loaded   : " + String.valueOf(_counter), 10, 20, 0);
-		g.drawString("W / item : " + String.valueOf(weight), 10, 30, 0);
-		g.drawString("MaxLoad  : " + String.valueOf(50 / weight), 10, 40, 0);
+		g.drawString("Required :" + String.valueOf(quantity), 10, 10, 0);
+		g.drawString("Loaded   :" + String.valueOf(_counter), 10, 20, 0);
+		g.drawString("W / item :" + String.valueOf(weight), 10, 30, 0);
+		g.drawString("MaxLoad  :" + String.valueOf(50 / weight), 10, 40, 0);
 		g.drawString("+", 75, 54, 0);
 		g.drawString("-", 20, 54, 0);
 		g.drawString(" ->", 80, 54, 0);
@@ -404,16 +404,18 @@ public class NXTInterface {
 	}
 
 	public void errorMenu(String message) {
-		while (!Button.ENTER.isPressed()) {
-			g.clear();
-			g.drawRect(15, 10, 70, 40);
-			g.drawString("Error Occurred:", 20, 20, 0);
-			g.drawString(message, 20, 25, 0);
-			g.drawString("Press Enter", 20, 30, 0);
-			g.drawString("to Exit", 20, 35, 0);
+		g.clear();
+		g.drawRect(5, 10, 70, 40);
+		g.drawString("Error Occurred:", 10, 12, 0);
+		g.drawString(message, 10, 22, 0);
+		g.drawString("Press Enter", 10, 32, 0);
+		g.drawString("to Exit", 10, 42, 0);
+		while (!Button.ENTER.isDown())) {
 			Thread.yield();
 		}
+		g.clear();
 		g.drawString("Goodbye!", 20, 25, 0);
+		Delay.msDelay(1000);
 	}
 	
 }
