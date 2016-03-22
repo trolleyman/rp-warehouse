@@ -23,9 +23,9 @@ public class Test {
 
 	public static void main(String args[]){
 		
-		Robot robotA = new Robot("george", "george", 0, 3, 0);
-		Robot robotB = new Robot("jason", "jason", 0, 4, 0);
-		Robot robotC = new Robot("lenka", "lenka", 0, 5, 0);
+		Robot robotA = new Robot("george", "george", 2, 0, 0);
+		Robot robotB = new Robot("jason", "jason", 8, 0, 0);
+		Robot robotC = new Robot("lenka", "lenka", 5, 0, 0);
 		
 		Map mapA = TestMaps.TEST_MAP4;
 		

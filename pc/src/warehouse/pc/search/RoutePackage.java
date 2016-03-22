@@ -51,7 +51,7 @@ public class RoutePackage {
 	
 	@Override
 	public String toString(){
-		return directionList.toString();
+		return commandList.toString() + "\n" + directionList.toString() + "\n" + junctionList.toString();
 	}
 	
 	
