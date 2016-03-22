@@ -78,7 +78,7 @@ public class NXTMotion {
 	public void go( String _direction, int _x, int _y ) {
 		//System.out.println("Go:" + _direction);
 		turn(_direction);
-		
+		this.in.directionUpdate("Forward");
 		trackToJunction();
 		
 		this.in.updatePosition(_x, _y);
