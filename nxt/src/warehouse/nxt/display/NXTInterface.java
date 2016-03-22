@@ -1,8 +1,4 @@
 package warehouse.nxt.display;
-// package warehouse.nxt.display;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
 
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
@@ -322,9 +318,9 @@ public class NXTInterface {
 
 		g.drawRect(5, 5, 90, 45); // Draws a box containing the information
 		// How many items are needed to be loaded
-		g.drawString("Required: " + String.valueOf(quantity), 10, 10, 0); 
+		g.drawString("Required: " + String.valueOf(quantity), 10, 10, 0);
 		// How many items are currently loaded
-		g.drawString("Loaded  : " + String.valueOf(_counter), 10, 20, 0); 
+		g.drawString("Loaded  : " + String.valueOf(_counter), 10, 20, 0);
 		g.drawString("Load me!", 10, 35, 0);
 
 		// Some arrows to indicate increase or decrease load
@@ -368,15 +364,22 @@ public class NXTInterface {
 	/**
 	 * Helper method to convert values into 3 significant figures
 	 * @param f To be converted
-	 * @return 
+	 * @return
 	 */
-	private float threeSF(float f) {
-		float fe = f;
-		BigDecimal bd = new BigDecimal(fe);
-		bd = bd.round(new MathContext(3));
-		float rounded = bd.floatValue();
-		return rounded;
+	// TODO: Test
+	private double threeSF(double f) {
+		return roundToSignificantFigures(f, 3);
 	}
+	
+	private static double roundToSignificantFigures(double num, int n) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("" + num);
+		if (sb.indexOf(".") > 0) {
+		    n++;
+		}
+		return Integer.parseInt(sb.substring(0, n));
+	}
+	
 	// TODO To be tested tomorrow
 	public void directionUpdate(String _direction) {
 		g.clear();
@@ -430,7 +433,7 @@ public class NXTInterface {
 }
 
 /* TODO
- * 3) make use of coordinates before resuming 
+ * 3) make use of coordinates before resuming
  * 7) make sure the right jobname is set after dropping off
  * 8) when error menu pops up, after pressing enter once, the robot moves forward, error menu
  * pops up again and enter has to be pressed again to close.
