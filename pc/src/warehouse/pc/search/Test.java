@@ -11,6 +11,7 @@ import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.Robot;
 import warehouse.pc.shared.TestMaps;
+import warehouse.pc.shared.Command;
 
 /**
  * Testing the new multi robot route planner
@@ -58,7 +59,7 @@ public class Test {
 		map1.put(robotB, jobB);
 		map1.put(robotC, jobC);
 		
-		NewMultiRoutePlanner plannerA = new NewMultiRoutePlanner(mapA, 60f, map1, bases, 1000);
+		NewMultiRoutePlanner plannerA = new NewMultiRoutePlanner(mapA, 60f, map1, bases, 10, new HashMap<Junction, Command>());
 		
 		plannerA.computeCommands();
 	}
