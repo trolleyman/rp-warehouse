@@ -102,8 +102,9 @@ public class NXTCommunication implements Runnable {
 			break;
 		case "Cancel Job":
 			this.cancel(data);
+			break;
 		default:
-			in.errorMenu("Protocol Error 1");
+			in.errorMenu("Protocol Error 1: (" + type + ")");
 			break;
 		}
 	}
