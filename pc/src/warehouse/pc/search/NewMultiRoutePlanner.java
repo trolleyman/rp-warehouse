@@ -158,5 +158,13 @@ public class NewMultiRoutePlanner {
 	public Junction getJunction(Robot robot) {
 		return map.getJunction((int) robot.getX(), (int) robot.getY());
 	}
+	
+	/**
+	 * Compute the commands for multiple robots
+	 */
+	
+	public void computeCommands(){
+		
+	}
 
 }
