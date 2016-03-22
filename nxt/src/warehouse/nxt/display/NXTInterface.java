@@ -427,7 +427,8 @@ public class NXTInterface {
 		}
 		g.clear();
 		g.drawString("Goodbye!", 20, 25, 0);
-		Delay.msDelay(1000);
+		Delay.msDelay(500);
+		System.exit(1);
 	}
 	
 }
