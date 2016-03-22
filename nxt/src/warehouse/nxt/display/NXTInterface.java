@@ -439,16 +439,18 @@ public class NXTInterface {
 	
 }
 
-/*
- * 4. fix bugs of screen, g.clear() is not being called
- * 5. check if coordinates updates (ties in with localisation)
- * 6. double check wrong location with lenka. (may not need it)
- * 7. make sure the right jobname is set motion problems
- * 
+/* TODO
+ * 3) make use of coordinates before resuming 
+ * 7) make sure the right jobname is set after dropping off
+ * 8) when error menu pops up, after pressing enter once, the robot moves forward, error menu
+ * pops up again and enter has to be pressed again to close.
  */
-/*
- * 1) Fix null pointer / exception bug printing over interface (perhaps graceful exit)
- * 2) after calibration, go to main menu and set to idle
- * 3) make use of jobname, quanity, weight, and coordinates
- * 
- */
+ /* DONE
+ * 1) Fix null pointer / exception bug printing over interface (perhaps graceful exit)-
+ * 2) after calibration, go to main menu and set to idle-
+ * 4) fix bugs of screen, g.clear() is not being called-
+ * 5) check if coordinates updates (ties in with localisation)-
+ * 6) double check wrong location with lenka. (may not need it)-
+ * 8) motion problems-
+*/
+ 
