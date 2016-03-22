@@ -29,10 +29,10 @@ public class MultiPlanningTests {
 	static Direction yp = Direction.Y_POS;
 	static Direction yn = Direction.Y_NEG;
 
-//	static Command r = Command.RIGHT;
-//	static Command l = Command.LEFT;
-//	static Command f = Command.FORWARD;
-//	static Command b = Command.BACKWARD;
+	static Command r = Command.RIGHT;
+	static Command l = Command.LEFT;
+	static Command f = Command.FORWARD;
+	static Command b = Command.BACKWARD;
 
 	static MultiRoutePlanner plannerA;
 
