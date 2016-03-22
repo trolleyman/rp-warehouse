@@ -2,6 +2,12 @@ package warehouse.pc.search;
 
 import java.util.HashMap;
 
+/**
+ * Messing about with hash maps
+ * @author George Kaye
+ *
+ */
+
 public class Test {
 
 	public static void main(String args[]){
