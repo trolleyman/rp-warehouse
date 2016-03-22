@@ -26,6 +26,7 @@ public class Localisation
 	private Boolean[][] probabilities;
 	private int numValidLocations; //all available positions on the map. this will not change.
 	private Direction robotFacing;
+	private ArrayList<Direction> robotMovements = new ArrayList<>();
 	
 	// We don't know the starting location
 	// Assume we know starting orientation (direction)
@@ -88,6 +89,64 @@ public class Localisation
 				//converse of above doesn't matter. If it is false, we shouldn't let it become true.
 			}
 		}
+	}
+	
+	/**
+	 * should be called every time the robot changed location.
+	 * one 'move' would be one junction away in a certain direction
+	 * @param dir the direction the robot was moved in.
+	 */
+	public void robotMoved(Direction dir)
+	{
+		robotMovements.add(dir);
+	}
+	
+	/**
+	 * gets the horizontal displacement of the robot from where it started when this class was instantiated
+	 */
+	public int getXTranslation()
+	{
+		int xTranslation = 0;
+		for (Direction dir : robotMovements)
+		{
+			if (dir == Direction.X_POS)
+			{
+				xTranslation++;
+			}
+			else if (dir == Direction.X_NEG)
+			{
+				xTranslation--;
+			}
+			else
+			{
+				continue;
+			}
+		}
+		return xTranslation;
+	}
+	
+	/**
+	 * gets the vertical displacement of the robot from where it started when this class was instantiated
+	 */
+	public int getYTranslation()
+	{
+		int yTranslation = 0;
+		for (Direction dir : robotMovements)
+		{
+			if (dir == Direction.Y_POS)
+			{
+				yTranslation++;
+			}
+			else if (dir == Direction.Y_NEG)
+			{
+				yTranslation--;
+			}
+			else
+			{
+				continue;
+			}
+		}
+		return yTranslation;
 	}
 	
 	public boolean isFinished() 
