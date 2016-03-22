@@ -15,21 +15,30 @@ import warehouse.pc.shared.Map;
  *  This means this class should be able to send commands to the robot(s), or at least invoke another class to tell
  *  the robots to follow the localise procedure.
  * 
- *  NOTE : Still need to account for the fact the robot will be moving during localisation.
+ *  NOTE : Still need to account for the fact the robot will be moving during localisation. - done I think?
  *  
- *  could use vectors of the movement to translate it back to origin so coords are consistent.
+ *  could use vectors of the movement to translate it back to origin so coords are consistent. - done
+ *  
+ *  using vectors means we can remove edges from our probability array. 
+ *  i.e, If the robot has moved one to the right, it can't be next to the left wall.
+ *  
+ *  we could use this ^ fact to make the "lost" procedure. for every unit the robot can move, we cancel out
+ *  lots of possible positions. (if it's always moving in the same direction)
+ *  
+ *  ** need to check distanceRecieved function to make sure translations are correct **
+ *  
  * 
  */
 public class Localisation 
 {
 	private Map map;
 	private Boolean[][] probabilities;
-	private int numValidLocations; //all available positions on the map. this will not change.
+	private int numValidLocations;
 	private Direction robotFacing;
 	private ArrayList<Direction> robotMovements = new ArrayList<>();
 	
 	// We don't know the starting location
-	// Assume we know starting orientation (direction)
+	// Assume we know starting orientation
 
 	public Localisation(Map _map,Direction dir) 
 	{
@@ -65,25 +74,20 @@ public class Localisation
 			}
 		}
 	}
-
-	public void setDirection(Direction dir)
-	{
-		this.robotFacing = dir;
-	}
 	
-	public void distanceRecieved(Direction dir, int _dist) 
+	public void distanceRecieved(int _dist) 
 	{
 		// Update probabilities at a junction. set probabilities [y][x] to false if not possible, to narrow down.
 		for (int y = 0; y < map.getHeight(); y++) 
 		{
 			for (int x = 0; x < map.getWidth(); x++) 
 			{
-				if (probabilities[y][x]) 
+				if (probabilities[y-getYTranslation()][x-getXTranslation()])
 				{
-					if (!map.getProbability(x,y,dir,_dist))
+					if (!map.getProbability(x-getXTranslation(),y-getYTranslation(),robotFacing,_dist))
 					{
 						//if a previously 'true' position is now false, don't let it stay true.
-						probabilities[y][x] = false;
+						probabilities[y-getYTranslation()][x-getXTranslation()] = false;
 					}
 				}
 				//converse of above doesn't matter. If it is false, we shouldn't let it become true.
@@ -99,6 +103,11 @@ public class Localisation
 	public void robotMoved(Direction dir)
 	{
 		robotMovements.add(dir);
+	}
+	
+	public void robotRotatedTo(Direction dir)
+	{
+		this.robotFacing = dir;
 	}
 	
 	/**
