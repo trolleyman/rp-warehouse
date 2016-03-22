@@ -11,14 +11,14 @@ import warehouse.shared.Direction;
 public class RoutePackage {
 
 	private ArrayList<Direction> directionList;
-	private ArrayDeque<Command> commandList;
+	private LinkedList<Command> commandList;
 	private ArrayList<Junction> junctionList;
 	
 	public RoutePackage(){
 		
 	}
 	
-	public RoutePackage(ArrayList<Direction> directionList, ArrayDeque<Command> commandList, ArrayList<Junction> junctionList){
+	public RoutePackage(ArrayList<Direction> directionList, LinkedList<Command> commandList, ArrayList<Junction> junctionList){
 		
 		this.directionList = directionList;
 		this.commandList = commandList;
@@ -30,7 +30,7 @@ public class RoutePackage {
 		return directionList;
 	}
 
-	public ArrayDeque<Command> getCommandList() {
+	public LinkedList<Command> getCommandList() {
 		return commandList;
 	}
 	
@@ -42,7 +42,7 @@ public class RoutePackage {
 		this.directionList = directionList;
 	}
 
-	public void setCommandList(ArrayDeque<Command> commandList) {
+	public void setCommandList(LinkedList<Command> commandList) {
 		this.commandList = commandList;
 	}
 
@@ -50,6 +50,7 @@ public class RoutePackage {
 		this.junctionList = junctionList;
 	}
 	
+	@Override
 	public String toString(){
 		return directionList.toString();
 	}

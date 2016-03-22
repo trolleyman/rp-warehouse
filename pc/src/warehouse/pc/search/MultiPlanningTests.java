@@ -137,9 +137,9 @@ public class MultiPlanningTests {
 		System.out.println(robotB.getName() + ": " + plannerA.getCommands(robotB).getCommands());
 		System.out.println(robotC.getName() + ": " + plannerA.getCommands(robotC).getCommands());
 
-		ArrayDeque<Command> commandsA = plannerA.getCommands(robotA).getCommands();
-		ArrayDeque<Command> commandsB = plannerA.getCommands(robotB).getCommands();
-		ArrayDeque<Command> commandsC = plannerA.getCommands(robotC).getCommands();
+		LinkedList<Command> commandsA = plannerA.getCommands(robotA).getCommands();
+		LinkedList<Command> commandsB = plannerA.getCommands(robotB).getCommands();
+		LinkedList<Command> commandsC = plannerA.getCommands(robotC).getCommands();
 
 		LinkedList<Junction> junctionsA = plannerA.getCommands(robotA).getJunctions();
 		LinkedList<Junction> junctionsB = plannerA.getCommands(robotB).getJunctions();
