@@ -303,7 +303,7 @@ public class MultiRoutePlanner {
 		Junction baseJ3 = findBase(getJunction(robot3), robot3);
 		
 		baseStatus.put(baseJ1, robot1);
-		baseStatus.put(baseJ2, robot1);
+		baseStatus.put(baseJ2, robot2);
 		baseStatus.put(baseJ3, robot3);
 		
 

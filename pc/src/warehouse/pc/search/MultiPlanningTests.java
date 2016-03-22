@@ -48,9 +48,9 @@ public class MultiPlanningTests {
 
 	public static void main(String[] args) {
 
-		robotA = new Robot("george", "george", 2, 0, 0);
-		robotB = new Robot("jason", "jason", 3, 0, 0);
-		robotC = new Robot("lenka", "lenka", 4, 0, 0);
+		robotA = new Robot("george", "george", 0, 3, 0);
+		robotB = new Robot("jason", "jason", 0, 4, 0);
+		robotC = new Robot("lenka", "lenka", 0, 5, 0);
 
 		mapA = TestMaps.TEST_MAP4;
 
@@ -112,7 +112,8 @@ public class MultiPlanningTests {
 		map1.put(robotB, jobB);
 		map1.put(robotC, jobC);
 
-		plannerA = new MultiRoutePlanner(mapA, 60f, map1, bases, 7);
+		plannerA = new MultiRoutePlanner(mapA, 60f, map1, bases, 1000);
+
 
 		for (Entry<Robot, LinkedList<Job>> entry : map1.entrySet()) {
 
