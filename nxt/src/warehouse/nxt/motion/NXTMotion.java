@@ -1,5 +1,6 @@
 package warehouse.nxt.motion;
 
+import lejos.nxt.Button;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
@@ -24,6 +25,9 @@ public class NXTMotion {
 	private static final double THRESHOLD_DOBOT = 17.0;
 	private static final double K_DOBOT = 3.0;
 	
+	private static final double THRESHOLD_VADER = 17.0;
+	private static final double K_VADER = 5.0;
+	
 	private final double THRESHOLD;
 	private final double K;
 	
@@ -44,6 +48,10 @@ public class NXTMotion {
 			THRESHOLD = THRESHOLD_DOBOT;
 			K = K_DOBOT;
 			break;
+		case "Vader":
+			THRESHOLD = THRESHOLD_VADER;
+			K = K_VADER;
+			break;
 		default:
 			THRESHOLD = THRESHOLD_DEFAULT;
 			K = K_DEFAULT;
@@ -55,7 +63,7 @@ public class NXTMotion {
 		this.pilot = robot.getDifferentialPilot();
 		LightSensor left =  new LightSensor( SensorPort.S3 );
 		LightSensor right = new LightSensor( SensorPort.S1 );
-		this.calibration = new LightSensorCalibration( in, left, right );
+		this.calibration = new LightSensorCalibration( friendlyName, in, left, right );
 		
 		this.eyes = new UltrasonicSensor( SensorPort.S4 );
 	}
@@ -161,7 +169,7 @@ public class NXTMotion {
 	private void trackToJunction() {
 		this.pilot.setTravelSpeed(Constants.ROBOT_SPEED);
 		this.pilot.setRotateSpeed(Constants.ROBOT_ROTATION_SPEED);
-				
+		
 		while(!atJunction()) {
 			double left = calibration.readLeftValue();
 			double right = calibration.readRightValue();
