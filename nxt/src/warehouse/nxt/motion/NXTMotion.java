@@ -59,7 +59,7 @@ public class NXTMotion {
 		}
 		
 		this.in = _in;
-		WheeledRobotConfiguration config = new WheeledRobotConfiguration( 0.056f, 0.111f, 0.111f, Motor.C, Motor.B );
+		WheeledRobotConfiguration config = new WheeledRobotConfiguration( 0.056f, 0.118f, 0.111f, Motor.C, Motor.B );
 		DifferentialDriveRobot robot = new DifferentialDriveRobot( config );
 		this.pilot = robot.getDifferentialPilot();
 		LightSensor left =  new LightSensor( SensorPort.S3 );

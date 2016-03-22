@@ -333,7 +333,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 				w += 2;
 			}
 			
-			g.fillRect(x, y, w, h);
+			g.drawRect(x, y, w, h);
 		}
 		
 		g.dispose();

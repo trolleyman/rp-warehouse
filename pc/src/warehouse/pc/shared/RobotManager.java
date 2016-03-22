@@ -212,6 +212,9 @@ public class RobotManager implements Runnable, RobotListener {
 			}
 			try {
 				System.out.println("Sending to " + e.getKey().getIdentity() + ": " + com);
+				Job j = robotJobs.getOrDefault(r, new ArrayDeque<>()).peekFirst();
+				if (j != null)
+					mi.getServer().sendToRobot(r.getName(), "Cancel Job:" + j.getId());
 				mi.getServer().sendCommand(r, com);
 				RobotUpdater ru = new RobotUpdater(r, com);
 				robotsToUpdate.add(ru);
