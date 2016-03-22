@@ -106,12 +106,14 @@ public class RouteFinder {
 		// If route is in the cache, return that.
 		RouteStartEnd rse = new RouteStartEnd(start, goal);
 		ArrayList<Direction> cachedRoute = cache.get(rse);
+
 		if (cachedRoute != null) {
 			RoutePackage rPackage = new RoutePackage();
 			rPackage.setCommandList(Command.fromDirections(cachedRoute));
 			return rPackage;
 		
 		}
+
 		
 		searched = new ArrayList<Junction>();
 		frontier = new LinkedHashMap<Junction, Integer>();

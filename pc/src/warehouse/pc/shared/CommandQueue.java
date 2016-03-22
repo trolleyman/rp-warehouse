@@ -46,11 +46,11 @@ public class CommandQueue{
 	
 	/**
 	 * Add a list of commands to the queue
-	 * @param commands the commands
+	 * @param list the commands
 	 */
 	
-	public void addCommandList(ArrayDeque<Command> commands){
-		for (Command c : commands) {
+	public void addCommandList(ArrayDeque<Command> list){
+		for (Command c : list) {
 			addCommand(c);
 		}
 	}

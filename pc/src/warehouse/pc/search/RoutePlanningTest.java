@@ -77,7 +77,7 @@ public class RoutePlanningTest {
 		plannerA.computeCommands();
 		
 		
-		ArrayDeque<Command> commands = plannerA.getCommands(robotA).getCommands();
+		LinkedList<Command> commands = plannerA.getCommands(robotA).getCommands();
 		
 		System.out.println(commands);
 		

@@ -62,8 +62,8 @@ public class PlanningTests {
 	ArrayList<Junction> bases;
 	HashMap<Robot, LinkedList<Job>> map;
 	
-	ArrayDeque<Command> bearingsA;
-	ArrayDeque<Command> bearingsB;
+	LinkedList<Command> bearingsA;
+	LinkedList<Command> bearingsB;
 
 	@Before
 	public void setUp() throws Exception {

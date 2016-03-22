@@ -15,10 +15,18 @@ public enum Command {
 	X_POS,
 	Y_NEG,
 	X_NEG,
-	PICK,
+	FORWARD,		// there was a reason these were here
+	BACKWARD,		// command is my baby
+	LEFT,			// mess with it and you mess with me
+	RIGHT,			// have a nice day
+	PICK,			
 	DROP,
 	COMPLETE_JOB,
 	WAIT;
+	
+	// PICK and DROP are blocking commands: 
+	// robots should not proceed beyond these commands 
+	// until all three robots are ready to move
 	
 	private int x;
 	private int y;
