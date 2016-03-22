@@ -115,7 +115,7 @@ public class MultiRouteFinder {
 
 				RoutePackage rPackage = new RoutePackage();
 				ArrayList<Direction> directionList = makePath(start, goal, rPackage);
-				rPackage.setCommandList(getActualDirections(directionList, direction));
+				rPackage.setCommandList(Command.fromDirections(directionList));
 				rPackage.setDirectionList(directionList);
 
 				return rPackage;
@@ -170,7 +170,7 @@ public class MultiRouteFinder {
 			ArrayList<Direction> directionList = makePath(start, currentJunct, rPackage);
 			
 			rPackage.setDirectionList(directionList);
-			rPackage.setCommandList(getActualDirections(directionList, direction));
+			rPackage.setCommandList(Command.fromDirections(directionList));
 
 			return rPackage;
 
@@ -249,7 +249,7 @@ public class MultiRouteFinder {
 		return (Math.abs(current.getX() - goal.getX()) + Math.abs(current.getY() - goal.getY()));
 	}
 
-	private LinkedList<Command> getActualDirections(ArrayList<Direction> oldList, Direction direction) {
+/*	private LinkedList<Command> getActualDirections(ArrayList<Direction> oldList, Direction direction) {
 
 		LinkedList<Command> newList = new LinkedList<Command>();
 
@@ -330,7 +330,7 @@ public class MultiRouteFinder {
 				}
 
 				break;
-			}
+			} 
 
 			direction = currentDirection;
 			newList.add(bearing);
@@ -338,5 +338,5 @@ public class MultiRouteFinder {
 		}
 
 		return newList;
-	}
+	} */
 }
