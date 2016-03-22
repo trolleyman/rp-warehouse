@@ -384,30 +384,20 @@ public class NXTInterface {
 		switch (_direction) {
 		case "Forward":
 			action = 1;
-			drawMainMenuUpdate();
 			break;
 		case "Left":
 			action = 2;
-			drawMainMenuUpdate();
-			Delay.msDelay(500);
-			directionUpdate("Forward");
 			break;
 		case "Right":
 			action = 3;
-			drawMainMenuUpdate();
-			Delay.msDelay(500);
-			directionUpdate("Forward");
 			break;
 		case "Backward":
 			action = 4;
-			drawMainMenuUpdate();
-			Delay.msDelay(500);
-			directionUpdate("Forward");
 			break;
 		default:
 			action = 0;
 		}
-
+		drawMainMenuUpdate();
 	}
 
 	public void updatePosition(int _x, int _y) {
