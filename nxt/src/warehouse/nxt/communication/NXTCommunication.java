@@ -39,8 +39,9 @@ public class NXTCommunication implements Runnable {
 		Sound.beepSequenceUp();
 		Delay.msDelay(1000);
 		
-		this.motion = new NXTMotion(in, LocalDevice.getLocalDevice().getFriendlyName());
-		
+		String name = LocalDevice.getLocalDevice().getFriendlyName();
+		this.motion = new NXTMotion(in, name);
+		this.in.setRobotName(name);
 		in.show();
 	}
 	
@@ -69,6 +70,8 @@ public class NXTCommunication implements Runnable {
 	@Override
 	public void run() {
 		try {
+			this.in.updatePosition(this.me.x, this.me.y);
+			this.in.show();
 			sendReady();
 			while (true) {
 				String fromServer = this.fromPC.readUTF();
@@ -99,8 +102,9 @@ public class NXTCommunication implements Runnable {
 			break;
 		case "Cancel Job":
 			this.cancel(data);
+			break;
 		default:
-			in.errorMenu("Protocol Error 1");
+			in.errorMenu("Protocol Error 1: (" + type + ")");
 			break;
 		}
 	}

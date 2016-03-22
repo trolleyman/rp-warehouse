@@ -1,6 +1,9 @@
 package warehouse.nxt.display;
 // package warehouse.nxt.display;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 
@@ -90,6 +93,7 @@ public class NXTInterface {
 		if (inPickUp) {
 			while (!Button.ENTER.isDown()) {
 
+				/*
 				if (Button.ESCAPE.isDown()) { // Escape Is Down? Then we should
 												// cancel the job right?
 					this.inPickUp = false;
@@ -107,7 +111,8 @@ public class NXTInterface {
 					return false;
 
 				}
-
+				*/
+				
 				if (Button.RIGHT.isDown()) {
 					g.clear();
 					g.drawRect(5, 5, 90, 45);
@@ -316,21 +321,10 @@ public class NXTInterface {
 		g.clear();
 
 		g.drawRect(5, 5, 90, 45); // Draws a box containing the information
-		g.drawString("Required :" + String.valueOf(quantity), 10, 10, 0); // How
-																			// many
-																			// items
-																			// are
-																			// needed
-																			// to
-																			// be
-																			// loaded
-		g.drawString("Loaded   :" + String.valueOf(_counter), 10, 20, 0); // How
-																			// many
-																			// items
-																			// are
-																			// currently
-																			// loaded
-
+		// How many items are needed to be loaded
+		g.drawString("Required: " + String.valueOf(quantity), 10, 10, 0); 
+		// How many items are currently loaded
+		g.drawString("Loaded  : " + String.valueOf(_counter), 10, 20, 0); 
 		g.drawString("Load me!", 10, 35, 0);
 
 		// Some arrows to indicate increase or decrease load
@@ -341,10 +335,10 @@ public class NXTInterface {
 	}
 
 	private void drawPickUpUpdate(int _counter) {
-		g.drawString("Required :" + String.valueOf(quantity), 10, 10, 0);
-		g.drawString("Loaded   :" + String.valueOf(_counter), 10, 20, 0);
-		g.drawString("W / item :" + String.valueOf(weight), 10, 30, 0);
-		g.drawString("MaxLoad  :" + String.valueOf(50 / weight), 10, 40, 0);
+		g.drawString("Required: " + String.valueOf(quantity), 10, 10, 0);
+		g.drawString("Loaded  : " + String.valueOf(_counter), 10, 20, 0);
+		g.drawString("W / item: " + String.valueOf(threeSF(weight)), 10, 30, 0);
+		g.drawString("MaxLoad : " + String.valueOf(threeSF(50 / weight)), 10, 40, 0);
 		g.drawString("+", 75, 54, 0);
 		g.drawString("-", 20, 54, 0);
 		g.drawString(" ->", 80, 54, 0);
@@ -371,6 +365,19 @@ public class NXTInterface {
 		weight = _weight;
 	}
 
+	/**
+	 * Helper method to convert values into 3 significant figures
+	 * @param f To be converted
+	 * @return 
+	 */
+	private float threeSF(float f) {
+		float fe = f;
+		BigDecimal bd = new BigDecimal(fe);
+		bd = bd.round(new MathContext(3));
+		float rounded = bd.floatValue();
+		return rounded;
+	}
+	// TODO To be tested tomorrow
 	public void directionUpdate(String _direction) {
 		g.clear();
 
@@ -390,7 +397,6 @@ public class NXTInterface {
 		default:
 			action = 0;
 		}
-
 		drawMainMenuUpdate();
 	}
 
@@ -423,16 +429,18 @@ public class NXTInterface {
 	
 }
 
-/*
- * 4. fix bugs of screen, g.clear() is not being called
- * 5. check if coordinates updates (ties in with localisation)
- * 6. double check wrong location with lenka. (may not need it)
- * 7. make sure the right jobname is set motion problems
- * 
+/* TODO
+ * 3) make use of coordinates before resuming 
+ * 7) make sure the right jobname is set after dropping off
+ * 8) when error menu pops up, after pressing enter once, the robot moves forward, error menu
+ * pops up again and enter has to be pressed again to close.
  */
-/*
- * 1) Fix null pointer / exception bug printing over interface (perhaps graceful exit)
- * 2) after calibration, go to main menu and set to idle
- * 3) make use of jobname, quanity, weight, and coordinates
- * 
- */
+ /* DONE
+ * 1) Fix null pointer / exception bug printing over interface (perhaps graceful exit)-
+ * 2) after calibration, go to main menu and set to idle-
+ * 4) fix bugs of screen, g.clear() is not being called-
+ * 5) check if coordinates updates (ties in with localisation)-
+ * 6) double check wrong location with lenka. (may not need it)-
+ * 8) motion problems-
+*/
+ 
