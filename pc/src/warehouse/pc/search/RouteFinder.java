@@ -106,8 +106,8 @@ public class RouteFinder {
 		// If route is in the cache, return that.
 		RouteStartEnd rse = new RouteStartEnd(start, goal);
 		ArrayList<Direction> cachedRoute = cache.get(rse);
-		if (cachedRoute != null)
-			return cachedRoute;
+		/*if (cachedRoute != null)
+			return cachedRoute;*/
 		
 		searched = new ArrayList<Junction>();
 		frontier = new LinkedHashMap<Junction, Integer>();

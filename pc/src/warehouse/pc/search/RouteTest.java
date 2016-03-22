@@ -32,7 +32,7 @@ public class RouteTest {
 
 		// prints a list of bearings
 		
-		for (Command c : commands) {
+		for (Command c : directions) {
 			System.out.println("[" + c + "], ");
 		}
 	}

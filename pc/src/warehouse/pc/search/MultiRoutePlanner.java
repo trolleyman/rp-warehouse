@@ -5,17 +5,15 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
-import com.sun.jndi.rmi.registry.ReferenceWrapper;
-
 import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
 import warehouse.pc.shared.Command;
 import warehouse.pc.shared.CommandQueue;
-import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.Robot;
+import warehouse.shared.Direction;
 
 /**
  * Class to create lists of bearings for individual robots to take Uses a lot of

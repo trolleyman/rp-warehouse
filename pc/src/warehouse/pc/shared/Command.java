@@ -15,6 +15,10 @@ public enum Command {
 	X_POS,
 	Y_NEG,
 	X_NEG,
+	FORWARD,		// there was a reason these were here
+	BACKWARD,		// command is my baby
+	LEFT,			// mess with it and you mess with me
+	RIGHT,			// have a nice day
 	PICK,
 	DROP,
 	COMPLETE_JOB,

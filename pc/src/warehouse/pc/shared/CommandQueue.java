@@ -1,6 +1,5 @@
 package warehouse.pc.shared;
 
-import java.util.ArrayDeque;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -49,7 +48,7 @@ public class CommandQueue{
 	 * @param commands the commands
 	 */
 	
-	public void addCommandList(ArrayDeque<Command> commands){
+	public void addCommandList(LinkedList<Command> commands){
 		for (Command c : commands) {
 			addCommand(c);
 		}

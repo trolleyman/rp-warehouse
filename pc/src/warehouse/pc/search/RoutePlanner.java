@@ -163,7 +163,8 @@ public class RoutePlanner {
 					Junction start = map.getJunction(robot.getGridX(), robot.getGridY());
 					Junction goal = null;
 					ArrayList<Direction> directList = new ArrayList<Direction>();
-					ArrayDeque<Command> list = new ArrayDeque<Command>();
+					LinkedList<Command> list = new LinkedList<Command>();
+					Direction facing = null;
 					
 					// if adding that item would make the robot carry more than the max weight
 					// go to the nearest base instead and repeat this iteration
@@ -256,7 +257,7 @@ public class RoutePlanner {
 	}
 
 
-		private Junction findClosestBase(Junction start){
+		private Junction findClosestBase(Junction start, Direction facing){
 			Junction closestBase = bases.get(0);
 			int steps = map.getHeight() + map.getWidth();
 			ArrayList<Direction> list = new ArrayList<Direction>();
