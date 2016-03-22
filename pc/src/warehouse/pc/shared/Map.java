@@ -365,13 +365,12 @@ public class Map {
 		for (int i = 0;i < possPositions.size();i++)
 		{
 			if (possPositions.get(i)[0] == x && possPositions.get(i)[1] == y)
-			//if the x and y coords are in possible positions, return 1/numPossiblePositions
+			//if the robot could be here
 			{
-				return (1/possPositions.size());
+				return true;
 			}
 		}
-		//return 0 if these x,y coords correspond to an impossible position based on the distance recieved.
-		return 0;
+		return false;
 	}
 
 	/**
