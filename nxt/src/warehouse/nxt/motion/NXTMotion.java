@@ -1,6 +1,5 @@
 package warehouse.nxt.motion;
 
-import lejos.nxt.Button;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
@@ -16,16 +15,18 @@ import warehouse.shared.RelativeDirection;
 public class NXTMotion {
 	private static final double TURNING_OFFSET = 0.07;
 	
-	private static final double THRESHOLD_DEFAULT = 70.0;
+	// The higher the threshold, the more likely it is that the robot will detect a junction
+	private static final double THRESHOLD_DEFAULT = 50.0;
+	// The higher K is, the less sensitive the line follower will be
 	private static final double K_DEFAULT = 5.0;
 	
 	private static final double THRESHOLD_BOT_LEE = 30.0;
 	private static final double K_BOT_LEE = 3.0;
 	
-	private static final double THRESHOLD_DOBOT = 17.0;
+	private static final double THRESHOLD_DOBOT = 50.0;
 	private static final double K_DOBOT = 3.0;
 	
-	private static final double THRESHOLD_VADER = 17.0;
+	private static final double THRESHOLD_VADER = 30.0;
 	private static final double K_VADER = 5.0;
 	
 	private final double THRESHOLD;
