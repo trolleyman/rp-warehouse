@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CommandQueue{
 
-	private LinkedList<Command> commands;
+	private ArrayDeque<Command> commands;
 	private LinkedList<Junction> junctions;
 	
 	/**
@@ -21,7 +21,7 @@ public class CommandQueue{
 	
 	public CommandQueue(){
 
-		commands = new LinkedList<>();
+		commands = new ArrayDeque<>();
 		junctions = new LinkedList<>();
 		
 	}
@@ -82,7 +82,7 @@ public class CommandQueue{
 	 * @return the list of commands
 	 */
 	
-	public LinkedList<Command> getCommands(){
+	public ArrayDeque<Command> getCommands(){
 		return commands;
 	}
 	

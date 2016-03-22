@@ -1,21 +1,20 @@
 package warehouse.pc.search;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-
-import com.sun.jndi.rmi.registry.ReferenceWrapper;
 
 import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
 import warehouse.pc.shared.Command;
 import warehouse.pc.shared.CommandQueue;
-import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.Robot;
+import warehouse.shared.Direction;
 
 /**
  * Class to create lists of bearings for individual robots to take Uses a lot of
@@ -507,6 +506,13 @@ public class MultiRoutePlanner {
 					 */
 					while (!idle1 || !idle2 || !idle3) {
 
+
+							reserveTable[0].add(new Junction((int)robot1.getX(),(int)robot1.getY()));
+
+							reserveTable[0].add(new Junction((int)robot2.getX(),(int)robot2.getY()));
+
+							reserveTable[0].add(new Junction((int)robot3.getX(),(int)robot3.getY()));
+						
 						// robot1 - highest priority
 
 						if (!idle1) {
@@ -515,16 +521,16 @@ public class MultiRoutePlanner {
 									+ robot1.getY() + ") to (" + item1.getX() + ", " + item1.getY() + ")");
 							findTheRoute(getJunction(robot1), getJunction(item1), reserveTable, robot1, idle1, base1);
 
-						} else {
+						} /* else {
 							for (int wait = 0; wait < timeWindow - 1; wait++) {
 								pairedCommands.get(robot1).addCommand(Command.WAIT);
 								pairedCommands.get(robot1).addJunction(getJunction(robot1));
 								reserveTable[wait].add(getJunction(robot1));
 
-							}
+							} 
 
 							reserveTable[timeWindow - 1].add(getJunction(robot1));
-						}
+						} */
 
 						// robot2 - second priority
 
@@ -535,16 +541,16 @@ public class MultiRoutePlanner {
 
 							findTheRoute(getJunction(robot2), getJunction(item2), reserveTable, robot2, idle2, base2);
 
-						} else {
+						} /*else {
 							for (int wait = 0; wait < timeWindow - 1; wait++) {
 								pairedCommands.get(robot2).addCommand(Command.WAIT);
 								pairedCommands.get(robot2).addJunction(getJunction(robot2));
 								reserveTable[wait].add(getJunction(robot2));
 
-							}
+							} 
 
 							reserveTable[timeWindow - 1].add(getJunction(robot2));
-						}
+						} */
 						// robot3 - lowest priority
 
 						if (!idle3) {
@@ -553,7 +559,7 @@ public class MultiRoutePlanner {
 									+ robot3.getY() + ") to (" + item3.getX() + ", " + item3.getY() + ")");
 
 							findTheRoute(getJunction(robot3), getJunction(item3), reserveTable, robot3, idle3, base3);
-						} else {
+						} /* else { 
 							for (int wait = 0; wait < timeWindow - 1; wait++) {
 								pairedCommands.get(robot3).addCommand(Command.WAIT);
 								pairedCommands.get(robot3).addJunction(getJunction(robot3));
@@ -562,7 +568,7 @@ public class MultiRoutePlanner {
 
 							reserveTable[timeWindow - 1].add(getJunction(robot3));
 
-						}
+						} */
 
 						rekt++;
 
@@ -616,6 +622,12 @@ public class MultiRoutePlanner {
 
 				while (!idle1 || !idle2 || !idle3) {
 
+						reserveTable[0].add(new Junction((int)robot1.getX(),(int)robot1.getY()));
+
+						reserveTable[0].add(new Junction((int)robot2.getX(),(int)robot2.getY()));
+
+						reserveTable[0].add(new Junction((int)robot3.getX(),(int)robot3.getY()));
+					
 					if (!idle1) {
 
 						System.out.println(robot1.getName() + " (1) - BASE: (" + robot1.getX() + ", " + robot1.getY()
@@ -623,7 +635,7 @@ public class MultiRoutePlanner {
 
 						findTheRoute(getJunction(robot1), baseJ1, reserveTable, robot1, idle1, base1);
 
-					} else {
+					} /* else {
 						for (int wait = 0; wait < timeWindow - 1; wait++) {
 							pairedCommands.get(robot1).addCommand(Command.WAIT);
 							pairedCommands.get(robot1).addJunction(getJunction(robot1));
@@ -633,7 +645,7 @@ public class MultiRoutePlanner {
 
 						reserveTable[timeWindow - 1].add(getJunction(robot1));
 
-					}
+					} */
 
 					if (!idle2) {
 
@@ -642,7 +654,7 @@ public class MultiRoutePlanner {
 
 						findTheRoute(getJunction(robot2), baseJ2, reserveTable, robot2, idle2, base2);
 
-					} else {
+					} /* else {
 						for (int wait = 0; wait < timeWindow - 1; wait++) {
 							pairedCommands.get(robot2).addCommand(Command.WAIT);
 							pairedCommands.get(robot2).addJunction(getJunction(robot2));
@@ -651,7 +663,7 @@ public class MultiRoutePlanner {
 						}
 
 						reserveTable[timeWindow - 1].add(getJunction(robot1));
-					}
+					} */
 
 					if (!idle3) {
 
@@ -660,7 +672,7 @@ public class MultiRoutePlanner {
 
 						findTheRoute(getJunction(robot3), baseJ3, reserveTable, robot3, idle3, base3);
 
-					} else {
+					} /* else {
 						for (int wait = 0; wait < timeWindow - 1; wait++) {
 							pairedCommands.get(robot3).addCommand(Command.WAIT);
 							pairedCommands.get(robot3).addJunction(getJunction(robot3));
@@ -669,7 +681,7 @@ public class MultiRoutePlanner {
 						}
 
 						reserveTable[timeWindow - 1].add(getJunction(robot1));
-					}
+					} */
 
 					rekt++;
 
@@ -736,10 +748,10 @@ public class MultiRoutePlanner {
 
 			for (int wait = 0; wait < timeWindow - 1; wait++) {
 
-				if (wait != 0) {
+				/* if (wait != 0) {
 					pairedCommands.get(robot).addCommand(Command.WAIT);
 					pairedCommands.get(robot).addJunction(getJunction(robot));
-				}
+				} */
 
 				reserveTable[wait].add(getJunction(robot));
 			}
@@ -748,7 +760,7 @@ public class MultiRoutePlanner {
 
 		} else {
 			ArrayList<Direction> directList = rPackage.getDirectionList();
-			LinkedList<Command> list = rPackage.getCommandList();
+			ArrayDeque<Command> list = rPackage.getCommandList();
 			ArrayList<Junction> junctionList = rPackage.getJunctionList();
 
 			pairedCommands.get(robot).addCommandList(list);
@@ -771,7 +783,7 @@ public class MultiRoutePlanner {
 				robot.setDirection(direction);
 			}
 
-			if (junctionList.size() < timeWindow - 1) {
+			/* if (junctionList.size() < timeWindow - 1) {
 				for (int len = junctionList.size() - 1; len < timeWindow; len++) {
 					pairedCommands.get(robot).addCommand(Command.WAIT);
 					pairedCommands.get(robot).addJunction(getJunction(robot));
@@ -779,10 +791,10 @@ public class MultiRoutePlanner {
 					if (len != -1) {
 						reserveTable[len].add(getJunction(robot));
 					}
-				}
+				} 
 
-				reserveTable[timeWindow - 1].add(getJunction(robot1));
-			}
+				reserveTable[timeWindow - 1].add(getJunction(robot1)); 
+			} */
 		}
 	}
 

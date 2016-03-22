@@ -106,8 +106,12 @@ public class RouteFinder {
 		// If route is in the cache, return that.
 		RouteStartEnd rse = new RouteStartEnd(start, goal);
 		ArrayList<Direction> cachedRoute = cache.get(rse);
-		if (cachedRoute != null)
-			return cachedRoute;
+		if (cachedRoute != null) {
+			RoutePackage rPackage = new RoutePackage();
+			rPackage.setCommandList(Command.fromDirections(cachedRoute));
+			return rPackage;
+		
+		}
 		
 		searched = new ArrayList<Junction>();
 		frontier = new LinkedHashMap<Junction, Integer>();
@@ -142,7 +146,7 @@ public class RouteFinder {
 				RoutePackage rPackage = new RoutePackage();
 				ArrayList<Direction> directionList = makePath(start, goal, rPackage);
 				//return getActualDirections(directionList, direction);
-				rPackage.setCommandList(getActualDirections(directionList, direction));
+				rPackage.setCommandList(Command.fromDirections(directionList));
 				
 				return rPackage;
 			}
@@ -259,7 +263,7 @@ public class RouteFinder {
 	 * @return a list of directions relative to the robot
 	 */
 
-	private LinkedList<Command> getActualDirections(ArrayList<Direction> oldList, Direction direction) {
+	/* private LinkedList<Command> getActualDirections(ArrayList<Direction> oldList, Direction direction) {
 
 		LinkedList<Command> newList = new LinkedList<Command>();
 
@@ -348,5 +352,5 @@ public class RouteFinder {
 		}
 
 		return newList;
-	}
+	} */
 }

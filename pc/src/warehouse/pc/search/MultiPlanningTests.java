@@ -1,5 +1,6 @@
 package warehouse.pc.search;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -28,10 +29,10 @@ public class MultiPlanningTests {
 	static Direction yp = Direction.Y_POS;
 	static Direction yn = Direction.Y_NEG;
 
-	static Command r = Command.RIGHT;
-	static Command l = Command.LEFT;
-	static Command f = Command.FORWARD;
-	static Command b = Command.BACKWARD;
+//	static Command r = Command.RIGHT;
+//	static Command l = Command.LEFT;
+//	static Command f = Command.FORWARD;
+//	static Command b = Command.BACKWARD;
 
 	static MultiRoutePlanner plannerA;
 
@@ -47,23 +48,23 @@ public class MultiPlanningTests {
 
 	public static void main(String[] args) {
 
-		robotA = new Robot("george", "george", 0, 0, 0);
+		robotA = new Robot("george", "george", 2, 0, 0);
 		robotB = new Robot("jason", "jason", 3, 0, 0);
-		robotC = new Robot("lenka", "lenka", 6, 0, 0);
+		robotC = new Robot("lenka", "lenka", 4, 0, 0);
 
-		mapA = TestMaps.TEST_MAP2;
+		mapA = TestMaps.TEST_MAP4;
 
 		yazoo = new Item("yazoo", 50, 25f, 3, 1);
 		lego = new Item("lego", 20, 10f, 2, 1);
-		crackers = new Item("crackers", 1, 5f, 4, 1);
+		crackers = new Item("crackers", 1, 5f, 0, 0);
 
 		map1 = new HashMap<Robot, LinkedList<Job>>();
 
 		bases = new ArrayList<Junction>();
 
-		bases.add(mapA.getJunction(0, 1));
-		bases.add(mapA.getJunction(6, 1));
-		bases.add(mapA.getJunction(3, 0));
+		bases.add(mapA.getJunction(3, 7));
+		bases.add(mapA.getJunction(5, 7));
+		bases.add(mapA.getJunction(7, 7));
 
 		LinkedList<Job> jobA = new LinkedList<>();
 		LinkedList<Job> jobB = new LinkedList<>();
@@ -131,9 +132,9 @@ public class MultiPlanningTests {
 		System.out.println(robotB.getName() + ": " + plannerA.getCommands(robotB).getCommands());
 		System.out.println(robotC.getName() + ": " + plannerA.getCommands(robotC).getCommands());
 
-		LinkedList<Command> commandsA = plannerA.getCommands(robotA).getCommands();
-		LinkedList<Command> commandsB = plannerA.getCommands(robotB).getCommands();
-		LinkedList<Command> commandsC = plannerA.getCommands(robotC).getCommands();
+		ArrayDeque<Command> commandsA = plannerA.getCommands(robotA).getCommands();
+		ArrayDeque<Command> commandsB = plannerA.getCommands(robotB).getCommands();
+		ArrayDeque<Command> commandsC = plannerA.getCommands(robotC).getCommands();
 
 		LinkedList<Junction> junctionsA = plannerA.getCommands(robotA).getJunctions();
 		LinkedList<Junction> junctionsB = plannerA.getCommands(robotB).getJunctions();
