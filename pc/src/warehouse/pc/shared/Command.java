@@ -113,6 +113,29 @@ public class Command {
 	}
 	
 	@Override
+	public String toString() {
+		StringBuilder b = new StringBuilder();
+		b.append(type);
+		switch (type) {
+		case FORWARD:
+		case BACKWARD:
+		case LEFT:
+		case RIGHT:
+		case Y_POS:
+		case Y_NEG:
+		case X_POS:
+		case X_NEG:
+			b.append(" ").append(x).append(", ").append(y);
+			break;
+		case PICK:
+			b.append(" ").append(quantity).append(" x item with weight ").append(weight);
+			break;
+		default:
+		}
+		return b.toString();
+	}
+	
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Command) {
 			Command c = (Command)o;

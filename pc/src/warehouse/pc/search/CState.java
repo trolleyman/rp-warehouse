@@ -104,9 +104,10 @@ public class CState {
 	}
 	
 	private void addCommands(List<Command> commands) {
-		if (parent != null)
+		if (parent != null) {
 			commands.add(new Command(command));
-		parent.addCommands(commands);
+			parent.addCommands(commands);
+		}
 	}
 	
 	/**

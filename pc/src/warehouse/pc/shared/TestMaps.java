@@ -32,6 +32,7 @@ public class TestMaps {
 			new Rectangle2D.Double(9.5, 0.5, 1.0, 5.0),
 		}, 0.25f);
 		REAL_WAREHOUSE = new Map(MapUtils.createRealWarehouse());
+		MARKING_WAREHOUSE = new Map(MapUtils.createMarkingWarehouseMap());
 	}
 	
 	/**
@@ -101,7 +102,15 @@ public class TestMaps {
 	public final static Map TEST_MAP4;
 	
 	/**
-	 * Like TEST_MAP4. But real!
+	 * Like TEST_MAP4. But real! - This is the training map
 	 */
 	public final static Map REAL_WAREHOUSE;
+	
+	/**
+	 * This is the marking map
+	 * <pre>
+	 * 
+	 * </pre>
+	 */
+	public final static Map MARKING_WAREHOUSE;
 }

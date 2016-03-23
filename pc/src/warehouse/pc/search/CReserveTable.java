@@ -14,6 +14,7 @@ public class CReserveTable {
 	
 	public CReserveTable() {
 		reserve = new ArrayList<>();
+		reservedAfter = new ArrayList<>();
 	}
 	
 	/**
@@ -35,7 +36,7 @@ public class CReserveTable {
 	
 	public boolean isPositionReserved(Junction pos, int time) {
 		extend(time);
-		if (reserve.get(time).contains(pos)) {
+		if (time < reserve.size() && reserve.get(time).contains(pos)) {
 			return true;
 		} else {
 			for (Pair<Junction, Integer> p : reservedAfter) {
