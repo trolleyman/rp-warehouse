@@ -197,6 +197,7 @@ public class RobotManager implements Runnable, RobotListener {
 		
 		ArrayList<RobotUpdater> robotsToUpdate = new ArrayList<>();
 		
+		/*// Don't do this for now - might deadlock the whole system.
 		// Get list of robots with where they are in the array
 		// Holds where robots will be.
 		ArrayList<Pair<Robot, Junction>> newPos = new ArrayList<>();
@@ -221,7 +222,7 @@ public class RobotManager implements Runnable, RobotListener {
 						+ jth.getItem1().getIdentity() + ".");
 				}
 			}
-		}
+		}*/
 		
 		// Send commands to robots
 		ArrayList<Robot> readyRobots = new ArrayList<>();
