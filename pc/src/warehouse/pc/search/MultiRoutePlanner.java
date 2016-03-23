@@ -1,6 +1,5 @@
 package warehouse.pc.search;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,163 +16,112 @@ import warehouse.pc.shared.Robot;
 import warehouse.shared.Direction;
 
 /**
- * Class to create lists of bearings for individual robots to take Uses a lot of
- * placeholders while the job and robot teams get their classes together
+ * A new and (hopefully) improved version of the multi robot route finding T
+ * time to fly my friends
+ * 
+ * @author George Kaye
  *
  */
 
 public class MultiRoutePlanner {
 
+	private Map map;
+	private int timeWindow;
+	private float maxWeight;
+
+	private RouteFinder oneFinder;
+	private MultiRouteFinder finder;
+
+	private ArrayList<Junction> bases;
+
 	private HashMap<Robot, LinkedList<Job>> pairedJobs;
 	private HashMap<Robot, CommandQueue> pairedCommands;
+	private HashMap<Junction, Command> escapeMap;
+
+	private HashMap<Robot, Boolean> idle;
+	private HashMap<Robot, ArrayList<ItemQuantity>> itemq;
+	private HashMap<Junction, Robot> waitMap;
+	private HashMap<Robot, Boolean> crashMap;
+
+	private boolean pickingPhase;
+
+	// for debugging
+
 	private Robot robot1;
 	private Robot robot2;
 	private Robot robot3;
-	private MultiRouteFinder finder;
-	private RouteFinder oneFinder;
-	private Map map;
-	private Float maxWeight;
-	private HashMap<Robot, Float> weights;
-	private ArrayList<Junction> bases;
-	private int timeWindow;
-	private HashMap<Robot, ArrayList<ItemCollection>> weightedJobs;
-	private HashMap<Junction, Robot> baseStatus;
-	private boolean idle1;
-	private boolean idle2;
-	private boolean idle3;
-	private boolean base1;
-	private boolean base2;
-	private boolean base3;
-	private HashMap<Robot, ItemQuantity> pairedItems;
-
-	private HashMap<Robot, Boolean> pairedIdle;
-	private HashMap<Robot, Boolean> pairedBase;
 
 	/**
-	 * Create a new RoutePlanner for a map
+	 * Create a new multi robot route planner
 	 * 
 	 * @param _map
 	 *            the map
 	 * @param _maxWeight
-	 *            the maximum weight of the robot
+	 *            the max weight
 	 * @param _jobs
-	 *            the hashmap of robots to jobs
-	 * @param _commands
-	 *            the hashmap of robots to commands
-	 * @param _base
-	 *            the dropoff point
+	 *            the hashmap of robots to lists of jobs
+	 * @param _bases
+	 *            the list of bases
+	 * @param _timeWindow
+	 *            the time window
+	 * @param _escapeMap
+	 *            the hashmap of junctions to where the robot can escape
 	 */
 
-	public MultiRoutePlanner(Map _map, Float _maxWeight, HashMap<Robot, LinkedList<Job>> _jobs,
-			ArrayList<Junction> _dropList, int _timeWindow) {
+	public MultiRoutePlanner(Map _map, float _maxWeight, HashMap<Robot, LinkedList<Job>> _jobs,
+			ArrayList<Junction> _bases, int _timeWindow) {
 
-		finder = new MultiRouteFinder(_map);
-		oneFinder = new RouteFinder(_map);
-		maxWeight = _maxWeight;
-		pairedJobs = _jobs;
-		map = _map;
-		timeWindow = _timeWindow;
+		this.map = _map;
+		this.maxWeight = _maxWeight;
+		this.pairedJobs = _jobs;
+		this.bases = _bases;
+		this.timeWindow = _timeWindow;
 
-		idle1 = false;
-		idle2 = false;
-		idle3 = false;
+		robot1 = getRobot(pairedJobs, 0);
+		robot2 = getRobot(pairedJobs, 1);
+		robot3 = getRobot(pairedJobs, 2);
 
-		base1 = false;
-		base2 = false;
-		base3 = false;
+		oneFinder = new RouteFinder(map);
+		finder = new MultiRouteFinder(map);
 
 		pairedCommands = new HashMap<>();
-		pairedIdle = new HashMap<>();
-		pairedBase = new HashMap<>();
-		pairedItems = new HashMap<>();
-		weightedJobs = new HashMap<>();
+		idle = new HashMap<>();
+		itemq = new HashMap<>();
+		waitMap = new HashMap<>();
+		crashMap = new HashMap<>();
 
-		bases = _dropList;
+		pickingPhase = true;
 
-		baseStatus = new HashMap<>();
-
-		for (Junction base : bases) {
-			baseStatus.put(base, null);
-		}
-
-		weights = new HashMap<>();
-
-		setUpJobs();
+		setUp();
 
 	}
 
 	/**
-	 * Helper method to set up robots on initialisation
-	 * 
-	 * @param robot
-	 *            the robot
-	 * @param i
-	 *            the number
+	 * Sets up the various hashmaps and makes sure it doesn't break It probably
+	 * will break though
 	 */
 
-	private void setUpRobots(Robot robot, int i) {
-
-		switch (i) {
-		case 0:
-			robot1 = robot;
-			pairedIdle.put(robot, idle1);
-			pairedBase.put(robot, base1);
-			break;
-		case 1:
-			robot2 = robot;
-			pairedIdle.put(robot, idle2);
-			pairedBase.put(robot, base2);
-			break;
-		case 2:
-			robot3 = robot;
-			pairedIdle.put(robot, idle3);
-			pairedBase.put(robot, base3);
-			break;
-		default:
-			break;
-		}
-
-	}
-
-	/**
-	 * Split the jobs into collections the robot can manage at once
-	 */
-
-	private void setUpJobs() {
-
-		// make a command queue for every robot, and put them in a hash table
-		int i = 0;
+	private void setUp() {
 
 		for (Entry<Robot, LinkedList<Job>> entry : pairedJobs.entrySet()) {
 
-			setUpRobots(entry.getKey(), i);
-			i++;
+			// filling the various hashmaps
+
+			idle.put(entry.getKey(), false);
 			pairedCommands.put(entry.getKey(), new CommandQueue());
-			weights.put(entry.getKey(), 0f);
-			ItemCollection itemColl = new ItemCollection();
-			weightedJobs.put(entry.getKey(), new ArrayList<ItemCollection>());
-			weightedJobs.get(entry.getKey()).add(itemColl);
+			itemq.put(entry.getKey(), null);
+			crashMap.put(entry.getKey(), false);
 
 			for (Job job : entry.getValue()) {
 
-				ArrayList<ItemQuantity> tempItems = job.getItems();
+				// checking that each job can be carried by the robot
 
-				for (ItemQuantity item : tempItems) {
-
-					float totalWeight = item.getItem().getWeight() * item.getQuantity();
-
-					if ((totalWeight + weights.get(entry.getKey())) <= maxWeight) {
-						weights.put(entry.getKey(), weights.get(entry.getKey()) + totalWeight);
-						itemColl.addItem(item);
-
-					} else {
-
-						itemColl = new ItemCollection();
-						itemColl.addItem(item);
-						weightedJobs.get(entry.getKey()).add(itemColl);
-						weights.put(entry.getKey(), totalWeight);
-					}
+				if (job.getTotalWeight() > maxWeight) {
+					System.out.println("WARNING: too much weight in job " + job);
+					System.out.println("removing job");
+					entry.getValue().removeFirstOccurrence(job);
 				}
+
 			}
 
 		}
@@ -189,23 +137,10 @@ public class MultiRoutePlanner {
 
 	public CommandQueue getCommands(Robot _robot) {
 		return pairedCommands.get(_robot);
-
 	}
 
 	/**
-	 * Get the next command for a robot
-	 * 
-	 * @param _robot
-	 *            the robot
-	 * @return the next command
-	 */
-
-	public Command getNextCommand(Robot _robot) {
-		return pairedCommands.get(_robot).getNextCommand();
-	}
-
-	/**
-	 * Gets the hashmap of robots mapped to commands for a given robot
+	 * Gets the hashmap of robots mapped to command queues for a given robot
 	 * 
 	 * @param _robot
 	 *            the robot
@@ -217,40 +152,18 @@ public class MultiRoutePlanner {
 	}
 
 	/**
-	 * Update the hashmaps with a new set of robots and linked lists
+	 * Update the route planner with a new hashmap of robots to linked list of
+	 * jobs
 	 * 
-	 * @param _hash
+	 * @param _hashBrown
 	 *            the new hashmap
 	 */
 
-	public void update(HashMap<Robot, LinkedList<Job>> _hash) {
+	public void update(HashMap<Robot, LinkedList<Job>> _hashBrown) {
 
-		this.pairedJobs = _hash;
+		this.pairedJobs = _hashBrown;
 
-		for (Entry<Robot, LinkedList<Job>> entry : pairedJobs.entrySet()) {
-
-			pairedCommands.put(entry.getKey(), new CommandQueue());
-		}
-
-		for (Entry<Robot, CommandQueue> entry : pairedCommands.entrySet()) {
-
-			weights.put(entry.getKey(), 0f);
-
-		}
-
-		setUpJobs();
-	}
-
-	private void setState(Robot robot, boolean idle) {
-
-		if (robot.equals(robot1)) {
-			idle1 = idle;
-		} else if (robot.equals(robot2)) {
-			idle2 = idle;
-		} else {
-			idle3 = idle;
-		}
-
+		setUp();
 	}
 
 	/**
@@ -277,533 +190,549 @@ public class MultiRoutePlanner {
 		return map.getJunction((int) robot.getX(), (int) robot.getY());
 	}
 
+	/***
+	 * Helper method to get a robot at a given index of a hashmap of robots to
+	 * jobs
+	 * 
+	 * @param hashMap
+	 *            the hashmap
+	 * @param x
+	 *            the index
+	 * @return the robot
+	 */
+
+	private Robot getRobot(HashMap<Robot, LinkedList<Job>> hashMap, int x) {
+
+		int i = 0;
+
+		for (Entry<Robot, LinkedList<Job>> entry : hashMap.entrySet()) {
+			if (i == x) {
+				return entry.getKey();
+			}
+			i++;
+		}
+
+		return null;
+	}
+
 	/**
-	 * Makes lists of commands for the robots
+	 * Compute the commands for multiple robots: these commands will be added to
+	 * pairedCommands which can be used by other classes
 	 */
 
 	public void computeCommands() {
 
-		int rekt = 0;
-
-		// work on each robot at the same time, so we get all the job queues
-		// these queues are split into parts the robot can carry at once
-		// so there is no need to visit the base inside an iteration
-		// the robots go collection - base - collection - base etc
-
-		ArrayList<ItemCollection> queue1 = weightedJobs.get(robot1);
-		ArrayList<ItemCollection> queue2 = weightedJobs.get(robot2);
-		ArrayList<ItemCollection> queue3 = weightedJobs.get(robot3);
-
-		pairedCommands.get(robot1).addJunction(getJunction(robot1));
-		pairedCommands.get(robot2).addJunction(getJunction(robot2));
-		pairedCommands.get(robot3).addJunction(getJunction(robot3));
-		
-		Junction baseJ1 = findBase(getJunction(robot1), robot1);
-		Junction baseJ2 = findBase(getJunction(robot2), robot2);
-		Junction baseJ3 = findBase(getJunction(robot3), robot3);
-		
-		baseStatus.put(baseJ1, robot1);
-		baseStatus.put(baseJ2, robot2);
-		baseStatus.put(baseJ3, robot3);
-		
-
-		// this is such a ghetto arrayList
-		// there's probably a better way to do this
+		// the ghetto arraylist returns
 
 		@SuppressWarnings("unchecked")
 		ArrayList<Junction>[] reserveTable = (ArrayList<Junction>[]) new ArrayList<?>[timeWindow];
 
-		for (int i = 0; i < timeWindow; i++) {
+		for (int i = 0; i < reserveTable.length; i++) {
 			reserveTable[i] = new ArrayList<Junction>();
 		}
 
-		// Right, this is how this works
-		// Each robot has already been assigned a job queue (above)
-		// These queues may or may not be different lengths
-		// We should iterate one job at a time
-		// finder.findRoute gets an n step path for each robot
-		// (I keep thinking it's ten but this can change)
-		// It will return null if the start = goal
-		// Some collections may take longer than ten steps
-		// Other robots should wait if they are finished
-		// Once every robot is done, proceed to next job
-		// (this will be a base return job)
-		// IMPORTANT: there may be less bases than robots
-		// This may cause a problem, will have to be looked at
-		// Hopefully there will be more bases than robots
+		// set up the initial robot priorities
+		// these will change but will be used a pointers for the hashmap
 
-		// Find out which robot has the most number of stops
-		// (i.e. the most item collections)
-		// This is the number of overall iterations
-		// (some of these iterations may only do one robot)
-		// Each of these overall iterations will cycle through the job queue
-		// for each robot and find the path to each item in it
+		Robot priority1 = getRobot(pairedJobs, 0);
+		Robot priority2 = getRobot(pairedJobs, 1);
+		Robot priority3 = getRobot(pairedJobs, 2);
 
-		double longestList = Math.max(queue1.size(), Math.max(queue2.size(), queue3.size()));
+		// set up some empty job objects, these will be used later
 
-		for (int j = 0; j < longestList * 2; j++) {
+		Job jobA = new Job(0, new ArrayList<ItemQuantity>(), 0, 0);
+		Job jobB = new Job(0, new ArrayList<ItemQuantity>(), 0, 0);
+		Job jobC = new Job(0, new ArrayList<ItemQuantity>(), 0, 0);
 
-			System.out.println("iteration " + j);
+		// each robot has a number of jobs, some robots might have more than
+		// others
+		// to stop it breaking, we have to find the longest job list
+		// this is the number we will iterate until
+		// hopefully job selection (easiest job) will have made it fairly equal
 
-			// every other iteration will be a picking iteration
-			// every other iteration will be a base iteration
+		double longestJobList = Math.max(pairedJobs.get(priority1).size(),
+				Math.max(pairedJobs.get(priority2).size(), pairedJobs.get(priority3).size()));
 
-			if (j % 2 == 0) {
+		for (int i = 0; i < longestJobList * 2; i++) {
 
-				idle1 = false;
-				idle2 = false;
-				idle3 = false;
+			if (i % 2 == 0) {
 
-				base1 = false;
-				base2 = false;
-				base3 = false;
+				pickingPhase = true;
 
-				// we now focus on the jth TtemCollection of each robot
-				// first make some empty ones to use later
+				idle.put(priority1, false);
+				idle.put(priority2, false);
+				idle.put(priority3, false);
 
-				ItemCollection job1 = new ItemCollection();
-				ItemCollection job2 = new ItemCollection();
-				ItemCollection job3 = new ItemCollection();
+				// assign a job to each robot
+				// since we're using priorities we need to get it from the
+				// hashmap
+				// if that robot has run out of jobs set it as idle
 
-				// if there is a jth collection, get it!
-				// if not flag that robot as completed
-
-				if (j / 2 < queue1.size()) {
-					job1 = queue1.get(j / 2);
+				if (pairedJobs.get(priority1).size() > i / 2) {
+					jobA = pairedJobs.get(priority1).get(i / 2);
 				} else {
-					idle1 = true;
+					idle.put(priority1, true);
 				}
 
-				if (j / 2 < queue2.size()) {
-					job2 = queue2.get(j / 2);
+				if (pairedJobs.get(priority2).size() > i / 2) {
+					jobB = pairedJobs.get(priority2).get(i / 2);
 				} else {
-					idle2 = true;
+					idle.put(priority2, true);
 				}
 
-				if (j / 2 < queue3.size()) {
-					job3 = queue3.get(j / 2); // get the jth for robot3
+				if (pairedJobs.get(priority1).size() > i / 2) {
+					jobC = pairedJobs.get(priority3).get(i / 2);
 				} else {
-					idle3 = true;
+					idle.put(priority1, true);
 				}
 
-				// now to get the list of items from each collection
-				// these lists will not exceed the maximum weight
-				// therefore they can all be performed in one fell swoop
+				// the jobs will all be different sizes (but hopefully similar
+				// sizes)
+				// first we need to get the list of items for this iteration
 
-				ArrayList<ItemQuantity> items1 = job1.getCollection();
-				ArrayList<ItemQuantity> items2 = job2.getCollection();
-				ArrayList<ItemQuantity> items3 = job3.getCollection();
+				itemq.put(priority1, jobA.getItems());
+				itemq.put(priority2, jobB.getItems());
+				itemq.put(priority3, jobC.getItems());
 
-				// again find the longest of these lists
-				// we'll be iterating over each one at the same time
-				// finished robots will wait while the others are moving
+				// like before we will iterate for the longest list size
 
-				double longestListItem = Math.max(items1.size(), Math.max(items2.size(), items3.size()));
+				double longestItemSize = Math.max(itemq.get(priority1).size(),
+						Math.max(itemq.get(priority2).size(), itemq.get(priority3).size()));
 
-				for (int k = 0; k < longestListItem; k++) {
+				for (int j = 0; j < longestItemSize; j++) {
 
-					idle1 = false;
-					idle2 = false;
-					idle3 = false;
+					Item itemA = new Item(null, 0, 0, 0, 0);
+					Item itemB = new Item(null, 0, 0, 0, 0);
+					Item itemC = new Item(null, 0, 0, 0, 0);
 
-					// this is where it gets complicated
+					// now each robot will get an item
+					// if there are no items left it will be set as idle
 
-					// three null items ready to assign
-
-					Item item1 = null;
-					Item item2 = null;
-					Item item3 = null;
-
-					// these booleans are used when two robots want the same
-					// base/item
-
-					boolean move1 = false; // robot1 will have to move after
-											// picking
-					boolean move2 = false; // robot2 will have to move after
-											// picking
-
-					boolean push2 = false; // robot2 will have to push before
-											// picking
-					boolean push3 = false; // robot3 will have to push before
-											// picking
-
-					// some of the collections have less items than others
-
-					// what i have done here is so disgusting
-					// that i deserve to be thrown to ze lions
-					// but it might just work
-
-					if (k <= items1.size() - 1) {
-						item1 = items1.get(k).getItem();
-						pairedItems.put(robot1, items1.get(k));
+					if (itemq.get(priority1).size() > j) {
+						itemA = itemq.get(priority1).get(j).getItem();
 					} else {
-						idle1 = true;
+						idle.put(priority1, true);
+						waitMap.put(getJunction(priority2), priority2);
+						pairedCommands.get(priority1).addCommand(Command.WAIT);
 					}
 
-					if (k <= items2.size() - 1) {
+					if (itemq.get(priority2).size() > j) {
+						itemB = itemq.get(priority2).get(j).getItem();
+					} else {
+						idle.put(priority2, true);
+						waitMap.put(getJunction(priority2), priority2);
+						pairedCommands.get(priority2).addCommand(Command.WAIT);
+					}
 
-						if (pairedItems.containsValue(items2.get(k))) {
-							items2.add(k + 1, items2.get(k));
+					if (itemq.get(priority3).size() > j) {
+						itemC = itemq.get(priority3).get(j).getItem();
+					} else {
+						idle.put(priority3, true);
+						waitMap.put(getJunction(priority3), priority3);
+						pairedCommands.get(priority3).addCommand(Command.WAIT);
+					}
 
-							Junction closest = findBase(robot1);
+					// as long as one robot is not idle, we will keep finding
+					// routes
 
-							items1.add(k + 1,
-									new ItemQuantity(new Item("placeholder", 0, 0, closest.getX(), closest.getY()), 0)); // DODGY
-																															// IMPLEMENTATION!!!!
+					while (!idle.get(priority1) || !idle.get(priority2) || !idle.get(priority3)) {
 
-							idle2 = true;
+						if (!idle.get(priority1)) {
+							Junction end = findTheRoute(getJunction(priority1),
+									getJunction(itemq.get(priority1).get(j).getItem()), reserveTable, priority1);
+							if (end.equals(getJunction(itemq.get(priority1).get(j).getItem()))) {
+								pairedCommands.get(priority1).addCommand(Command.PICK);
+								pairedCommands.get(priority1).addCommand(Command.WAIT);
+								idle.put(priority1, true);
+								waitMap.put(end, priority1);
+							}
 						} else {
-							item2 = items2.get(k).getItem();
-							pairedItems.put(robot2, items2.get(k));
-						}
-					} else {
-						idle2 = true;
-					}
-
-					if (k <= items3.size() - 1) {
-						if (pairedItems.containsValue(items3.get(k))) {
-
-							if (item1 != null && item1.getName().equals(items3.get(k).getItem().getName())) {
-								
-								Junction closest = findBase(robot1);
-								
-								items1.add(k + 1, new ItemQuantity(
-										new Item("placeholder", 0, 0, closest.getX(), closest.getY()), 0)); // DODGY
-																														// IMPLEMENTATION!!!!
-							} else {
-								
-								Junction closest = findBase(robot2);
-										
-								
-								items2.add(k + 1, new ItemQuantity(
-										new Item("placeholder", 0, 0, closest.getX(), closest.getY()), 0));
+							for (int l = 0; l < timeWindow; l++) {
+								reserveTable[l].add(getJunction(priority1));
 							}
+						}
 
-							items3.add(k + 1, items2.get(k));
-							idle3 = true;
+						if (!idle.get(priority2)) {
+							Junction end = findTheRoute(getJunction(priority2),
+									getJunction(itemq.get(priority2).get(j).getItem()), reserveTable, priority2);
+							if (end.equals(getJunction(itemq.get(priority2).get(j).getItem()))) {
+								pairedCommands.get(priority2).addCommand(Command.PICK);
+								pairedCommands.get(priority2).addCommand(Command.WAIT);
+								idle.put(priority2, true);
+								waitMap.put(end, priority2);
+							}
 						} else {
-							item3 = items3.get(k).getItem();
-							pairedItems.put(robot3, items3.get(k));
+							for (int l = 0; l < timeWindow; l++) {
+								reserveTable[l].add(getJunction(priority2));
+							}
 						}
-					} else {
-						idle3 = true;
+
+						if (!idle.get(priority3)) {
+							Junction end = findTheRoute(getJunction(priority3),
+									getJunction(itemq.get(priority3).get(j).getItem()), reserveTable, priority3);
+							if (end.equals(getJunction(itemq.get(priority3).get(j).getItem()))) {
+								pairedCommands.get(priority3).addCommand(Command.PICK);
+								pairedCommands.get(priority3).addCommand(Command.WAIT);
+								idle.put(priority3, true);
+								waitMap.put(end, priority3);
+							}
+						} else {
+							for (int l = 0; l < timeWindow; l++) {
+								reserveTable[l].add(getJunction(priority3));
+							}
+						}
+
+						for (int l = 0; l < timeWindow; l++) {
+							reserveTable[l] = new ArrayList<>();
+						}
+
+						Robot priorityTemp = priority1;
+						priority1 = priority2;
+						priority2 = priority3;
+						priority3 = priorityTemp;
+
 					}
 
-					// the basic idea is that each robot takes its turn
-					// according to its priority and finds a route
+					System.out.println(priority1.getName() + " (item): " + pairedCommands.get(priority1).getCommands());
+					System.out.println(priority2.getName() + " (item): " + pairedCommands.get(priority2).getCommands());
+					System.out.println(priority3.getName() + " (item): " + pairedCommands.get(priority3).getCommands());
 
-					// currently using extremely basic implementation
-					// each robot gets a go doing its bit of the route
-					// if the returned package is null (i.e. goal reached)
-					// a flag is set and pick is added to commands
-					// this robot then sits still until the other items are
-					// found
+					idle.put(priority1, false);
+					idle.put(priority2, false);
+					idle.put(priority3, false);
 
-					/*
-					 * reserveTable[0].add(getJunction(robot1));
-					 * reserveTable[0].add(getJunction(robot2));
-					 * reserveTable[0].add(getJunction(robot3));
-					 */
-					while (!idle1 || !idle2 || !idle3) {
+					waitMap.clear();
 
-
-							reserveTable[0].add(new Junction((int)robot1.getX(),(int)robot1.getY()));
-
-							reserveTable[0].add(new Junction((int)robot2.getX(),(int)robot2.getY()));
-
-							reserveTable[0].add(new Junction((int)robot3.getX(),(int)robot3.getY()));
-						
-						// robot1 - highest priority
-
-						if (!idle1) {
-
-							System.out.print(robot1.getName() + " (1) - ITEM: (" + robot1.getX() + ", "
-									+ robot1.getY() + ") to (" + item1.getX() + ", " + item1.getY() + ") ");
-							findTheRoute(getJunction(robot1), getJunction(item1), reserveTable, robot1, idle1, base1);
-
-						} /* else {
-							for (int wait = 0; wait < timeWindow - 1; wait++) {
-								
-								pairedCommands.get(robot1).addJunction(getJunction(robot1));
-								reserveTable[wait].add(getJunction(robot1));
-
-							}
-
-							System.out.print(robot1.getName() + " (1) - waiting for other robots ");
-							reserveTable[timeWindow - 1].add(getJunction(robot1));
-						} */
-
-						// robot2 - second priority
-
-						if (!idle2) {
-
-							System.out.print(robot2.getName() + " (2) - ITEM: (" + robot2.getX() + ", "
-									+ robot2.getY() + ") to (" + item2.getX() + ", " + item2.getY() + ") ");
-
-							findTheRoute(getJunction(robot2), getJunction(item2), reserveTable, robot2, idle2, base2);
-
-						} /*else {
-							for (int wait = 0; wait < timeWindow - 1; wait++) {
-								pairedCommands.get(robot2).addJunction(getJunction(robot2));
-								reserveTable[wait].add(getJunction(robot2));
-
-							}
-
-							System.out.print(robot2.getName() + " (2) - waiting for other robots ");
-							reserveTable[timeWindow - 1].add(getJunction(robot2));
-						} */
-						// robot3 - lowest priority
-
-						if (!idle3) {
-
-							System.out.println(robot3.getName() + " (3) - ITEM: (" + robot3.getX() + ", "
-									+ robot3.getY() + ") to (" + item3.getX() + ", " + item3.getY() + ") ");
-
-							findTheRoute(getJunction(robot3), getJunction(item3), reserveTable, robot3, idle3, base3);
-						} /* else {
-							for (int wait = 0; wait < timeWindow - 1; wait++) {
-								pairedCommands.get(robot3).addJunction(getJunction(robot3));
-								reserveTable[wait].add(getJunction(robot3));
-							}
-
-							System.out.println(robot3.getName() + " (3) - waiting for other robots ");
-							reserveTable[timeWindow - 1].add(getJunction(robot3));
-
-						} */
-
-						rekt++;
-
-						for (Entry<Robot, ItemQuantity> entry : pairedItems.entrySet()) {
-							pairedItems.put(entry.getKey(), null);
-						}
-
-						for (int p = 0; p < timeWindow; p++) {
-							reserveTable[p] = new ArrayList<>();
-						}
-					}
 				}
+
 			} else {
 
-				for (Entry<Junction, Robot> entry : baseStatus.entrySet()) {
+				pickingPhase = false;
 
-					baseStatus.put(entry.getKey(), null);
+				HashMap<Robot, Junction> basem = new HashMap<>();
 
-				}
+				basem.put(priority1, findBase(getJunction(priority1), priority1));
+				basem.put(priority2, findBase(getJunction(priority2), priority2));
+				basem.put(priority3, findBase(getJunction(priority3), priority3));
 
-				base1 = true;
-				base2 = true;
-				base3 = true;
+				int rekt = 0;
 
-				idle1 = false;
-				idle2 = false;
-				idle3 = false;
+				while (!idle.get(priority1) || !idle.get(priority2) || !idle.get(priority3)) {
 
-				baseJ1 = findBase(getJunction(robot1), robot1);
-				baseJ2 = findBase(getJunction(robot2), robot2);
-				baseJ3 = findBase(getJunction(robot3), robot3);
-
-				if (robot1.getX() == baseJ1.getX() && robot1.getY() == baseJ1.getY()) {
-					pairedCommands.get(robot1).addCommand(Command.DROP);
-					idle1 = true;
-				}
-
-				if (robot2.getX() == baseJ2.getX() && robot2.getY() == baseJ2.getY()) {
-					pairedCommands.get(robot2).addCommand(Command.DROP);
-					idle2 = true;
-				}
-
-				if (robot3.getX() == baseJ3.getX() && robot3.getY() == baseJ3.getY()) {
-					pairedCommands.get(robot3).addCommand(Command.DROP);
-					idle3 = true;
-				}
-
-				// time to go to a base
-				// currently just doing based on heuristic
-				// i can't be bothered to get more accurate atm
-
-				while (!idle1 || !idle2 || !idle3) {
-
-						reserveTable[0].add(new Junction((int)robot1.getX(),(int)robot1.getY()));
-
-						reserveTable[0].add(new Junction((int)robot2.getX(),(int)robot2.getY()));
-
-						reserveTable[0].add(new Junction((int)robot3.getX(),(int)robot3.getY()));
-					
-					if (!idle1) {
-
-						System.out.print(robot1.getName() + " (1) - BASE: (" + robot1.getX() + ", " + robot1.getY()
-								+ ") to (" + baseJ1.getX() + ", " + baseJ1.getY() + ") ");
-
-						findTheRoute(getJunction(robot1), baseJ1, reserveTable, robot1, idle1, base1);
-
-					} /* else {
-						for (int wait = 0; wait < timeWindow - 1; wait++) {
-							pairedCommands.get(robot1).addJunction(getJunction(robot1));
-							reserveTable[wait].add(getJunction(robot1));
-
+					if (!idle.get(priority1)) {
+						Junction end = findTheRoute(getJunction(priority1), basem.get(priority1), reserveTable,
+								priority1);
+						if (end.equals(basem.get(priority1))) {
+							pairedCommands.get(priority1).addCommand(Command.DROP);
+							pairedCommands.get(priority1).addCommand(Command.WAIT);
+							idle.put(priority1, true);
+							waitMap.put(end, priority1);
 						}
-						
-						System.out.print(robot1.getName() + " (1) - waiting for other robots ");
-						reserveTable[timeWindow - 1].add(getJunction(robot1));
-
-					} */
-
-					if (!idle2) {
-
-						System.out.print(robot2.getName() + " (2) - BASE: (" + robot2.getX() + ", " + robot2.getY()
-								+ ") to (" + baseJ2.getX() + ", " + baseJ2.getY() + ") ");
-
-						findTheRoute(getJunction(robot2), baseJ2, reserveTable, robot2, idle2, base2);
-
-					} /* else {
-						for (int wait = 0; wait < timeWindow - 1; wait++) {
-							pairedCommands.get(robot2).addJunction(getJunction(robot2));
-							reserveTable[wait].add(getJunction(robot2));
-
+					} else {
+						for (int l = 0; l < timeWindow; l++) {
+							reserveTable[l].add(getJunction(priority1));
 						}
+					}
 
-						System.out.print(robot2.getName() + " (2) - waiting for other robots ");
-						reserveTable[timeWindow - 1].add(getJunction(robot1));
-					} */
-
-					if (!idle3) {
-
-						System.out.println(robot3.getName() + " (3) - BASE: (" + robot3.getX() + ", " + robot3.getY()
-								+ ") to (" + baseJ3.getX() + ", " + baseJ3.getY() + ") ");
-
-						findTheRoute(getJunction(robot3), baseJ3, reserveTable, robot3, idle3, base3);
-
-					} /* else {
-						for (int wait = 0; wait < timeWindow - 1; wait++) {
-							pairedCommands.get(robot3).addJunction(getJunction(robot3));
-							reserveTable[wait].add(getJunction(robot3));
-
+					if (!idle.get(priority2)) {
+						Junction end = findTheRoute(getJunction(priority2), basem.get(priority2), reserveTable,
+								priority2);
+						if (end.equals(basem.get(priority2))) {
+							pairedCommands.get(priority2).addCommand(Command.DROP);
+							pairedCommands.get(priority2).addCommand(Command.WAIT);
+							idle.put(priority2, true);
+							waitMap.put(end, priority2);
 						}
+					} else {
+						for (int l = 0; l < timeWindow; l++) {
+							reserveTable[l].add(getJunction(priority2));
+						}
+					}
 
-						System.out.println(robot3.getName() + " (3) - waiting for other robots ");
-						reserveTable[timeWindow - 1].add(getJunction(robot1));
-					} */
+					if (!idle.get(priority3)) {
+						Junction end = findTheRoute(getJunction(priority1), basem.get(priority3), reserveTable,
+								priority3);
+						if (end.equals(basem.get(priority3))) {
+							pairedCommands.get(priority3).addCommand(Command.DROP);
+							pairedCommands.get(priority3).addCommand(Command.WAIT);
+							idle.put(priority3, true);
+							waitMap.put(end, priority3);
+						}
+					} else {
+						for (int l = 0; l < timeWindow; l++) {
+							reserveTable[l].add(getJunction(priority1));
+						}
+					}
+
+					for (int l = 0; l < timeWindow; l++) {
+						reserveTable[l] = new ArrayList<>();
+					}
+
+					Robot priorityTemp = priority1;
+					priority1 = priority2;
+					priority2 = priority3;
+					priority3 = priorityTemp;
 
 					rekt++;
 
-					for (int p = 0; p < timeWindow; p++) {
-						reserveTable[p] = new ArrayList<>();
-					}
-
-					// change the priorities of the robots
-					// hopefully this will avoid deadlock
 				}
 
-			}
-		}
+				System.out.println(priority1.getName() + " (base) : " + pairedCommands.get(priority1).getCommands());
+				System.out.println(priority2.getName() + " (base) : " + pairedCommands.get(priority2).getCommands());
+				System.out.println(priority3.getName() + " (base) : " + pairedCommands.get(priority3).getCommands());
 
-	}
-	
-	/**
-	 * Find the base associated with the robot
-	 * @param robot the robot
-	 * @return the base
-	 */
+				idle.put(priority1, false);
+				idle.put(priority2, false);
+				idle.put(priority3, false);
 
-	private Junction findBase(Robot robot){
-		
-		for(Entry<Junction, Robot> entry : baseStatus.entrySet()){
-			if(entry.getValue().equals(robot)){
-				return entry.getKey();
+				waitMap.clear();
+
 			}
+
 		}
-		
-		return null;
 	}
-	
+
 	/**
-	 * Attempt to find the route between two points, keeping in a time frame
+	 * Helper method to find a route from one junction to another
 	 * 
+	 * @param start
+	 *            the start point
 	 * @param goal
-	 *            the goal
+	 *            the end point
 	 * @param reserveTable
 	 *            the reserve table
 	 * @param robot
 	 *            the robot
+	 * @return
 	 */
 
-	private void findTheRoute(Junction start, Junction goal, ArrayList<Junction>[] reserveTable, Robot robot,
-			boolean idle, boolean base) {
+	private Junction findTheRoute(Junction start, Junction goal, ArrayList<Junction>[] reserveTable, Robot robot) {
 
-		RoutePackage rPackage = new RoutePackage();
-		Direction direction = robot.getDirection();
+		System.out.println(robot.getName() + " " + start + " to " + goal);
 
-		rPackage = finder.findRoute(map.getJunction((int) robot.getX(), (int) robot.getY()), goal, robot.getDirection(),
-				reserveTable);
+		boolean triggered = false;
 
-		if (rPackage == null) {
-			setState(robot, true);
+		if (waitMap.containsKey(goal)) {
 
-			if (!base) {
-				pairedCommands.get(robot).addCommand(Command.PICK);
-				pairedCommands.get(robot).addJunction(getJunction(robot));
-			} else {
-				pairedCommands.get(robot).addCommand(Command.DROP);
-				pairedCommands.get(robot).addJunction(getJunction(robot));
+			Junction newJ = escape(waitMap.get(goal), goal);
+
+			for (int l = 0; l < timeWindow; l++) {
+				reserveTable[l].add(newJ);
 			}
 
-			for (int wait = 0; wait < timeWindow - 1; wait++) {
-
-				/* if (wait != 0) {
-					pairedCommands.get(robot).addCommand(Command.WAIT);
-					pairedCommands.get(robot).addJunction(getJunction(robot));
-				} */
-
-				reserveTable[wait].add(getJunction(robot));
-			}
-
-			reserveTable[timeWindow - 1].add(getJunction(robot1));
-
-		} else {
-			ArrayList<Direction> directList = rPackage.getDirectionList();
-			LinkedList<Command> list = rPackage.getCommandList();
-			ArrayList<Junction> junctionList = rPackage.getJunctionList();
-
-			pairedCommands.get(robot).addCommandList(list);
-			pairedCommands.get(robot).addJunctionList(junctionList);
-
-			Junction end = null;
-
-			try {
-				end = junctionList.get(junctionList.size() - 1);
-			} catch (ArrayIndexOutOfBoundsException e) {
-				end = start;
-			}
-
-			robot.setX(end.getX());
-			robot.setY(end.getY());
-
-			try {
-				robot.setDirection(directList.get(directList.size() - 1));
-			} catch (ArrayIndexOutOfBoundsException e) {
-				robot.setDirection(direction);
-			}
-
-			/* if (junctionList.size() < timeWindow - 1) {
-				for (int len = junctionList.size() - 1; len < timeWindow; len++) {
-					pairedCommands.get(robot).addJunction(getJunction(robot));
-
-					if (len != -1) {
-						reserveTable[len].add(getJunction(robot));
-					}
-				}
-
-				reserveTable[timeWindow - 1].add(getJunction(robot1));
-			} */
+			crashMap.put(robot, true);
 		}
+
+		RoutePackage rPackage = finder.findRoute(start, goal, robot.getDirection(), reserveTable);
+
+		ArrayList<Direction> directionList = rPackage.getDirectionList();
+		ArrayList<Junction> junctionList = rPackage.getJunctionList();
+		LinkedList<Command> commandList = rPackage.getCommandList();
+
+		Junction endPoint = junctionList.get(junctionList.size() - 1);
+		Direction endDirection = directionList.get(directionList.size() - 1);
+
+		if (crashMap.get(robot) && goal.equals(endPoint)) {
+			Command last = commandList.removeLast();
+			commandList.add(Command.WAIT_ESC);
+			commandList.add(last);
+			waitMap.put(endPoint, robot);
+			
+		}
+
+		robot.setX(endPoint.getX());
+		robot.setY(endPoint.getY());
+		robot.setDirection(endDirection);
+
+		pairedCommands.get(robot).addCommandList(commandList);
+
+		if (junctionList.size() < timeWindow) {
+			for (int l = junctionList.size(); l < timeWindow; l++) {
+				reserveTable[l].add(getJunction(robot));
+			}
+		}
+
+		return endPoint;
+
 	}
 
 	/**
-	 * Find the 'closest' base (currently not optimal)
+	 * Helper method to force a waiting robot to move if another robot is on its
+	 * way
+	 * 
+	 * @param robot
+	 *            the waiting robot
+	 * @param junction
+	 *            where it is waiting
+	 */
+
+	private Junction escape(Robot robot, Junction junction) {
+
+		for (Junction junc : junction.getNeighbours()) {
+
+			for (Entry<Robot, LinkedList<Job>> entry : pairedJobs.entrySet()) {
+
+				Junction a = getJunction(entry.getKey());
+
+				if (!a.equals(junc)) {
+
+					Direction facing = robot.getDirection();
+
+					RoutePackage rPack = findTheWay(facing, junction, junc);
+
+					pairedCommands.get(robot).setLastCommand(rPack.getCommandList().pop());
+
+					pairedCommands.get(robot).addCommand(Command.WAIT);
+
+					waitMap.put(junc, robot);
+					waitMap.remove(junction);
+
+					robot.setX(junc.getX());
+					robot.setY(junc.getY());
+					robot.setDirection(rPack.getDirectionList().get(0));
+
+					return junc;
+
+				}
+
+			}
+
+		}
+
+		return null;
+
+	}
+
+	/**
+	 * Helper method to find the command to give to a robot in order to move
+	 * between two spaces
+	 * 
+	 * @param direction
+	 *            the initial direction of the robot
+	 * @param first
+	 *            the first junction
+	 * @param second
+	 *            the second junction
+	 * @return the command
+	 */
+
+	private RoutePackage findTheWay(Direction direction, Junction first, Junction second) {
+
+		Direction way = null;
+
+		if (second.getX() > first.getX()) {
+			way = Direction.X_POS;
+		}
+
+		if (second.getX() < first.getX()) {
+			way = Direction.X_NEG;
+		}
+
+		if (second.getY() > first.getY()) {
+			way = Direction.Y_POS;
+		}
+
+		if (second.getY() < first.getY()) {
+			way = Direction.Y_NEG;
+		}
+
+		Command command = null;
+
+		switch (direction) {
+		case Y_POS:
+			switch (way) {
+			case Y_POS:
+				command = Command.FORWARD;
+				break;
+			case Y_NEG:
+				command = Command.BACKWARD;
+				break;
+			case X_POS:
+				command = Command.RIGHT;
+				break;
+			case X_NEG:
+				command = Command.LEFT;
+				break;
+
+			}
+			break;
+
+		case Y_NEG:
+			switch (way) {
+			case Y_NEG:
+				command = Command.FORWARD;
+				break;
+			case Y_POS:
+				command = Command.BACKWARD;
+				break;
+			case X_NEG:
+				command = Command.RIGHT;
+				break;
+			case X_POS:
+				command = Command.LEFT;
+				break;
+			}
+			break;
+
+		case X_POS:
+			switch (way) {
+			case X_POS:
+				command = Command.FORWARD;
+				break;
+			case X_NEG:
+				command = Command.BACKWARD;
+				break;
+			case Y_NEG:
+				command = Command.RIGHT;
+				break;
+			case Y_POS:
+				command = Command.LEFT;
+				break;
+
+			}
+			break;
+
+		case X_NEG:
+			switch (way) {
+			case X_NEG:
+				command = Command.FORWARD;
+				break;
+			case X_POS:
+				command = Command.BACKWARD;
+				break;
+			case Y_POS:
+				command = Command.RIGHT;
+				break;
+			case Y_NEG:
+				command = Command.LEFT;
+				break;
+
+			}
+
+			break;
+		}
+
+		ArrayList<Direction> dList = new ArrayList<>();
+		dList.add(way);
+
+		LinkedList<Command> cList = new LinkedList<>();
+		cList.add(command);
+
+		ArrayList<Junction> jList = new ArrayList<>();
+		jList.add(first);
+		jList.add(second);
+
+		return new RoutePackage(dList, cList, jList);
+	}
+
+	/**
+	 * Helper method to return the closest base
 	 * 
 	 * @param start
 	 *            the start position
-	 * @return the base
+	 * @param robot
+	 *            the robot
+	 * @return the closest base
 	 */
 
 	private Junction findBase(Junction start, Robot robot) {
@@ -811,18 +740,16 @@ public class MultiRoutePlanner {
 		Junction closest = new Junction(0, 0);
 		int lowest = map.getHeight() + map.getWidth();
 
-		for (Entry<Junction, Robot> entry : baseStatus.entrySet()) {
-			if (entry.getValue() == null) {
-				int heury = oneFinder.findRoute(map.getJunction((int) start.getX(), (int) start.getY()), entry.getKey(),
-						robot.getDirection()).getDirectionList().size();
-				if (heury < lowest) {
-					closest = entry.getKey();
-					lowest = heury;
-				}
+		for (Junction base : bases) {
+			int heury = oneFinder
+					.findRoute(map.getJunction((int) start.getX(), (int) start.getY()), base, robot.getDirection())
+					.getDirectionList().size();
+			if (heury < lowest) {
+				closest = base;
+				lowest = heury;
 			}
 		}
 
-		baseStatus.put(closest, robot);
 		return closest;
 	}
 

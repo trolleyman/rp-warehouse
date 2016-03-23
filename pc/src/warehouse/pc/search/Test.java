@@ -46,15 +46,19 @@ public class Test {
 		ArrayList<ItemQuantity> listA = new ArrayList<>();
 		ArrayList<ItemQuantity> listB = new ArrayList<>();
 		ArrayList<ItemQuantity> listC = new ArrayList<>();
+		ArrayList<ItemQuantity> listD = new ArrayList<>();
 		
 		listA.add(new ItemQuantity(yazoo, 1));
 		listA.add(new ItemQuantity(lego, 1));
 		listB.add(new ItemQuantity(lego, 1));
 		listC.add(new ItemQuantity(crackers, 1));
+		listD.add(new ItemQuantity(lego, 1));
+		listD.add(new ItemQuantity(crackers, 1));
 
 		jobA.add(new Job(0, listA, 25, 0));
 		jobB.add(new Job(0, listB, 10, 0));
 		jobC.add(new Job(0, listC, 5, 0));
+		jobA.add(new Job(0, listD, 10, 0));
 		
 		/*jobA.add(new Job(0, listC, 25, 0));
 		jobB.add(new Job(0, listB, 10, 0));
@@ -64,7 +68,7 @@ public class Test {
 		map1.put(robotB, jobB);
 		map1.put(robotC, jobC);
 		
-		NewMultiRoutePlanner plannerA = new NewMultiRoutePlanner(mapA, 60f, map1, bases, 10);
+		MultiRoutePlanner plannerA = new MultiRoutePlanner(mapA, 60f, map1, bases, 10);
 		
 		plannerA.computeCommands();
 	}

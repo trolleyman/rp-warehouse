@@ -34,7 +34,7 @@ public class MultiPlanningTests {
 	static Command f = Command.FORWARD;
 	static Command b = Command.BACKWARD;
 
-	static MultiRoutePlanner plannerA;
+	static OldMultiRoutePlanner plannerA;
 
 	static Item yazoo;
 	static Item lego;
@@ -112,7 +112,7 @@ public class MultiPlanningTests {
 		map1.put(robotB, jobB);
 		map1.put(robotC, jobC);
 
-		plannerA = new MultiRoutePlanner(mapA, 60f, map1, bases, 1000);
+		plannerA = new OldMultiRoutePlanner(mapA, 60f, map1, bases, 1000);
 
 
 		for (Entry<Robot, LinkedList<Job>> entry : map1.entrySet()) {
