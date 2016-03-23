@@ -23,9 +23,9 @@ public enum Command {
 	RIGHT,			// have a nice day
 	PICK,
 	DROP,
-	COMPLETE_JOB,
-	ESC,	// if the robot has escaped from another robot (similar to pick but without the picking process)
-	WAIT;   // if the robot must wait for another robot to escape
+	COMPLETE_JOB,	  
+	WAIT,
+	WAIT_ESC;
 	
 	// Escape is my term for a robot leaving an item/base so another robot can use it
 	

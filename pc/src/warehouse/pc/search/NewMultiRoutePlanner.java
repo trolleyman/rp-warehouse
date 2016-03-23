@@ -41,6 +41,9 @@ public class NewMultiRoutePlanner {
 	private HashMap<Robot, Boolean> idle;
 	private HashMap<Robot, ArrayList<ItemQuantity>> itemq;
 	private HashMap<Junction, Robot> waitMap;
+	private HashMap<Robot, Boolean> crashMap;
+
+	private boolean pickingPhase;
 
 	// for debugging
 
@@ -85,6 +88,9 @@ public class NewMultiRoutePlanner {
 		idle = new HashMap<>();
 		itemq = new HashMap<>();
 		waitMap = new HashMap<>();
+		crashMap = new HashMap<>();
+
+		pickingPhase = true;
 
 		setUp();
 
@@ -104,6 +110,7 @@ public class NewMultiRoutePlanner {
 			idle.put(entry.getKey(), false);
 			pairedCommands.put(entry.getKey(), new CommandQueue());
 			itemq.put(entry.getKey(), null);
+			crashMap.put(entry.getKey(), false);
 
 			for (Job job : entry.getValue()) {
 
@@ -250,6 +257,8 @@ public class NewMultiRoutePlanner {
 
 			if (i % 2 == 0) {
 
+				pickingPhase = true;
+
 				idle.put(priority1, false);
 				idle.put(priority2, false);
 				idle.put(priority3, false);
@@ -330,6 +339,7 @@ public class NewMultiRoutePlanner {
 									getJunction(itemq.get(priority1).get(j).getItem()), reserveTable, priority1);
 							if (end.equals(getJunction(itemq.get(priority1).get(j).getItem()))) {
 								pairedCommands.get(priority1).addCommand(Command.PICK);
+								pairedCommands.get(priority1).addCommand(Command.WAIT);
 								idle.put(priority1, true);
 								waitMap.put(end, priority1);
 							}
@@ -344,6 +354,7 @@ public class NewMultiRoutePlanner {
 									getJunction(itemq.get(priority2).get(j).getItem()), reserveTable, priority2);
 							if (end.equals(getJunction(itemq.get(priority2).get(j).getItem()))) {
 								pairedCommands.get(priority2).addCommand(Command.PICK);
+								pairedCommands.get(priority2).addCommand(Command.WAIT);
 								idle.put(priority2, true);
 								waitMap.put(end, priority2);
 							}
@@ -358,6 +369,7 @@ public class NewMultiRoutePlanner {
 									getJunction(itemq.get(priority3).get(j).getItem()), reserveTable, priority3);
 							if (end.equals(getJunction(itemq.get(priority3).get(j).getItem()))) {
 								pairedCommands.get(priority3).addCommand(Command.PICK);
+								pairedCommands.get(priority3).addCommand(Command.WAIT);
 								idle.put(priority3, true);
 								waitMap.put(end, priority3);
 							}
@@ -392,6 +404,8 @@ public class NewMultiRoutePlanner {
 
 			} else {
 
+				pickingPhase = false;
+
 				HashMap<Robot, Junction> basem = new HashMap<>();
 
 				basem.put(priority1, findBase(getJunction(priority1), priority1));
@@ -399,14 +413,15 @@ public class NewMultiRoutePlanner {
 				basem.put(priority3, findBase(getJunction(priority3), priority3));
 
 				int rekt = 0;
-				
+
 				while (!idle.get(priority1) || !idle.get(priority2) || !idle.get(priority3)) {
-					
+
 					if (!idle.get(priority1)) {
 						Junction end = findTheRoute(getJunction(priority1), basem.get(priority1), reserveTable,
 								priority1);
 						if (end.equals(basem.get(priority1))) {
 							pairedCommands.get(priority1).addCommand(Command.DROP);
+							pairedCommands.get(priority1).addCommand(Command.WAIT);
 							idle.put(priority1, true);
 							waitMap.put(end, priority1);
 						}
@@ -421,6 +436,7 @@ public class NewMultiRoutePlanner {
 								priority2);
 						if (end.equals(basem.get(priority2))) {
 							pairedCommands.get(priority2).addCommand(Command.DROP);
+							pairedCommands.get(priority2).addCommand(Command.WAIT);
 							idle.put(priority2, true);
 							waitMap.put(end, priority2);
 						}
@@ -435,6 +451,7 @@ public class NewMultiRoutePlanner {
 								priority3);
 						if (end.equals(basem.get(priority3))) {
 							pairedCommands.get(priority3).addCommand(Command.DROP);
+							pairedCommands.get(priority3).addCommand(Command.WAIT);
 							idle.put(priority3, true);
 							waitMap.put(end, priority3);
 						}
@@ -452,7 +469,7 @@ public class NewMultiRoutePlanner {
 					priority1 = priority2;
 					priority2 = priority3;
 					priority3 = priorityTemp;
-					
+
 					rekt++;
 
 				}
@@ -490,6 +507,8 @@ public class NewMultiRoutePlanner {
 
 		System.out.println(robot.getName() + " " + start + " to " + goal);
 
+		boolean triggered = false;
+
 		if (waitMap.containsKey(goal)) {
 
 			Junction newJ = escape(waitMap.get(goal), goal);
@@ -498,6 +517,7 @@ public class NewMultiRoutePlanner {
 				reserveTable[l].add(newJ);
 			}
 
+			crashMap.put(robot, true);
 		}
 
 		RoutePackage rPackage = finder.findRoute(start, goal, robot.getDirection(), reserveTable);
@@ -509,9 +529,9 @@ public class NewMultiRoutePlanner {
 		Junction endPoint = junctionList.get(junctionList.size() - 1);
 		Direction endDirection = directionList.get(directionList.size() - 1);
 
-		if (waitMap.containsKey(endPoint)) {
+		if (crashMap.get(robot) && goal.equals(endPoint)) {
 			Command last = commandList.removeLast();
-			commandList.add(Command.WAIT);
+			commandList.add(Command.WAIT_ESC);
 			commandList.add(last);
 		}
 
@@ -555,12 +575,13 @@ public class NewMultiRoutePlanner {
 
 					RoutePackage rPack = findTheWay(facing, junction, junc);
 
-					pairedCommands.get(robot).addCommand(rPack.getCommandList().pop());
-					pairedCommands.get(robot).addCommand(Command.ESC);
+					pairedCommands.get(robot).setLastCommand(rPack.getCommandList().pop());
+
+					pairedCommands.get(robot).addCommand(Command.WAIT);
 
 					waitMap.put(junc, robot);
 					waitMap.remove(junction);
-					
+
 					robot.setX(junc.getX());
 					robot.setY(junc.getY());
 					robot.setDirection(rPack.getDirectionList().get(0));
@@ -574,7 +595,7 @@ public class NewMultiRoutePlanner {
 		}
 
 		return null;
-		
+
 	}
 
 	/**
