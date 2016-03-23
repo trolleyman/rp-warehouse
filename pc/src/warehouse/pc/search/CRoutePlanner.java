@@ -178,6 +178,6 @@ public class CRoutePlanner {
 		}
 		
 		// Find route using A*
-		return multiFinder.findRoute(from, to, reserve);
+		return multiFinder.findRoute(from, to, reserve, time);
 	}
 }

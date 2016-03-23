@@ -21,7 +21,7 @@ public class CRouteFinder {
 		finder = _finder;
 	}
 	
-	public Optional<LinkedList<Command>> findRoute(Junction start, Junction goal, CReserveTable reserve) {
+	public Optional<LinkedList<Command>> findRoute(Junction start, Junction goal, CReserveTable reserve, int startTime) {
 		HashSet<CState> closedList = new HashSet<>();
 		PriorityQueue<CState> openList = new PriorityQueue<>(new Comparator<CState>() {
 			@Override
@@ -36,7 +36,7 @@ public class CRouteFinder {
 			}
 		});
 		
-		openList.add(new CState(map, finder, reserve, start.getX(), start.getY()));
+		openList.add(new CState(map, finder, reserve, start.getX(), start.getY(), startTime));
 		
 		// TODO: This probably fails when the robot cannot get to the goal, as
 		// it will keep on generating successors that wait. Maybe a counter that

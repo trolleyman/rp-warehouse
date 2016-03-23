@@ -23,7 +23,7 @@ public class CReserveTable {
 	 */
 	private void extend(int time) {
 		reserve.ensureCapacity(time + 1);
-		for (int i = reserve.size(); i < time; i++) {
+		for (int i = reserve.size(); i <= time; i++) {
 			HashSet<Junction> newReserved = new HashSet<>();
 			/*for (Pair<Junction, Integer> p : reservedAfter) {
 				if (time >= p.getItem2()) {
@@ -36,7 +36,7 @@ public class CReserveTable {
 	
 	public boolean isPositionReserved(Junction pos, int time) {
 		extend(time);
-		if (time < reserve.size() && reserve.get(time).contains(pos)) {
+		if (reserve.get(time).contains(pos)) {
 			return true;
 		} else {
 			for (Pair<Junction, Integer> p : reservedAfter) {
@@ -83,6 +83,7 @@ public class CReserveTable {
 			com.setFrom(currentX, currentY);
 			currentX = com.getX();
 			currentY = com.getY();
+			time += 1;
 			
 			reservePosition(new Junction(currentX, currentY), time);
 		}

@@ -27,19 +27,18 @@ public class CState {
 	
 	private ArrayList<CState> successors = null;
 	
-	public CState(Map _map, RouteFinder _finder, CReserveTable _reserve, int _robotX, int _robotY) {
+	public CState(Map _map, RouteFinder _finder, CReserveTable _reserve, int _robotX, int _robotY, int _time) {
 		map = _map;
 		finder = _finder;
 		reserve = _reserve;
 		robotX = _robotX;
 		robotY = _robotY;
-		time = 0;
+		time = _time;
 	}
 	
 	public CState(CState _parent, CommandType _command) {
 		this(_parent.map, _parent.finder, _parent.reserve,
-			transformX(_parent.robotX, _command), transformY(_parent.robotY, _command));
-		time = _parent.time + 1;
+			transformX(_parent.robotX, _command), transformY(_parent.robotY, _command), _parent.time + 1);
 		parent = _parent;
 		command = _command;
 	}

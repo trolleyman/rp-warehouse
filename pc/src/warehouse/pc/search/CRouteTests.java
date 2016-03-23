@@ -47,7 +47,7 @@ public class CRouteTests {
 			Junction start = p.getItem1();
 			Junction goal = p.getItem2();
 			
-			Optional<LinkedList<Command>> op = finder.findRoute(start, goal, reserve);
+			Optional<LinkedList<Command>> op = finder.findRoute(start, goal, reserve, 0);
 			if (op.isPresent()) {
 				reserve.reservePositions(start, op.get() , 0);
 			}
