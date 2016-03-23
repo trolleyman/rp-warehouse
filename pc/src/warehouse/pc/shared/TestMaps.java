@@ -31,11 +31,7 @@ public class TestMaps {
 			new Rectangle2D.Double(6.5, 0.5, 1.0, 5.0),
 			new Rectangle2D.Double(9.5, 0.5, 1.0, 5.0),
 		}, 0.25f);
-		REAL_WAREHOUSE = new Map(12, 8, new Rectangle2D.Double[] {
-				new Rectangle2D.Double(1.5, 1.5, 1.0, 4.0),
-				new Rectangle2D.Double(4.5, 2.5, 2.0, 2.0),
-				new Rectangle2D.Double(8.5, 1.5, 1.0, 4.0)
-		}, 0.5f);
+		REAL_WAREHOUSE = new Map(MapUtils.createRealWarehouse());
 	}
 	
 	/**

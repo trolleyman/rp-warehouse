@@ -47,13 +47,14 @@ public class DropList implements FileList {
 				splitLine = line.split(",");
 				
 				try {
-					int x = Integer.valueOf(splitLine[0]);
-					int y = Integer.valueOf(splitLine[1]);
+					int x = Integer.valueOf(splitLine[0].trim());
+					int y = Integer.valueOf(splitLine[1].trim());
 					
 					//Create drop point and add to list.
 					dropList.add(new Junction(x, y));
 				} catch (NumberFormatException e) {
 					// Ignore line.
+					System.err.println("Ignored invalid line in drops.csv: '" + line + "'");
 				}
 				
 				line = br.readLine();

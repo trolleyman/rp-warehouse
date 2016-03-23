@@ -95,6 +95,8 @@ public class RouteFinder {
 		start = map.getJunction(start.getX(), start.getY());
 		goal = map.getJunction(goal.getX(), goal.getY());
 		
+		if (start == null || goal == null)
+			return null;
 		
 		if (!nodes.contains(start) || !nodes.contains(goal)) {
 			return null;
