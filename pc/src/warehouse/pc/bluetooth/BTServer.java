@@ -44,7 +44,9 @@ public class BTServer {
 
 		commandMap = new HashMap<>();
 		executer = new RouteExecuter(this, commandMap);
-		new Thread(executer, "RouteExecuter").start();
+		Thread t = new Thread(executer, "RouteExecuter");
+		t.setDaemon(true);
+		t.start();
 		connections = new HashMap<>();
 	}
 	

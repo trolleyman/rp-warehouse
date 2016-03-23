@@ -43,6 +43,9 @@ public class CMultiRouteFinder {
 		// keeps track of this and stops when it has waited more than 10 times?
 		while (!openList.isEmpty()) {
 			CState current = openList.remove();
+			if (closedList.contains(current))
+				continue;
+			
 			if (current.getX() == goal.getX() && current.getY() == goal.getY()) {
 				// Goal has been found, return list of commands
 				return Optional.of(current.getCommands());

@@ -65,7 +65,9 @@ public class CState {
 	}
 	
 	private Junction getJunction(int x, int y, Direction d) {
-		Junction j = map.getJunction(x, y);
+		Junction j = map.getJunction(
+			transformX(x, CommandType.fromDirection(d)),
+			transformY(y, CommandType.fromDirection(d)));
 		if (j == null)
 			return null;
 		if (reserve.isPositionReserved(j, time + 1)) // Check for reserved positions.
