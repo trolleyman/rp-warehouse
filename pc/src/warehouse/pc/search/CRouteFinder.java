@@ -48,7 +48,8 @@ public class CRouteFinder {
 				return Optional.of(current.getCommands());
 			}
 			
-			// TODO
+			// Add sucessors of current to open list.
+			openList.addAll(current.getSucessors());
 			
 			closedList.add(current);
 		}
