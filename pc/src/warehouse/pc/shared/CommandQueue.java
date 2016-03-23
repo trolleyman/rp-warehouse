@@ -106,6 +106,17 @@ public class CommandQueue {
 		return junctions;
 	}
 
+	/**
+	 * Set the last element to a different one
+	 * 
+	 * @param command
+	 *            the command
+	 */
+
+	public void setLastCommand(Command command) {
+		commands.set(commands.size() - 1, command);
+	}
+
 	public String toString() {
 		return commands.toString();
 	}
