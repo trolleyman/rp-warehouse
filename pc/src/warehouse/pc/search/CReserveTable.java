@@ -85,6 +85,7 @@ public class CReserveTable {
 			currentY = com.getY();
 			time += 1;
 			
+			reservePosition(new Junction(currentX, currentY), time + 1);
 			reservePosition(new Junction(currentX, currentY), time);
 		}
 	}
