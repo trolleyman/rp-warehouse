@@ -34,7 +34,7 @@ public class TestMaps {
 		REAL_WAREHOUSE = new Map(MapUtils.createRealWarehouse());
 		MARKING_WAREHOUSE = new Map(MapUtils.createMarkingWarehouseMap());
 		PATHFINDING_TEST = new Map(8, 4, new Rectangle2D.Double[] {
-			new Rectangle2D.Double(1.5, 0.5, 4, 1),
+			new Rectangle2D.Double(2.5, 0.5, 4, 1),
 			new Rectangle2D.Double(5.5, 1.5, 1, 1),
 		}, 0.1f);
 	}

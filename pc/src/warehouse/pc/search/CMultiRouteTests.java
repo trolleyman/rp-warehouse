@@ -23,11 +23,13 @@ import warehouse.pc.shared.TestMaps;
 
 public class CMultiRouteTests {
 	public static void main(String[] args) {
-		test1();
+		CMultiRouteTests t = new CMultiRouteTests();
+		
+		t.test1();
 	}
 	
 	@Test
-	private static void test1() {
+	public void test1() {
 		MainInterface mi = MainInterface.get();
 		Map map = TestMaps.PATHFINDING_TEST;
 		
@@ -60,8 +62,29 @@ public class CMultiRouteTests {
 			CommandType.X_POS,
 		};
 		CommandType[] path2 = new CommandType[] {
-			
+			CommandType.X_POS,
+			CommandType.Y_POS,
+			CommandType.Y_POS,
+			CommandType.Y_POS,
+			CommandType.X_NEG,
+			CommandType.X_NEG,
+			CommandType.Y_NEG,
+			CommandType.X_NEG,
+			CommandType.X_NEG,
+			CommandType.X_NEG,
+			CommandType.Y_NEG,
+			CommandType.Y_NEG,
+			CommandType.X_POS,
 		};
+		
+		assertTrue(path1.length == routeResults.get(0).get().size());
+		assertTrue(path2.length == routeResults.get(1).get().size());
+		for (int i = 0; i < path1.length; i++) {
+			assertTrue(path1[i].equals(routeResults.get(0).get().get(i).getType()));
+		}
+		for (int i = 0; i < path2.length; i++) {
+			assertTrue(path2[i].equals(routeResults.get(1).get().get(i).getType()));
+		}
 		
 		ArrayList<Job> jobList = mi.getJobList().getList();
 		jobList.remove(0);
