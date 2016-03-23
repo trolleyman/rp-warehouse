@@ -15,6 +15,7 @@ import warehouse.pc.job.Item;
 import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
 import warehouse.pc.shared.Command;
+import warehouse.pc.shared.CommandType;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.TestMaps;
@@ -44,14 +45,14 @@ public class PlanningTests {
 	Direction yp = Direction.Y_POS;
 	Direction yn = Direction.Y_NEG;
 
-	Command u = Command.Y_POS;
-	Command d = Command.Y_NEG;
-	Command l = Command.X_NEG;
-	Command r = Command.X_POS;
-	Command dp = Command.DROP;
-	Command w = Command.WAIT;
-	Command p = Command.PICK;
-	Command cj = Command.COMPLETE_JOB;
+	Command u  = new Command(CommandType.Y_POS);
+	Command d  = new Command(CommandType.Y_NEG);
+	Command l  = new Command(CommandType.X_NEG);
+	Command r  = new Command(CommandType.X_POS);
+	Command dp = new Command(CommandType.DROP);
+	Command w  = new Command(CommandType.WAIT);
+	Command p  = new Command(CommandType.PICK);
+	Command cj = new Command(CommandType.COMPLETE_JOB);
 
 	RoutePlanner plannerA;
 

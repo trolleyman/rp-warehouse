@@ -11,6 +11,7 @@ import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
 import warehouse.pc.shared.Command;
 import warehouse.pc.shared.CommandQueue;
+import warehouse.pc.shared.CommandType;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.Robot;
@@ -177,7 +178,7 @@ public class RoutePlanner {
 						System.out.println(directList);
 						System.out.println(list);*/
 						pairedCommands.get(robot).addCommandList(list);
-						pairedCommands.get(robot).addCommand(Command.DROP);
+						pairedCommands.get(robot).addCommand(new Command(CommandType.DROP));
 						
 						// this should be updated by the robot, here for testing purposes
 						
@@ -230,8 +231,8 @@ public class RoutePlanner {
 			System.out.println(directList);
 			System.out.println(list);*/
 			pairedCommands.get(robot).addCommandList(list);
-			pairedCommands.get(robot).addCommand(Command.DROP);
-			pairedCommands.get(robot).addCommand(Command.COMPLETE_JOB); // Completes the job
+			pairedCommands.get(robot).addCommand(new Command(CommandType.DROP));
+			pairedCommands.get(robot).addCommand(new Command(CommandType.COMPLETE_JOB)); // Completes the job
 			
 			robot.setX(goal.getX());
 			robot.setY(goal.getY());

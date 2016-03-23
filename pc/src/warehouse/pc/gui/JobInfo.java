@@ -139,12 +139,10 @@ public class JobInfo extends JPanel implements RobotListener {
 			RobotManager man = mi.getRobotManager();
 			
 			for (Robot r : mi.getRobots()) {
-				ArrayDeque<Job> jobs = man.getJobs(r);
-				Job j = null;
-				if (jobs != null) {
-					j = jobs.peekFirst();
+				Job j = man.getPartialJob(r);
+				if (j != null) {
+					newJobs.add(Pair.makePair(r, j));
 				}
-				newJobs.add(Pair.makePair(r, j));
 			}
 			
 			newJobs.sort(new Comparator<Pair<Robot, Job>>() {

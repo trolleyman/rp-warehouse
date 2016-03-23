@@ -67,4 +67,13 @@ public class LocationList implements FileList {
 			}
 		}
 	}
+
+	// Returns "" on failure.
+	public String getItemNameAt(int x, int y) {
+		for (Location loc : locationList) {
+			if (loc.getX() == x && loc.getY() == y)
+				return loc.getItemName();
+		}
+		return "";
+	}
 }

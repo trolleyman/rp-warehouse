@@ -127,7 +127,7 @@ public class BTServer {
 				break;
 			}
 		} else {
-			switch (com) {
+			switch (com.getType()) {
 			case PICK:
 				sendToRobot(robot.getName(), Format.pickUp(com.getQuantity(), com.getWeight()));
 				break;

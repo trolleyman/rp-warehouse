@@ -10,23 +10,27 @@ import warehouse.shared.Direction;
  * Commands the robot can execute in the field
  */
 
-public enum Command {
-	Y_POS,
-	X_POS,
-	Y_NEG,
-	X_NEG,
-	PICK,
-	DROP,
-	COMPLETE_JOB,
-	WAIT;
+public class Command {
+	private CommandType type;
 	
+	// Metadata
 	private int x;
 	private int y;
 	private int quantity;
 	private float weight;
 	
+	public Command(CommandType _type) {
+		this.type = _type;
+	}
+
+	public Command(int _quantity, float _weight) {
+		this.type = CommandType.PICK;
+		this.quantity = _quantity;
+		this.weight = _weight;
+	}
+
 	public Optional<Direction> toDirection() {
-		switch (this) {
+		switch (type) {
 		case Y_POS: return Optional.of(Direction.Y_POS);
 		case X_POS: return Optional.of(Direction.X_POS);
 		case Y_NEG: return Optional.of(Direction.Y_NEG);
@@ -40,20 +44,20 @@ public enum Command {
 	 */
 	public static Command fromDirection(Direction dir) {
 		switch (dir) {
-		case Y_POS: return Command.Y_POS;
-		case X_POS: return Command.X_POS;
-		case Y_NEG: return Command.Y_NEG;
-		case X_NEG: return Command.X_NEG;
-		default: return Command.WAIT;
+		case Y_POS: return new Command(CommandType.Y_POS);
+		case X_POS: return new Command(CommandType.X_POS);
+		case Y_NEG: return new Command(CommandType.Y_NEG);
+		case X_NEG: return new Command(CommandType.X_NEG);
+		default: return new Command(CommandType.WAIT);
 		}
 	}
 	
+	public CommandType getType() {
+		return type;
+	}
 	
 	public static Command pickUp(int _quantity, float _weight) {
-		Command com = Command.PICK;
-		com.quantity = _quantity;
-		com.weight = _weight;
-		return com;
+		return new Command(_quantity, _weight);
 	}
 	
 	public void setX(int _x) {
@@ -89,7 +93,7 @@ public enum Command {
 	}
 
 	public void setFrom(int _x, int _y) {
-		switch (this) {
+		switch (type) {
 		case Y_POS:
 			x = _x;
 			y = _y + 1;
@@ -111,5 +115,18 @@ public enum Command {
 			y = _y;
 			break;
 		}
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof Command) {
+			Command c = (Command)o;
+			return c.type == type
+				&& c.weight == weight
+				&& c.quantity == quantity
+				&& c.x == x
+				&& c.y == y;
+		}
+		return false;
 	}
 }

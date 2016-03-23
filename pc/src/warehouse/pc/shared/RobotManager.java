@@ -10,12 +10,16 @@ import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import rp.util.Pair;
+import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
 import warehouse.pc.job.JobSelector;
 import warehouse.pc.search.RoutePlanner;
 
 public class RobotManager implements Runnable, RobotListener {
+	// Holds the current job & other jobs in the queue
 	private HashMap<Robot, ArrayDeque<Job>> robotJobs = new HashMap<>();
+	// Holds how much of the job is left to complete. Null signifies no job
+	private HashMap<Robot, Job> robotPartialJobs = new HashMap<>();
 	private HashMap<Robot, CommandQueue> robotCommands = new HashMap<>();
 	private HashMap<Robot, LinkedBlockingQueue<String>> robotMessages = new HashMap<>();
 	private volatile MainInterface mi;
@@ -60,6 +64,7 @@ public class RobotManager implements Runnable, RobotListener {
 				// Add robots
 				for (Robot robot : robotsToAdd) {
 					robotJobs.put(robot, new ArrayDeque<>());
+					robotPartialJobs.put(robot, null);
 					robotCommands.put(robot, new CommandQueue());
 					robotMessages.put(robot, new LinkedBlockingQueue<>());
 					nextStepRecalculate = true;
@@ -68,6 +73,7 @@ public class RobotManager implements Runnable, RobotListener {
 				// Remove robots
 				for (Robot robot : robotsToRemove) {
 					robotJobs.remove(robot);
+					robotPartialJobs.remove(robot);
 					robotCommands.remove(robot);
 					robotMessages.remove(robot);
 					nextStepRecalculate = true;
@@ -80,6 +86,7 @@ public class RobotManager implements Runnable, RobotListener {
 				
 				// Remove robot jobs
 				for (Robot r : robotJobsToCancel) {
+					robotPartialJobs.put(r, null);
 					ArrayDeque<Job> jq = robotJobs.get(r);
 					if (jq == null)
 						continue;
@@ -96,8 +103,9 @@ public class RobotManager implements Runnable, RobotListener {
 				// If any robot's next command is Command.COMPLETE_JOB, complete job & recalculate.
 				for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
 					ArrayDeque<Command> coms = e.getValue().getCommands();
-					if (coms.peekFirst() != null && coms.peekFirst().equals(Command.COMPLETE_JOB)) {
+					if (coms.peekFirst() != null && coms.peekFirst().getType().equals(CommandType.COMPLETE_JOB)) {
 						coms.pollFirst();
+						robotPartialJobs.put(e.getKey(), null);
 						ArrayDeque<Job> jobs = robotJobs.get(e.getKey());
 						if (jobs != null && !jobs.isEmpty()) {
 							// Complete first job in queue
@@ -162,9 +170,11 @@ public class RobotManager implements Runnable, RobotListener {
 			Robot robot = e.getKey();
 			ArrayDeque<Job> jobs = e.getValue();
 			if (jobs.size() == 0) {
-				Optional<Job> job = js.getJob((int) robot.getX(), (int) robot.getY(), Robot.MAX_WEIGHT);
-				if (job.isPresent()) {
-					jobs.offer(job.get());
+				Optional<Job> ojob = js.getJob((int) robot.getX(), (int) robot.getY(), Robot.MAX_WEIGHT);
+				if (ojob.isPresent()) {
+					Job j = ojob.get();
+					jobs.offer(j);
+					robotPartialJobs.put(robot, new Job(j.getId(), j.getItems(), j.getTotalWeight(), j.getTotalReward()));
 				}
 			}
 		}
@@ -174,7 +184,9 @@ public class RobotManager implements Runnable, RobotListener {
 		HashMap<Robot, LinkedList<Job>> robotEmptyCommandJobs = new HashMap<>();
 		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
 			if (e.getValue().getCommands().isEmpty()) {
-				robotEmptyCommandJobs.put(e.getKey().clone(), new LinkedList<>(robotJobs.get(e.getKey())));
+				LinkedList<Job> jobs = new LinkedList<>();
+				jobs.add(robotPartialJobs.get(e.getKey()));
+				robotEmptyCommandJobs.put(e.getKey().clone(), jobs);
 			}
 		}
 		RoutePlanner planner = new RoutePlanner(mi.getMap(), Robot.MAX_WEIGHT, robotEmptyCommandJobs, mi.getDropList().getList());
@@ -197,13 +209,12 @@ public class RobotManager implements Runnable, RobotListener {
 		
 		ArrayList<RobotUpdater> robotsToUpdate = new ArrayList<>();
 		
-		/*// Don't do this for now - might deadlock the whole system.
 		// Get list of robots with where they are in the array
 		// Holds where robots will be.
 		ArrayList<Pair<Robot, Junction>> newPos = new ArrayList<>();
 		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
 			Command com = e.getValue().getCommands().peekFirst();
-			com = (com == null ? Command.WAIT : com);
+			com = (com == null ? new Command(CommandType.WAIT) : com);
 			com.setFrom(e.getKey().getGridX(), e.getKey().getGridY());
 			newPos.add(Pair.makePair(e.getKey(), mi.getMap().getJunction(com.getX(), com.getY())));
 		}
@@ -214,34 +225,36 @@ public class RobotManager implements Runnable, RobotListener {
 				Pair<Robot, Junction> jth = newPos.get(j);
 				if (ith.getItem2().equals(jth.getItem2())) {
 					// Collision - add wait command to second (least prioritised robot)
+					// Don't do this for now - might deadlock the whole system.
+					/*
 					Robot second = newPos.get(j).getItem1();
-					robotCommands.get(second).getCommands().addFirst(Command.WAIT);
-					System.out.println("Collision averted between "
+					robotCommands.get(second).getCommands().addFirst(Command.WAIT);*/
+					System.out.println("Collision between "
 						+ ith.getItem1().getIdentity()
 						+ " and "
 						+ jth.getItem1().getIdentity() + ".");
 				}
 			}
-		}*/
+		}
 		
 		// Send commands to robots
-		ArrayList<Robot> readyRobots = new ArrayList<>();
+		HashMap<Robot, Command> readyRobots = new HashMap<>();
 		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
 			CommandQueue q = e.getValue();
 			Robot r = e.getKey();
 			Command com = q.getCommands().peekFirst();
 			if (com == null) {
-				com = Command.WAIT;
+				com = new Command(CommandType.WAIT);
 			} else {
 				com.setFrom(r.getGridX(), r.getGridY());
 				r.setGridX(com.getX());
 				r.setGridY(com.getY());
 				q.getCommands().pop();
-				readyRobots.add(r);
+				readyRobots.put(r, com);
 			}
 			try {
 				System.out.println("Sending to " + e.getKey().getIdentity() + ": " + com);
-				Job j = robotJobs.getOrDefault(r, new ArrayDeque<>()).peekFirst();
+				Job j = robotPartialJobs.get(r);
 				if (j != null)
 					mi.getServer().sendToRobot(r.getName(), "Cancel Job:" + j.getId());
 				mi.getServer().sendCommand(r, com);
@@ -258,7 +271,28 @@ public class RobotManager implements Runnable, RobotListener {
 		if (!readyRobots.isEmpty())
 			System.out.println("Robot Manager: Waiting for robots to reply 'ready'...");
 		
-		for (Robot robot : readyRobots) {
+		for (Entry<Robot, Command> e : readyRobots.entrySet()) {
+			Robot robot = e.getKey();
+			Command com = e.getValue();
+			
+			if (com.getType().equals(CommandType.PICK)) {
+				// Get item at x,y
+				String itemName = mi.getLocationList().getItemNameAt(robot.getGridX(), robot.getGridY());
+				System.out.println("Item at " + robot.getGridX() + ", " + robot.getGridY() + ":" + itemName);
+				ArrayList<ItemQuantity> items = robotPartialJobs.get(robot).getItems();
+				int found = -1;
+				for (int i = 0; i < items.size(); i++) {
+					if (items.get(i).getItem().getName().equals(itemName)) {
+						found = i;
+						break;
+					}
+				}
+				if (found != -1) {
+					// Remove completed item
+					items.remove(found);
+				}
+			}
+			
 			try {
 				mi.getServer().waitForReady(robot.getName());
 			} catch (IOException ex) {
@@ -285,6 +319,13 @@ public class RobotManager implements Runnable, RobotListener {
 	 */
 	public ArrayDeque<Job> getJobs(Robot _r) {
 		return robotJobs.get(_r);
+	}
+	
+	/**
+	 * Gets the job left.
+	 */
+	public Job getPartialJob(Robot _r) {
+		return robotPartialJobs.get(_r);
 	}
 	
 	/**
