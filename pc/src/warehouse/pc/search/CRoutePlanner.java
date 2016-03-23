@@ -21,11 +21,15 @@ public class CRoutePlanner {
 	private CReserveTable reserve;
 	private Map map;
 	private ArrayList<Junction> bases;
+	private RouteFinder finder;
+	private CRouteFinder multiFinder;
 	
-	public CRoutePlanner(Map _map, ArrayList<Junction> _bases) {
+	public CRoutePlanner(Map _map, ArrayList<Junction> _bases, RouteFinder _finder) {
 		reserve = new CReserveTable();
 		map = _map;
 		bases = _bases;
+		finder = _finder;
+		multiFinder = new CRouteFinder(map, finder);
 	}
 	
 	public HashMap<Robot, LinkedList<Command>> routeRobots(HashMap<Robot, LinkedList<Job>> jobs) {
@@ -61,7 +65,7 @@ public class CRoutePlanner {
 		
 		outer: for (Job j : jobs) {
 			for (ItemQuantity i : j.getItems()) {
-				if (i.getItem().getWeight() * i.getQuantity() > Robot.MAX_WEIGHT) {
+				if (weight + i.getItem().getWeight() * i.getQuantity() > Robot.MAX_WEIGHT) {
 					// Path to nearest available base
 					Optional<Pair<Junction, LinkedList<Command>>> op = routeToNearestBase(currentX, currentY, allCommands.size());
 					if (!op.isPresent()) {
@@ -74,6 +78,7 @@ public class CRoutePlanner {
 					allCommands.addAll(commands);
 					currentX = base.getX();
 					currentY = base.getY();
+					weight = 0;
 				}
 				
 				// Path from current position to item position
@@ -87,9 +92,24 @@ public class CRoutePlanner {
 				LinkedList<Command> commands = op.get();
 				currentX = at.getX();
 				currentY = at.getY();
+				weight += i.getItem().getWeight() * i.getQuantity();
 				allCommands.addAll(commands);
 				allCommands.add(Command.pickUp(i.getQuantity(), i.getItem().getWeight()));
 			}
+			
+			// Drop off all items.
+			Optional<Pair<Junction, LinkedList<Command>>> op = routeToNearestBase(currentX, currentY, allCommands.size());
+			if (!op.isPresent()) {
+				// Error - no bases are available
+				System.err.println("No bases available for " + r.getIdentity() + ".");
+				break outer;
+			}
+			LinkedList<Command> commands = op.get().getItem2();
+			Junction base = op.get().getItem1();
+			allCommands.addAll(commands);
+			currentX = base.getX();
+			currentY = base.getY();
+			weight = 0;
 			allCommands.add(new Command(CommandType.COMPLETE_JOB));
 		}
 		
@@ -158,7 +178,6 @@ public class CRoutePlanner {
 		}
 		
 		// Find route using A*
-		
-		
+		return multiFinder.findRoute(from, to, reserve);
 	}
 }
