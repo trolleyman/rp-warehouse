@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import rp.util.Pair;
 import warehouse.pc.job.Job;
 import warehouse.pc.job.JobSelector;
 import warehouse.pc.search.RoutePlanner;
@@ -196,6 +197,33 @@ public class RobotManager implements Runnable, RobotListener {
 		
 		ArrayList<RobotUpdater> robotsToUpdate = new ArrayList<>();
 		
+		// Get list of robots with where they are in the array
+		// Holds where robots will be.
+		ArrayList<Pair<Robot, Junction>> newPos = new ArrayList<>();
+		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
+			Command com = e.getValue().getCommands().peekFirst();
+			com = (com == null ? Command.WAIT : com);
+			com.setFrom(e.getKey().getGridX(), e.getKey().getGridY());
+			newPos.add(Pair.makePair(e.getKey(), mi.getMap().getJunction(com.getX(), com.getY())));
+		}
+		// Check for collisions
+		for (int i = 0; i < newPos.size(); i++) {
+			for (int j = i + 1; j < newPos.size(); j++) {
+				Pair<Robot, Junction> ith = newPos.get(i);
+				Pair<Robot, Junction> jth = newPos.get(j);
+				if (ith.getItem2().equals(jth.getItem2())) {
+					// Collision - add wait command to second
+					Robot second = newPos.get(j).getItem1();
+					robotCommands.get(second).getCommands().addFirst(Command.WAIT);
+					System.out.println("Collision averted between "
+						+ ith.getItem1().getIdentity()
+						+ " and "
+						+ jth.getItem1().getIdentity() + ".");
+				}
+			}
+		}
+		
+		// Send commands to robots
 		ArrayList<Robot> readyRobots = new ArrayList<>();
 		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
 			CommandQueue q = e.getValue();
