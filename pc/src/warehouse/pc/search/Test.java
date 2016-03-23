@@ -54,6 +54,7 @@ public class Test {
 		listC.add(new ItemQuantity(crackers, 1));
 		listD.add(new ItemQuantity(lego, 1));
 		listD.add(new ItemQuantity(crackers, 1));
+		listC.add(new ItemQuantity(crackers, 1));
 
 		jobA.add(new Job(0, listA, 25, 0));
 		jobB.add(new Job(0, listB, 10, 0));
