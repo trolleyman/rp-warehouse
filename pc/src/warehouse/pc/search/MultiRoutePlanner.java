@@ -42,6 +42,7 @@ public class MultiRoutePlanner {
 	private HashMap<Robot, ArrayList<ItemQuantity>> itemq;
 	private HashMap<Junction, Robot> waitMap;
 	private HashMap<Robot, Boolean> crashMap;
+	private HashMap<Robot, Junction> baseStatus;
 
 	private boolean pickingPhase;
 
@@ -89,6 +90,7 @@ public class MultiRoutePlanner {
 		itemq = new HashMap<>();
 		waitMap = new HashMap<>();
 		crashMap = new HashMap<>();
+		baseStatus = new HashMap<>();
 
 		pickingPhase = true;
 
@@ -280,10 +282,10 @@ public class MultiRoutePlanner {
 					idle.put(priority2, true);
 				}
 
-				if (pairedJobs.get(priority1).size() > i / 2) {
+				if (pairedJobs.get(priority3).size() > i / 2) {
 					jobC = pairedJobs.get(priority3).get(i / 2);
 				} else {
-					idle.put(priority1, true);
+					idle.put(priority3, true);
 				}
 
 				// the jobs will all be different sizes (but hopefully similar
@@ -400,6 +402,10 @@ public class MultiRoutePlanner {
 					idle.put(priority1, false);
 					idle.put(priority2, false);
 					idle.put(priority3, false);
+					
+					crashMap.put(priority1, false);
+					crashMap.put(priority2, false);
+					crashMap.put(priority3, false);
 
 					waitMap.clear();
 
@@ -484,7 +490,11 @@ public class MultiRoutePlanner {
 				idle.put(priority1, false);
 				idle.put(priority2, false);
 				idle.put(priority3, false);
-
+				
+				crashMap.put(priority1, false);
+				crashMap.put(priority1, false);
+				crashMap.put(priority1, false);
+				
 				waitMap.clear();
 
 			}
@@ -525,6 +535,12 @@ public class MultiRoutePlanner {
 
 		RoutePackage rPackage = finder.findRoute(start, goal, robot.getDirection(), reserveTable);
 
+		if(rPackage == null){
+			return start;
+		}
+		else
+		{
+
 		ArrayList<Direction> directionList = rPackage.getDirectionList();
 		ArrayList<Junction> junctionList = rPackage.getJunctionList();
 		LinkedList<Command> commandList = rPackage.getCommandList();
@@ -553,7 +569,7 @@ public class MultiRoutePlanner {
 		}
 
 		return endPoint;
-
+		}
 	}
 
 	/**
@@ -741,6 +757,9 @@ public class MultiRoutePlanner {
 		int lowest = map.getHeight() + map.getWidth();
 
 		for (Junction base : bases) {
+			
+			if(howManyTimes(baseStatus, base) !=2){
+			
 			int heury = oneFinder
 					.findRoute(map.getJunction((int) start.getX(), (int) start.getY()), base, robot.getDirection())
 					.getDirectionList().size();
@@ -748,9 +767,31 @@ public class MultiRoutePlanner {
 				closest = base;
 				lowest = heury;
 			}
+			}
 		}
 
+		baseStatus.put(robot, closest);
 		return closest;
+	}
+	
+	/**
+	 * Find how many times a junction occurs in a hashmap
+	 * @param hashy the hashmap
+	 * @param junction the junction
+	 * @return how many times it occurs
+	 */
+	
+	private int howManyTimes(HashMap<Robot, Junction> hashy, Junction junction){
+		
+		int num = 0;
+		
+		for(Entry<Robot, Junction> entry : hashy.entrySet()){
+			if(entry.getValue().equals(junction)){
+				num++;
+			}
+		}
+		
+		return num;
 	}
 
 }
