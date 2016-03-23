@@ -29,24 +29,8 @@ public class CMultiRouteTests {
 	@Test
 	private static void test1() {
 		MainInterface mi = MainInterface.get();
-		/**
-		 * http://imgur.com/kE8xENd - Like in the lecture
-		 * 
-		 * 3 +---+---+---+---+---+---+---+
-		 *   |   |   |   |   |   |   |   |
-		 * 2 +---+---+---+---+---+---+   +
-		 *   |   |   |                   |
-		 * 1 +---+---+                   +
-		 *   |   |   |                   |
-		 * 0 +---+---A---2---+---1---B---+
-		 * 
-		 *   0   1   2   3   4   5   6   7
-		 * With robot A trying to get to 1 and robot B trying to get to 2.
-		 */
-		Map map = new Map(8, 4, new Rectangle.Double[] {
-			new Rectangle.Double(1.5, 0.5, 4, 1),
-			new Rectangle.Double(5.5, 1.5, 1, 1),
-		}, mi.getMap().getCellSize());
+		Map map = TestMaps.PATHFINDING_TEST;
+		
 		ArrayList<Pair<Junction, Junction>> routeInfo = new ArrayList<>();
 		routeInfo.add(Pair.makePair(new Junction(2, 0), new Junction(5, 0)));
 		routeInfo.add(Pair.makePair(new Junction(6, 0), new Junction(3, 0)));

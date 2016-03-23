@@ -33,6 +33,10 @@ public class TestMaps {
 		}, 0.25f);
 		REAL_WAREHOUSE = new Map(MapUtils.createRealWarehouse());
 		MARKING_WAREHOUSE = new Map(MapUtils.createMarkingWarehouseMap());
+		PATHFINDING_TEST = new Map(8, 4, new Rectangle2D.Double[] {
+			new Rectangle2D.Double(1.5, 0.5, 4, 1),
+			new Rectangle2D.Double(5.5, 1.5, 1, 1),
+		}, 0.1f);
 	}
 	
 	/**
@@ -109,8 +113,39 @@ public class TestMaps {
 	/**
 	 * This is the marking map
 	 * <pre>
-	 * 
+	 * +---+---+---+---+---+---+---+---+---+---+---+
+	 * |   |   |   |   |   |   |   |   |   |   |   |
+	 * +---+---+---+---+---+---+---+---+---+---+---+
+	 * |   |       |   |   |   |   |   |       |   |
+	 * +---+       +---+---+---+---+---+       +---+
+	 * |   |       |   |           |   |       |   |
+	 * +---+       +---+           +---+       +---+
+	 * |   |       |   |           |   |       |   |
+	 * +---+       +---+           +---+       +---+
+	 * |   |       |   |           |   |       |   |
+	 * +---+       +---+---+---+---+---+       +---+
+	 * |   |       |   |   |   |   |   |       |   |
+	 * +---+---+---+---+---+---+---+---+---+---+---+
+	 * |   |   |   |   |   |   |   |   |   |   |   |
+	 * +---+---+---+---+---+---+---+---+---+---+---+
 	 * </pre>
 	 */
 	public final static Map MARKING_WAREHOUSE;
+	
+	/**
+	 * Pathfinding test map
+	 * http://imgur.com/kE8xENd - Like in the lecture
+	 * <pre>
+	 * 3 +---+---+---+---+---+---+---+
+	 *   |   |   |   |   |   |   |   |
+	 * 2 +---+---+---+---+---+---+   +
+	 *   |   |   |                   |
+	 * 1 +---+---+                   +
+	 *   |   |   |                   |
+	 * 0 +---+---A---2---+---1---B---+
+	 *   0   1   2   3   4   5   6   7
+	 * </pre>
+	 * With robot A trying to get to 1 and robot B trying to get to 2.
+	 */
+	public final static Map PATHFINDING_TEST;
 }
