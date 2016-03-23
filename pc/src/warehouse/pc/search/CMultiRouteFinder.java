@@ -1,5 +1,6 @@
 package warehouse.pc.search;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -22,7 +23,7 @@ public class CMultiRouteFinder {
 	}
 	
 	public Optional<LinkedList<Command>> findRoute(Junction start, Junction goal, CReserveTable reserve, int startTime) {
-		HashSet<CState> closedList = new HashSet<>();
+		HashSet<Junction> closedList = new HashSet<>();
 		PriorityQueue<CState> openList = new PriorityQueue<>(new Comparator<CState>() {
 			@Override
 			public int compare(CState s1, CState s2) {
@@ -43,18 +44,20 @@ public class CMultiRouteFinder {
 		// keeps track of this and stops when it has waited more than 10 times?
 		while (!openList.isEmpty()) {
 			CState current = openList.remove();
-			if (closedList.contains(current))
-				continue;
-			
 			if (current.getX() == goal.getX() && current.getY() == goal.getY()) {
 				// Goal has been found, return list of commands
 				return Optional.of(current.getCommands());
 			}
 			
 			// Add sucessors of current to open list.
-			openList.addAll(current.getSucessors());
+			ArrayList<CState> sucessors = current.getSucessors();
+			for (CState s : sucessors) {
+				if (!closedList.contains(new Junction(s.getX(), s.getY()))) {
+					openList.add(s);
+				}
+			}
 			
-			closedList.add(current);
+			closedList.add(new Junction(current.getX(), current.getY()));
 		}
 		
 		return Optional.empty();

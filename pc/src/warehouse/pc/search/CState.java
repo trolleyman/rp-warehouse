@@ -70,7 +70,7 @@ public class CState {
 			return null;
 		if (reserve.isPositionReserved(j, time + 1)) // Check for reserved positions.
 			return null;
-		return j.getNeighbours()[d.ordinal()];
+		return j;
 	}
 	
 	public ArrayList<CState> getSucessors() {
