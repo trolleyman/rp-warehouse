@@ -31,8 +31,8 @@ public class Command {
 
 	public Optional<Direction> toDirection() {
 		switch (type) {
-		case Y_POS: return Optional.of(Direction.Y_POS); 
-		case X_POS: return Optional.of(Direction.X_POS); 
+		case Y_POS: return Optional.of(Direction.Y_POS);
+		case X_POS: return Optional.of(Direction.X_POS);
 		case Y_NEG: return Optional.of(Direction.Y_NEG);
 		case X_NEG: return Optional.of(Direction.X_NEG);
 		default:    return Optional.empty();
@@ -43,13 +43,7 @@ public class Command {
 	 * Converts a direction into a command
 	 */
 	public static Command fromDirection(Direction dir) {
-		switch (dir) {
-		case Y_POS: return new Command(CommandType.Y_POS);
-		case X_POS: return new Command(CommandType.X_POS);
-		case Y_NEG: return new Command(CommandType.Y_NEG);
-		case X_NEG: return new Command(CommandType.X_NEG);
-		default: return new Command(CommandType.WAIT);
-		}
+		return new Command(CommandType.fromDirection(dir));
 	}
 	
 	public CommandType getType() {
