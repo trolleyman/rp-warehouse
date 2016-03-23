@@ -212,7 +212,7 @@ public class RobotManager implements Runnable, RobotListener {
 				Pair<Robot, Junction> ith = newPos.get(i);
 				Pair<Robot, Junction> jth = newPos.get(j);
 				if (ith.getItem2().equals(jth.getItem2())) {
-					// Collision - add wait command to second
+					// Collision - add wait command to second (least prioritised robot)
 					Robot second = newPos.get(j).getItem1();
 					robotCommands.get(second).getCommands().addFirst(Command.WAIT);
 					System.out.println("Collision averted between "
