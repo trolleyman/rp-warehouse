@@ -13,6 +13,7 @@ import rp.util.Pair;
 import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
 import warehouse.pc.job.JobSelector;
+import warehouse.pc.search.MultiRoutePlanner;
 import warehouse.pc.search.RoutePlanner;
 
 public class RobotManager implements Runnable, RobotListener {
@@ -189,8 +190,10 @@ public class RobotManager implements Runnable, RobotListener {
 				robotEmptyCommandJobs.put(e.getKey().clone(), jobs);
 			}
 		}
-		RoutePlanner planner = new RoutePlanner(mi.getMap(), Robot.MAX_WEIGHT, robotEmptyCommandJobs, mi.getDropList().getList());
-		planner.computeCommands();
+		MultiRoutePlanner planner = new MultiRoutePlanner(mi.getMap(), Robot.MAX_WEIGHT, robotEmptyCommandJobs, mi.getDropList().getList(), 10);
+		if (robotEmptyCommandJobs.size() == 3) {
+			planner.computeCommands();
+		}
 		for (Entry<Robot, CommandQueue> robotCommand : robotCommands.entrySet()) {
 			CommandQueue commands = planner.getCommands(robotCommand.getKey());
 			if (commands != null) {
