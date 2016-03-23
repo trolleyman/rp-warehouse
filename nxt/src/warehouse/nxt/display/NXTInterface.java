@@ -377,7 +377,7 @@ public class NXTInterface {
 		if (sb.indexOf(".") > 0) {
 		    n++;
 		}
-		return Integer.parseInt(sb.substring(0, n));
+		return Double.parseDouble(sb.substring(0, n));
 	}
 	
 	// TODO To be tested tomorrow
