@@ -533,6 +533,7 @@ public class NewMultiRoutePlanner {
 			Command last = commandList.removeLast();
 			commandList.add(Command.WAIT_ESC);
 			commandList.add(last);
+			
 		}
 
 		robot.setX(endPoint.getX());
