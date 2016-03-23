@@ -16,7 +16,7 @@ import warehouse.pc.shared.Map;
 import warehouse.pc.shared.Robot;
 import warehouse.pc.shared.TestMaps;
 
-public class CRouteTests {
+public class CMultiRouteTests {
 	public static void main(String[] args) {
 		MainInterface mi = MainInterface.get();
 		/**
@@ -41,7 +41,7 @@ public class CRouteTests {
 		routeInfo.add(Pair.makePair(new Junction(6, 0), new Junction(3, 0)));
 		
 		ArrayList<Optional<LinkedList<Command>>> routeResults = new ArrayList<>();
-		CRouteFinder finder = new CRouteFinder(map, new RouteFinder(map));
+		CMultiRouteFinder finder = new CMultiRouteFinder(map, new RouteFinder(map));
 		CReserveTable reserve = new CReserveTable();
 		for (Pair<Junction, Junction> p : routeInfo) {
 			Junction start = p.getItem1();

@@ -16,20 +16,20 @@ import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.Robot;
 
-public class CRoutePlanner {
+public class CMultiRoutePlanner {
 	
 	private CReserveTable reserve;
 	private Map map;
 	private ArrayList<Junction> bases;
 	private RouteFinder finder;
-	private CRouteFinder multiFinder;
+	private CMultiRouteFinder multiFinder;
 	
-	public CRoutePlanner(Map _map, ArrayList<Junction> _bases, RouteFinder _finder) {
+	public CMultiRoutePlanner(Map _map, ArrayList<Junction> _bases, RouteFinder _finder) {
 		reserve = new CReserveTable();
 		map = _map;
 		bases = _bases;
 		finder = _finder;
-		multiFinder = new CRouteFinder(map, finder);
+		multiFinder = new CMultiRouteFinder(map, finder);
 	}
 	
 	public HashMap<Robot, LinkedList<Command>> routeRobots(HashMap<Robot, LinkedList<Job>> jobs) {

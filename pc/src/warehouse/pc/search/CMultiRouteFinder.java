@@ -12,11 +12,11 @@ import warehouse.pc.shared.Map;
 import warehouse.shared.Direction;
 
 // Tries to implement Hierarchical Cooperative A*
-public class CRouteFinder {
+public class CMultiRouteFinder {
 	private Map map;
 	private RouteFinder finder;
 	
-	public CRouteFinder(Map _map, RouteFinder _finder) {
+	public CMultiRouteFinder(Map _map, RouteFinder _finder) {
 		map = _map;
 		finder = _finder;
 	}
