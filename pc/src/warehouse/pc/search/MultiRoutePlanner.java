@@ -774,6 +774,13 @@ public class MultiRoutePlanner {
 		return closest;
 	}
 	
+	/**
+	 * Find how many times a junction occurs in a hashmap
+	 * @param hashy the hashmap
+	 * @param junction the junction
+	 * @return how many times it occurs
+	 */
+	
 	private int howManyTimes(HashMap<Robot, Junction> hashy, Junction junction){
 		
 		int num = 0;

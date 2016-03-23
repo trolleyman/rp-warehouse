@@ -19,7 +19,7 @@ import warehouse.pc.shared.Command;
  *
  */
 
-public class Test {
+public class MultiRoutePlannerTests {
 
 	public static void main(String args[]){
 		

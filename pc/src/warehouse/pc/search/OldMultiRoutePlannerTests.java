@@ -16,7 +16,7 @@ import warehouse.pc.shared.Map;
 import warehouse.pc.shared.Robot;
 import warehouse.pc.shared.TestMaps;
 
-public class MultiPlanningTests {
+public class OldMultiRoutePlannerTests {
 
 	static Map mapA;
 
