@@ -1,7 +1,8 @@
 package warehouse.pc.search;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.LinkedList;
+
 import warehouse.pc.shared.Command;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.TestMaps;
@@ -24,12 +25,14 @@ public class RouteTest {
 
 		// change the start node, goal node and initial direction
 		
-		ArrayList<Direction> testArray = testSearch.findRoute(testMap.getJunction(5, 1), testMap.getJunction(4, 0));
-		ArrayDeque<Command> commands = Command.fromDirections(testArray);
+		RoutePackage routes = testSearch.findRoute(testMap.getJunction(5, 1), testMap.getJunction(4, 0),
+				Direction.X_POS);
+		ArrayList<Direction> testArray = routes.getDirectionList();
+		LinkedList<Command> directions = routes.getCommandList();
 
 		// prints a list of bearings
 		
-		for (Command c : commands) {
+		for (Command c : directions) {
 			System.out.println("[" + c + "], ");
 		}
 	}

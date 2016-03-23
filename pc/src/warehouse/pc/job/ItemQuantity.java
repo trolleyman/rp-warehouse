@@ -23,6 +23,23 @@ public class ItemQuantity {
 		return this.quantity;
 	}
 	
+	public boolean equals(Object obj){
+		if(obj == null){
+			return false;
+		}
+		if(((ItemQuantity)obj).getItem().getName().equals(this.getItem().getName())){
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	public int hashCode(){
+		return item.getName().hashCode();
+	}
+
 	public static String listToString(List<ItemQuantity> iqs) {
 		StringBuilder b = new StringBuilder();
 		for (ItemQuantity iq : iqs) {

@@ -9,4 +9,9 @@ public enum CommandType {
 	DROP,
 	COMPLETE_JOB,
 	WAIT,
+	FORWARD,
+	BACKWARD,
+	LEFT,
+	RIGHT,
+	WAIT_ESC
 }
