@@ -91,7 +91,7 @@ public class MultiPlanningTests {
 		
 		jobA.add(new Job(0, listA, 25, 0));
 		jobB.add(new Job(0, listB, 10, 0));
-		jobC.add(new Job(0, listC, 5, 0));
+		jobC.add(new Job(0, listB, 5, 0));
 		
 		//jobA.add(new Job(3, listD, 15, 0));
 
