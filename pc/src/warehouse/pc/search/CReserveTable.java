@@ -40,7 +40,7 @@ public class CReserveTable {
 			return true;
 		} else {
 			for (Pair<Junction, Integer> p : reservedAfter) {
-				if (time >= p.getItem2()) {
+				if (time >= p.getItem2() && p.getItem1().equals(pos)) {
 					return true;
 				}
 			}

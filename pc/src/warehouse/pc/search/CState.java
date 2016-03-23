@@ -24,9 +24,7 @@ public class CState {
 	private CState parent;
 	// Command type can be null.
 	private CommandType command;
-	
-	private ArrayList<CState> successors = null;
-	
+		
 	public CState(Map _map, RouteFinder _finder, CReserveTable _reserve, int _robotX, int _robotY, int _time) {
 		map = _map;
 		finder = _finder;
@@ -53,14 +51,14 @@ public class CState {
 			return x;
 		}
 	}
-	private static int transformY(int x, CommandType c) {
+	private static int transformY(int y, CommandType c) {
 		switch (c) {
 		case Y_POS:
-			return x + 1;
+			return y + 1;
 		case Y_NEG:
-			return x - 1;
+			return y - 1;
 		default:
-			return x;
+			return y;
 		}
 	}
 	
@@ -76,15 +74,13 @@ public class CState {
 	}
 	
 	public ArrayList<CState> getSucessors() {
-		if (successors == null) {
-			successors = new ArrayList<>();
-			
-			// For each direction, add the sucessor state
-			for (Direction d : Direction.values()) {
-				Junction j = getJunction(robotX, robotY, d);
-				if (j != null)
-					successors.add(new CState(this, CommandType.fromDirection(d)));
-			}
+		ArrayList<CState> successors = new ArrayList<>();
+		
+		// For each direction, add the sucessor state
+		for (Direction d : Direction.values()) {
+			Junction j = getJunction(robotX, robotY, d);
+			if (j != null)
+				successors.add(new CState(this, CommandType.fromDirection(d)));
 		}
 		return successors;
 	}
