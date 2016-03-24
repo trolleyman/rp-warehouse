@@ -177,6 +177,7 @@ public class RobotManager implements Runnable, RobotListener {
 	/**
 	 * Recalculate the jobs & commands for the system
 	 */
+	@SuppressWarnings("unchecked")
 	private void doRecalculate() {
 		JobSelector js = mi.getJobSelector();
 		
@@ -193,7 +194,7 @@ public class RobotManager implements Runnable, RobotListener {
 				if (ojob.isPresent()) {
 					Job j = ojob.get();
 					jobs.offer(j);
-					robotPartialJobs.put(robot, new Job(j.getId(), j.getItems(), j.getTotalWeight(), j.getTotalReward()));
+					robotPartialJobs.put(robot, new Job(j.getId(), (ArrayList<ItemQuantity>)j.getItems().clone(), j.getTotalWeight(), j.getTotalReward()));
 				}
 			}
 		}
@@ -316,7 +317,6 @@ public class RobotManager implements Runnable, RobotListener {
 			if (com.getType().equals(CommandType.PICK)) {
 				// Get item at x,y
 				String itemName = mi.getLocationList().getItemNameAt(robot.getGridX(), robot.getGridY());
-				System.out.println("Item at " + robot.getGridX() + ", " + robot.getGridY() + ":" + itemName);
 				ArrayList<ItemQuantity> items = robotPartialJobs.get(robot).getItems();
 				int found = -1;
 				for (int i = 0; i < items.size(); i++) {
