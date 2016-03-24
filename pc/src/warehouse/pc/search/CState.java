@@ -24,7 +24,7 @@ public class CState {
 	private CState parent;
 	// Command type can be null.
 	private CommandType command;
-		
+			
 	public CState(Map _map, RouteFinder _finder, CReserveTable _reserve, int _robotX, int _robotY, int _time) {
 		map = _map;
 		finder = _finder;
@@ -82,6 +82,7 @@ public class CState {
 			if (j != null)
 				successors.add(new CState(this, CommandType.fromDirection(d)));
 		}
+		
 		return successors;
 	}
 	
