@@ -113,12 +113,12 @@ public class CMultiRouteTests {
 	 * Also assert that no robots hit each other.
 	 * 
 	 * @param map the map that was used
-	 * @param routeInfo a list of robots with their start and end locations
+	 * @param routeInfo a list of robots with their start and end locations. End locations can be null.
 	 * @param routes the results of the route finder
 	 * @param staticRobots if false then doesn't check for collisions after a robot has finished it's commands
 	 */
 	private void validateRoutes(Map map, ArrayList<Pair<Junction, Junction>> routeInfo, ArrayList<Optional<LinkedList<Command>>> routes, boolean staticRobots) {
-		assertTrue(routes.size() == routeInfo.size());
+			assertTrue(routes.size() == routeInfo.size());
 		
 		// x, y positions of all robots
 		ArrayList<Pair<Integer, Integer>> positions = new ArrayList<>();
@@ -219,6 +219,9 @@ public class CMultiRouteTests {
 			
 			Pair<Integer, Integer> pos = positions.get(r);
 			Junction goal = routeInfo.get(r).getItem2();
+			if (goal == null)
+				continue;
+			
 			int x = pos.getItem1();
 			int y = pos.getItem2();
 			
@@ -284,14 +287,14 @@ public class CMultiRouteTests {
 			System.out.printf("%s: %4dms: job %s: %s\n", p.getItem1().getIdentity(), t1 - t0, p.getItem2(), coms);
 		}
 		
-		HashMap<Robot, Pair<LinkedList<Job>, LinkedList<Command>>> robots = new HashMap<>();
-		for (int i = 0; i < jobs.size(); i++) {
+		ArrayList<Pair<Robot, LinkedList<Job>>> listedJobs = new ArrayList<>();
+		for (Pair<Robot, Job> p : jobs) {
 			LinkedList<Job> l = new LinkedList<>();
-			l.add(jobs.get(i).getItem2());
-			robots.put(jobs.get(i).getItem1(),
-				Pair.makePair(l, commands.get(i).getItem2()));
+			l.add(p.getItem2());
+			listedJobs.add(Pair.makePair(p.getItem1(), l));
 		}
-		validatePlan(map, robots);
+		
+		validatePlan(map, listedJobs, commands);
 	}
 	
 	/**
@@ -309,7 +312,13 @@ public class CMultiRouteTests {
 		for (Pair<Robot, LinkedList<Command>> e : commands) {
 			routes.add(Optional.of(e.getItem2()));
 		}
-		validateRoutes(map, null, routes, false);
+		
+		ArrayList<Pair<Junction, Junction>> info = new ArrayList<>();
+		for (Pair<Robot, LinkedList<Job>> p : jobs) {
+			Robot r = p.getItem1();
+			info.add(Pair.makePair(new Junction(r.getGridX(), r.getGridY()), null));
+		}
+		validateRoutes(map, info, routes, false);
 		
 		// Makes sure jobs have been completed.
 		for (int i = 0; i < jobs.size(); i++) {
