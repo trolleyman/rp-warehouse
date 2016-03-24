@@ -49,6 +49,13 @@ public class CMultiRouteFinder {
 				return Optional.of(current.getCommands());
 			}
 			
+			// If by the minimum time it takes to get to the goal junction the goal is taken forever,
+			// quit as it is pointless.
+//			int extraTime = getHeuristic(new Junction(current.getX(), current.getY()), goal);
+//			if (reserve.isPositionReservedAfter(goal, current.getTime() + extraTime)) {
+//				return Optional.empty();
+//			}
+			
 			// Add sucessors of current to open list.
 			ArrayList<CState> sucessors = current.getSucessors();
 			for (CState s : sucessors) {

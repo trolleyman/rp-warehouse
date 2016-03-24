@@ -45,6 +45,6 @@ public class Item {
 	
 	@Override
 	public String toString() {
-		return name + ", " + reward + ", " + weight + ", " + j;
+		return name + ": reward:" + reward + " weight:" + weight + " " + j;
 	}
 }

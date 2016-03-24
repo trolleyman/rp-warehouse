@@ -7,14 +7,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.junit.Test;
 
 import rp.util.Pair;
 import warehouse.pc.job.Item;
+import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
 import warehouse.pc.shared.Command;
+import warehouse.pc.shared.CommandQueue;
 import warehouse.pc.shared.CommandType;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.MainInterface;
@@ -27,11 +30,12 @@ public class CMultiRouteTests {
 		CMultiRouteTests t = new CMultiRouteTests();
 		
 		// CMultiRouteFinder tests
-		t.test1();
-		t.test2();
-		t.test3();
+//		t.test1();
+//		t.test2();
+//		t.test3();
 		
-		
+		// CMultiRoutePlanner tests
+		t.test4();
 	}
 	
 	@Test
@@ -74,7 +78,7 @@ public class CMultiRouteTests {
 		testRoutes(map, routeInfo);
 	}
 	
-	public void testRoutes(Map map, ArrayList<Pair<Junction, Junction>> routeInfo) {
+	private void testRoutes(Map map, ArrayList<Pair<Junction, Junction>> routeInfo) {
 		ArrayList<Optional<LinkedList<Command>>> routeResults = new ArrayList<>();
 		CMultiRouteFinder finder = new CMultiRouteFinder(map, new RouteFinder(map));
 		CReserveTable reserve = new CReserveTable();
@@ -101,7 +105,7 @@ public class CMultiRouteTests {
 		long ms = tEnd - tStart;
 		System.out.println("Total: " + ms + "ms");
 		
-		validateResults(map, routeInfo, routeResults);
+		validateRoutes(map, routeInfo, routeResults, true);
 	}
 	
 	/**
@@ -110,10 +114,11 @@ public class CMultiRouteTests {
 	 * 
 	 * @param map the map that was used
 	 * @param routeInfo a list of robots with their start and end locations
-	 * @param results the results of the route finder
+	 * @param routes the results of the route finder
+	 * @param staticRobots if false then doesn't check for collisions after a robot has finished it's commands
 	 */
-	public void validateResults(Map map, ArrayList<Pair<Junction, Junction>> routeInfo, ArrayList<Optional<LinkedList<Command>>> results) {
-		assertTrue(results.size() == routeInfo.size());
+	private void validateRoutes(Map map, ArrayList<Pair<Junction, Junction>> routeInfo, ArrayList<Optional<LinkedList<Command>>> routes, boolean staticRobots) {
+		assertTrue(routes.size() == routeInfo.size());
 		
 		// x, y positions of all robots
 		ArrayList<Pair<Integer, Integer>> positions = new ArrayList<>();
@@ -124,16 +129,22 @@ public class CMultiRouteTests {
 		printPositions(positions);
 		ArrayList<Pair<Integer, Integer>> prevPositions = new ArrayList<>(positions);
 		
+		ArrayList<Boolean> robotEnded = new ArrayList<>();
+		for (int i = 0; i < routeInfo.size(); i++) {
+			robotEnded.add(false);
+		}
+		
 		for (int i = 0; ; i++) {
 			// Update positions
-			for (int r = 0; r < results.size(); r++) {
-				Optional<LinkedList<Command>> res = results.get(r);
+			for (int r = 0; r < routes.size(); r++) {
+				Optional<LinkedList<Command>> res = routes.get(r);
 				if (res.isPresent()) {
-					// Update position
 					if (i < res.get().size()) {
 						Command com = res.get().get(i);
 						com.setFrom(positions.get(r).getItem1(), positions.get(r).getItem2());
 						positions.set(r, Pair.makePair(com.getX(), com.getY()));
+					} else {
+						robotEnded.set(r, true);
 					}
 				}
 			}
@@ -171,8 +182,12 @@ public class CMultiRouteTests {
 			}
 			
 			// Check that the positions don't collide
-			for (int r1 = 0; r1 < results.size(); r1++) {
-				for (int r2 = r1 + 1; r2 < results.size(); r2++) {
+			for (int r1 = 0; r1 < routes.size(); r1++) {
+				for (int r2 = r1 + 1; r2 < routes.size(); r2++) {
+					// Ignore collisions between ended robots and normal robots if the robots aren't static
+					if (!staticRobots && (robotEnded.get(r1) || robotEnded.get(r2))) {
+						continue;
+					}
 					boolean xEqual = positions.get(r1).getItem1().equals(positions.get(r2).getItem1());
 					boolean yEqual = positions.get(r1).getItem2().equals(positions.get(r2).getItem2());
 					
@@ -183,7 +198,7 @@ public class CMultiRouteTests {
 			
 			// If all robots have reached the end of their commands, exit.
 			boolean exit = true;
-			for (Optional<LinkedList<Command>> res : results) {
+			for (Optional<LinkedList<Command>> res : routes) {
 				if (res.isPresent()) {
 					if (i < res.get().size() - 1) {
 						exit = false;
@@ -199,7 +214,7 @@ public class CMultiRouteTests {
 		
 		// Check all robots that had commands ended up at their goals
 		for (int r = 0; r < positions.size(); r++) {
-			if (!results.get(r).isPresent())
+			if (!routes.get(r).isPresent())
 				continue;
 			
 			Pair<Integer, Integer> pos = positions.get(r);
@@ -226,5 +241,86 @@ public class CMultiRouteTests {
 			i++;
 		}
 		System.out.println("]");
+	}
+
+	@Test
+	public void test4() {
+		System.out.println("=== Test 4 ===");
+		Map map = TestMaps.TEST_MAP1;
+		ArrayList<Junction> bases = new ArrayList<>();
+		bases.add(new Junction(2, 0));
+		bases.add(new Junction(4, 2));
+		
+		Item a = new Item("a", 10.0f, 8.0f, 0, 0);
+		Item b = new Item("b", 10.0f, 8.0f, 5, 0);
+		Item c = new Item("c", 10.0f, 8.0f, 7, 0);
+		
+		ArrayList<ItemQuantity> jeffItems = new ArrayList<>();
+		jeffItems.add(new ItemQuantity(a, 6));
+		jeffItems.add(new ItemQuantity(b, 3));
+		
+		ArrayList<ItemQuantity> daveItems = new ArrayList<>();
+		daveItems.add(new ItemQuantity(b, 6));
+		daveItems.add(new ItemQuantity(c, 3));
+		
+		ArrayList<Pair<Robot, Job>> robots = new ArrayList<>();
+		robots.add(Pair.makePair(new Robot("Jeff", "", 2, 1, 0), new Job(100, jeffItems)));
+		robots.add(Pair.makePair(new Robot("Dave", "", 2, 1, 0), new Job(100, daveItems)));
+		
+		testPlans(map, bases, robots);
+	}
+	
+	private void testPlans(Map map, ArrayList<Junction> bases, ArrayList<Pair<Robot, Job>> jobs) {
+		CMultiRoutePlanner planner = new CMultiRoutePlanner(map, bases, new RouteFinder(map), new CReserveTable());
+		
+		ArrayList<Pair<Robot, LinkedList<Command>>> commands = new ArrayList<>();
+		for (Pair<Robot, Job> p : jobs) {
+			LinkedList<Job> l = new LinkedList<>();
+			l.add(p.getItem2());
+			long t0 = System.currentTimeMillis();
+			LinkedList<Command> coms = planner.routeRobot(p.getItem1(), l);
+			long t1 = System.currentTimeMillis();
+			commands.add(Pair.makePair(p.getItem1(), coms));
+			System.out.printf("%s: %4dms: job %s: %s\n", p.getItem1().getIdentity(), t1 - t0, p.getItem2(), coms);
+		}
+		
+		HashMap<Robot, Pair<LinkedList<Job>, LinkedList<Command>>> robots = new HashMap<>();
+		for (int i = 0; i < jobs.size(); i++) {
+			LinkedList<Job> l = new LinkedList<>();
+			l.add(jobs.get(i).getItem2());
+			robots.put(jobs.get(i).getItem1(),
+				Pair.makePair(l, commands.get(i).getItem2()));
+		}
+		validatePlan(map, robots);
+	}
+	
+	/**
+	 * Validates the plan provided
+	 *   - Makes sure the path is correct
+	 *       - removes them from the simulation after the robots are done.
+	 *   - Makes sure the jobs have been completed
+	 *   - Makes sure the robots never go over their weight limit
+	 */
+	private void validatePlan(Map map, ArrayList<Pair<Robot, LinkedList<Job>>> jobs, ArrayList<Pair<Robot, LinkedList<Command>>> commands) {
+		assertTrue(jobs.size() == commands.size());
+		
+		// Validate path
+		ArrayList<Optional<LinkedList<Command>>> routes = new ArrayList<>();
+		for (Pair<Robot, LinkedList<Command>> e : commands) {
+			routes.add(Optional.of(e.getItem2()));
+		}
+		validateRoutes(map, null, routes, false);
+		
+		// Makes sure jobs have been completed.
+		for (int i = 0; i < jobs.size(); i++) {
+			int count = 0;
+			for (Command c : commands.get(i).getItem2()) {
+				if (c.getType() == CommandType.COMPLETE_JOB)
+					count++;
+			}
+			assertTrue("Not all jobs have been completed by " + jobs.get(i).getItem1().getIdentity() + ".", count == jobs.get(i).getItem2().size());
+		}
+		
+		
 	}
 }
