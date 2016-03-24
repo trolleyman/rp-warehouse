@@ -30,9 +30,9 @@ public class CMultiRouteTests {
 		CMultiRouteTests t = new CMultiRouteTests();
 		
 		// CMultiRouteFinder tests
-//		t.test1();
-//		t.test2();
-//		t.test3();
+		t.test1();
+		t.test2();
+		t.test3();
 		
 		// CMultiRoutePlanner tests
 		t.test4();
@@ -106,6 +106,7 @@ public class CMultiRouteTests {
 		System.out.println("Total: " + ms + "ms");
 		
 		validateRoutes(map, routeInfo, routeResults, true);
+		System.out.println("");
 	}
 	
 	/**
@@ -303,6 +304,7 @@ public class CMultiRouteTests {
 	 *       - removes them from the simulation after the robots are done.
 	 *   - Makes sure the jobs have been completed
 	 *   - Makes sure the robots never go over their weight limit
+	 *   - Makes sure that when the robot picks up an item it is over the item pickup location
 	 */
 	private void validatePlan(Map map, ArrayList<Pair<Robot, LinkedList<Job>>> jobs, ArrayList<Pair<Robot, LinkedList<Command>>> commands) {
 		assertTrue(jobs.size() == commands.size());
