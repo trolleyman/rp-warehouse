@@ -12,6 +12,15 @@ import warehouse.pc.shared.Map;
 import warehouse.shared.Direction;
 
 public class CState {
+	// The maximum number of times the robot can just wait in one place.
+	// Increasing this has a large impact on the running time.
+	private static final int MAX_WAITS = 3;
+	// The maximum number of times the robot can visit the same junction.
+	private static final int MAX_VISITS = 1;
+	// The maximum time that the route finder will look ahead.
+	// i.e. if a route can't be found in this time, it will not be found.
+	private static final int MAX_TIME = 100;
+	
 	private Map map;
 	private RouteFinder finder;
 	private CReserveTable reserve;
@@ -62,6 +71,27 @@ public class CState {
 		}
 	}
 	
+	private static int timesVisited(CState s, int x, int y) {
+		int acc = 0;
+		while (true) {
+			if (x == s.robotX && y == s.robotY) {
+				acc += 1;
+			}
+			if (s.parent == null) {
+				return acc;
+			} else {
+				s = s.parent;
+			}
+		}
+	}
+	
+	/**
+	 * Returns the amount of times the robot has visited the position x,y so far.
+	 */
+	private int timesVisited(int x, int y) {
+		return CState.timesVisited(this, x, y);
+	}
+	
 	private Junction getJunction(int x, int y, Direction d) {
 		Junction from = map.getJunction(x, y);
 		Junction to = map.getJunction(
@@ -71,11 +101,16 @@ public class CState {
 			return null;
 		if (reserve.isPositionReserved(to, time + 1)) // Check for reserved positions.
 			return null;
+		if (timesVisited(to.getX(), to.getY()) >= MAX_VISITS)
+			return null;
 		return from.getJunction(d);
 	}
 	
 	public ArrayList<CState> getSucessors() {
 		ArrayList<CState> successors = new ArrayList<>();
+		if (time >= MAX_TIME) {
+			return successors;
+		}
 		
 		// For each direction, add the sucessor state
 		for (Direction d : Direction.values()) {
@@ -117,6 +152,11 @@ public class CState {
 		addCommands(commands);
 		Collections.reverse(commands);
 		return commands;
+	}
+	
+	@Override
+	public String toString() {
+		return "t" + time + ": " + robotX + ", " + robotY;
 	}
 	
 	@Override
