@@ -81,6 +81,7 @@ public class CMultiRoutePlanner {
 					LinkedList<Command> commands = op.get().getItem2();
 					Junction base = op.get().getItem1();
 					allCommands.addAll(commands);
+					allCommands.add(new Command(CommandType.DROP));
 					currentX = base.getX();
 					currentY = base.getY();
 					weight = 0;
@@ -112,6 +113,7 @@ public class CMultiRoutePlanner {
 			LinkedList<Command> commands = op.get().getItem2();
 			Junction base = op.get().getItem1();
 			allCommands.addAll(commands);
+			allCommands.add(new Command(CommandType.DROP));
 			currentX = base.getX();
 			currentY = base.getY();
 			weight = 0;

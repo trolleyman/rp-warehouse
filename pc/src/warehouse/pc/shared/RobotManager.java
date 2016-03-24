@@ -105,7 +105,7 @@ public class RobotManager implements Runnable, RobotListener {
 				// If any robot's next command is Command.COMPLETE_JOB, complete job & recalculate.
 				for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
 					LinkedList<Command> coms = e.getValue().getCommands();
-					if (coms != null && coms.peekFirst() != null && coms.peekFirst().equals(new Command(CommandType.COMPLETE_JOB))) {
+					if (coms != null && coms.peekFirst() != null && coms.peekFirst().getType() == CommandType.COMPLETE_JOB) {
 						coms.pollFirst();
 						robotPartialJobs.put(e.getKey(), null);
 						ArrayDeque<Job> jobs = robotJobs.get(e.getKey());

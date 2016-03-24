@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import rp.util.Pair;
 import warehouse.pc.shared.Command;
+import warehouse.pc.shared.CommandType;
 import warehouse.pc.shared.Junction;
 
 public class CReserveTable {
@@ -83,7 +84,10 @@ public class CReserveTable {
 			com.setFrom(currentX, currentY);
 			currentX = com.getX();
 			currentY = com.getY();
-			time += 1;
+			
+			// COMPLETE_JOB doesn't advance time as it won't be
+			if (com.getType() != CommandType.COMPLETE_JOB)
+				time += 1;
 			
 			reservePosition(new Junction(currentX, currentY), time + 1);
 			reservePosition(new Junction(currentX, currentY), time);
