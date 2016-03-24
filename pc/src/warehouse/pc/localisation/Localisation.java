@@ -1,5 +1,7 @@
 package warehouse.pc.localisation;
 
+import java.util.ArrayList;
+
 import warehouse.pc.shared.Direction;
 import warehouse.pc.shared.Map;
 /***
@@ -16,20 +18,20 @@ import warehouse.pc.shared.Map;
  *  the robots to follow the localise procedure.
  * 
  *  NOTE : Still need to account for the fact the robot will be moving during localisation. - done I think?
- *  
+ * 
  *  could use vectors of the movement to translate it back to origin so coords are consistent. - done
- *  
- *  using vectors means we can remove edges from our probability array. 
+ * 
+ *  using vectors means we can remove edges from our probability array.
  *  i.e, If the robot has moved one to the right, it can't be next to the left wall.
- *  
+ * 
  *  we could use this ^ fact to make the "lost" procedure. for every unit the robot can move, we cancel out
  *  lots of possible positions. (if it's always moving in the same direction)
- *  
+ * 
  *  ** need to check distanceRecieved function to make sure translations are correct **
- *  
+ * 
  * 
  */
-public class Localisation 
+public class Localisation
 {
 	private Map map;
 	private Boolean[][] probabilities;
@@ -40,7 +42,7 @@ public class Localisation
 	// We don't know the starting location
 	// Assume we know starting orientation
 
-	public Localisation(Map _map,Direction dir) 
+	public Localisation(Map _map,Direction dir)
 	{
 		this.map = _map;
 		this.probabilities = new Boolean[map.getHeight()][map.getWidth()];
@@ -49,25 +51,26 @@ public class Localisation
 		
 		for (int y = 0; y < map.getHeight(); y++)
 		{
-			for (int x = 0; x < map.getWidth(); x++) 
+			for (int x = 0; x < map.getWidth(); x++)
 			{
-				if (map.getJunction(x, y) != null) 
+				if (map.getJunction(x, y) != null)
 				{
 					numValidLocations += 1;
 				}
 			}
 		}
 		
-		for (int y = 0; y < map.getHeight(); y++) 
+		for (int y = 0; y < map.getHeight(); y++)
 		{
-			for (int x = 0; x < map.getWidth(); x++) 
+			for (int x = 0; x < map.getWidth(); x++)
 			{
-				if (map.getJunction(x, y) != null) 
+				if (map.getJunction(x, y) != null)
 				{
 					//so it can be in any valid location on the map initially
 					probabilities[y][x] = true;
 				}
 				else
+				{
 					//it can't be on a wall or junction node.
 					probabilities[y][x] = false;
 				}
@@ -75,16 +78,17 @@ public class Localisation
 		}
 	}
 	
-	public void distanceRecieved(int _dist) 
+	public void distanceRecieved(int _dist)
 	{
+		double dist = _dist / 100.0;
 		// Update probabilities at a junction. set probabilities [y][x] to false if not possible, to narrow down.
-		for (int y = 0; y < map.getHeight(); y++) 
+		for (int y = 0; y < map.getHeight(); y++)
 		{
-			for (int x = 0; x < map.getWidth(); x++) 
+			for (int x = 0; x < map.getWidth(); x++)
 			{
 				if (probabilities[y-getYTranslation()][x-getXTranslation()])
 				{
-					if (!map.getProbability(x-getXTranslation(),y-getYTranslation(),robotFacing,_dist))
+					if (!map.isProbableLocation(x-getXTranslation(),y-getYTranslation(),robotFacing,dist))
 					{
 						//if a previously 'true' position is now false, don't let it stay true.
 						probabilities[y-getYTranslation()][x-getXTranslation()] = false;
@@ -158,7 +162,7 @@ public class Localisation
 		return yTranslation;
 	}
 	
-	public boolean isFinished() 
+	public boolean isFinished()
 	{
 		int count = 0;
 		for (int y = 0; y < map.getHeight(); y++)
@@ -175,7 +179,7 @@ public class Localisation
 		return (count > 1? false : true);
 	}
 	
-	public int getLikelyX() 
+	public int getLikelyX()
 	{
 		//get the first x coordinate of the array that has a true value
 		for (int y = 0;y < map.getHeight();y++)
@@ -190,7 +194,7 @@ public class Localisation
 		}
 		return -1; //this SHOULDN'T happen (but could)
 	}
-	public int getLikelyY() 
+	public int getLikelyY()
 	{
 		// Get the first y coordinate of the array that has a true value
 		for (int y = 0;y < map.getHeight();y++)
@@ -204,5 +208,17 @@ public class Localisation
 			}
 		}
 		return -1; //this SHOULDN'T happen (but could)
+	}
+	
+	@Override
+	public String toString() {
+		String s = "";
+		for (int y = map.getHeight() - 1; y >= 0; y--) {
+			for (int x = 0; x < map.getWidth(); x++) {
+				s += probabilities[y][x] ? "T" : "F";
+			}
+			s += "\n";
+		}
+		return s;
 	}
 }

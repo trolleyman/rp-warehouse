@@ -17,11 +17,11 @@ import rp.robotics.mapping.GridMap;
 public class Map {
 	//sensorOffset is the displacement between the center
 	//of the robot and the sensor, measured as positive in the forward direction of the robot
-	private static final int sensorOffset = 0;
+	private static final int SENSOR_OFFSET = 0;
 
 	//allowedError is the threshold for deciding if a robot is in a certain position. used when
 	//comparing the raw distanced recieved by the robot sensors and the expected distance.
-	private static final int allowedError = 10;
+	private static final double ALLOWED_ERROR = 0.5;
 
 	private Junction[][] js;
 	private ArrayList<Line2D> grid;
@@ -261,7 +261,7 @@ public class Map {
 			}
 		}
 		
-		return Math.sqrt(minDistSquared);
+		return Math.sqrt(minDistSquared) * cellSize;
 	}
 	
 	/**
@@ -333,14 +333,14 @@ public class Map {
 	 *Gets a list of the possible positions the robot could be in based on it's current position and facing direction
 	 *Returns an arraylist of integer arrays of size 2. [x_coord,y_coord]
 	 */
-	public ArrayList<Integer[]> possiblePositions(int distanceRecieved,Direction facing)
+	public ArrayList<Integer[]> possiblePositions(double distanceRecieved,Direction facing)
 	{
 		ArrayList<Integer[]> positions = new ArrayList<Integer[]>();
 		for (int i = 0;i < width;i++)
 		{
 			for (int j = 0; j < height; j++)
 			{
-				if (Math.abs((distanceRecieved + sensorOffset) - getRangeAt(width,height,facing)) < allowedError)
+				if (Math.abs((distanceRecieved + SENSOR_OFFSET) - getRangeAt(width,height,facing)) < ALLOWED_ERROR)
 				{
 					Integer[] pos = new Integer[2];
 					pos[0] = i;
@@ -358,7 +358,7 @@ public class Map {
 	 *e.g - if there are 5 positions the robot can be in based on the distance it recieves and the direction it is facing,
 	 *this will return 0.2 if we call it with any of these positions, or 0 for a position that isn't possible.
 	 */
-	public double getProbability(int x,int y,Direction facing,int dist)
+	public boolean isProbableLocation(int x,int y,Direction facing,double dist)
 	{
 		ArrayList<Integer[]> possPositions = possiblePositions(dist,facing);
 
