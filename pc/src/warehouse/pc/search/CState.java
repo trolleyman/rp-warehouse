@@ -14,12 +14,12 @@ import warehouse.shared.Direction;
 public class CState {
 	// The maximum number of times the robot can just wait in one place.
 	// Increasing this has a large impact on the running time.
-	private static final int MAX_WAITS = 3;
+	private static final int MAX_WAITS = 0;
 	// The maximum number of times the robot can visit the same junction.
 	private static final int MAX_VISITS = 1;
 	// The maximum time that the route finder will look ahead.
 	// i.e. if a route can't be found in this time, it will not be found.
-	private static final int MAX_TIME = 25;
+	private static final int MAX_TIME = 100;
 	
 	private Map map;
 	private RouteFinder finder;
