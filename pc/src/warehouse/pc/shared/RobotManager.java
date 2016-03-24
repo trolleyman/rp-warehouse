@@ -13,13 +13,8 @@ import rp.util.Pair;
 import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
 import warehouse.pc.job.JobSelector;
-<<<<<<< HEAD
 import warehouse.pc.search.CMultiRoutePlanner;
 import warehouse.pc.search.CReserveTable;
-=======
-import warehouse.pc.search.MultiRoutePlanner;
->>>>>>> b12cb943a940a22cc5348d3acd059b2679e81858
-import warehouse.pc.search.RoutePlanner;
 
 public class RobotManager implements Runnable, RobotListener {
 	// Holds the current job & other jobs in the queue
