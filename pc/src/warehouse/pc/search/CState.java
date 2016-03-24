@@ -19,7 +19,7 @@ public class CState {
 	private static final int MAX_VISITS = 1;
 	// The maximum time that the route finder will look ahead.
 	// i.e. if a route can't be found in this time, it will not be found.
-	private static final int MAX_TIME = 100;
+	private static final int MAX_TIME = 25;
 	
 	private Map map;
 	private RouteFinder finder;
@@ -71,14 +71,17 @@ public class CState {
 		}
 	}
 	
-	private static int timesVisited(CState s, int x, int y) {
+	private static boolean hasVisitedTimes(CState s, int x, int y, int times) {
 		int acc = 0;
 		while (true) {
 			if (x == s.robotX && y == s.robotY) {
 				acc += 1;
+				if (acc >= times) {
+					return true;
+				}
 			}
 			if (s.parent == null) {
-				return acc;
+				return false;
 			} else {
 				s = s.parent;
 			}
@@ -86,10 +89,10 @@ public class CState {
 	}
 	
 	/**
-	 * Returns the amount of times the robot has visited the position x,y so far.
+	 * Returns true if x,y has been visited more than a certain amount of times
 	 */
-	private int timesVisited(int x, int y) {
-		return CState.timesVisited(this, x, y);
+	private boolean hasVisitedTimes(int x, int y, int times) {
+		return CState.hasVisitedTimes(this, x, y, times);
 	}
 	
 	private Junction getJunction(int x, int y, Direction d) {
@@ -101,7 +104,7 @@ public class CState {
 			return null;
 		if (reserve.isPositionReserved(to, time + 1)) // Check for reserved positions.
 			return null;
-		if (timesVisited(to.getX(), to.getY()) >= MAX_VISITS)
+		if (hasVisitedTimes(to.getX(), to.getY(), MAX_VISITS))
 			return null;
 		return from.getJunction(d);
 	}

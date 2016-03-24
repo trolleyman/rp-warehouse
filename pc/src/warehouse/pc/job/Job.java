@@ -12,6 +12,19 @@ public class Job {
 	private final float totalWeight;
 	private final float totalReward;
 	
+	public Job(int _id, ArrayList<ItemQuantity> _items) {
+		this.id = _id;
+		this.items = _items;
+		float tw = 0;
+		float tr = 0;
+		for (ItemQuantity iq : items) {
+			tw += iq.getItem().getWeight() * iq.getQuantity();
+			tr += iq.getItem().getReward();
+		}
+		this.totalWeight = tw;
+		this.totalReward = tr;
+	}
+	
 	public Job(int _id, ArrayList<ItemQuantity> _items, float _totalWeight, float _totalReward) {
 		this.id = _id;
 		this.items = _items;
