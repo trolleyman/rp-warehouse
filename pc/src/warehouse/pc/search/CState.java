@@ -24,6 +24,8 @@ public class CState {
 	private CState parent;
 	// Command type can be null.
 	private CommandType command;
+	
+	private int numWaits;
 		
 	public CState(Map _map, RouteFinder _finder, CReserveTable _reserve, int _robotX, int _robotY, int _time) {
 		map = _map;
@@ -32,6 +34,7 @@ public class CState {
 		robotX = _robotX;
 		robotY = _robotY;
 		time = _time;
+		numWaits = 0;
 	}
 	
 	public CState(CState _parent, CommandType _command) {
@@ -39,6 +42,11 @@ public class CState {
 			transformX(_parent.robotX, _command), transformY(_parent.robotY, _command), _parent.time + 1);
 		parent = _parent;
 		command = _command;
+		if (command == CommandType.WAIT) {
+			numWaits += 1;
+		} else {
+			numWaits = 0;
+		}
 	}
 	
 	private static int transformX(int x, CommandType c) {
@@ -82,6 +90,13 @@ public class CState {
 			if (j != null)
 				successors.add(new CState(this, CommandType.fromDirection(d)));
 		}
+		
+		// Try waiting.
+		CState s = new CState(this, CommandType.WAIT);
+		if (s.numWaits <= 3) {
+			successors.add(s);
+		}
+		
 		return successors;
 	}
 	
