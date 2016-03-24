@@ -26,6 +26,10 @@ public class CommandQueue {
 
 	}
 
+	public CommandQueue(LinkedList<Command> _commands) {
+		commands = _commands;
+	}
+
 	/**
 	 * Add a single command to the queue
 	 * 
@@ -117,6 +121,7 @@ public class CommandQueue {
 		commands.set(commands.size() - 1, command);
 	}
 
+	@Override
 	public String toString() {
 		return commands.toString();
 	}

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import warehouse.pc.search.RouteFinder;
 import warehouse.pc.shared.Junction;
-import warehouse.pc.shared.Map;
 import warehouse.shared.Direction;
 
 public class TSPDistance {
@@ -12,9 +11,9 @@ public class TSPDistance {
 	private RouteFinder routeFinder;
 	ArrayList<Junction> dropLocations;
 	
-	public TSPDistance(Map map, ArrayList<Junction> dropLocations){
-		routeFinder = new RouteFinder(map);
-		this.dropLocations = dropLocations;
+	public TSPDistance(RouteFinder _finder, ArrayList<Junction> _dropLocations){
+		routeFinder = _finder;
+		this.dropLocations = _dropLocations;
 	}
 	
 	public int getDistance(Job job, int x, int y){

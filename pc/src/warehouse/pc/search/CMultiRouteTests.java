@@ -26,6 +26,7 @@ public class CMultiRouteTests {
 		CMultiRouteTests t = new CMultiRouteTests();
 		
 		t.test1();
+		t.test2();
 	}
 	
 	@Test
@@ -88,5 +89,9 @@ public class CMultiRouteTests {
 		
 		ArrayList<Job> jobList = mi.getJobList().getList();
 		jobList.remove(0);
+	}
+
+	public void test2() {
+		
 	}
 }

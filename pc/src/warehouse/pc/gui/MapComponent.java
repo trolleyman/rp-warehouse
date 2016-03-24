@@ -114,6 +114,7 @@ public class MapComponent extends JComponent implements MouseListener, RobotList
 			CommandQueue cq = mi.getRobotManager().getCommands(robot);
 			if (cq == null)
 				return;
+			
 			ArrayDeque<Command> coms = new ArrayDeque<>(cq.getCommands());
 			double prevX = robot.getGridX();
 			double prevY = robot.getGridY();

@@ -2,6 +2,8 @@ package warehouse.pc.job;
 
 import java.util.ArrayList;
 import java.util.Optional;
+
+import warehouse.pc.search.RouteFinder;
 import warehouse.pc.shared.Junction;
 import warehouse.pc.shared.Map;
 import warehouse.pc.shared.TestMaps;
@@ -15,25 +17,31 @@ public class JobSelector {
 	private ArrayList<Junction> dropLocations;
 	private TSPDistance tsp;
 	private Map map;
+	private RouteFinder finder;
 	
+	public JobSelector(String locationsLocation, String itemsLocation, String jobsLocation, String dropsLocation, Map _map) {
+		this(locationsLocation, itemsLocation, jobsLocation, dropsLocation, _map, new RouteFinder(_map));
+	}
 	//Currently: "locations.csv", "items.csv", "jobs.csv", "drops.csv"
-	public JobSelector(String locationsLocation, String itemsLocation, String jobsLocation, String dropsLocation, Map _map){
+	public JobSelector(String locationsLocation, String itemsLocation, String jobsLocation, String dropsLocation, Map _map, RouteFinder _finder){
 		LocationList locList = new LocationList(locationsLocation);
 		ItemList itemList = new ItemList(itemsLocation, locList);
 		JobList jobList = new JobList(jobsLocation, itemList);
 		DropList dropList = new DropList(dropsLocation);
 		dropLocations = dropList.getList();
 		this.map = _map;
-		tsp = new TSPDistance(map, dropLocations);
+		this.finder = _finder;
+		tsp = new TSPDistance(finder, dropLocations);
 		
 		jobs = jobList.getList();
 		jobs.sort(new RewardComparator()); //This sorts the jobs into reward order
 	}
 	
-	public JobSelector(LocationList locList, ItemList itemList, JobList jobList, DropList dropList, Map _map){
+	public JobSelector(JobList jobList, DropList dropList, Map _map, RouteFinder _finder){
 		dropLocations = dropList.getList();
 		this.map = _map;
-		tsp = new TSPDistance(map, dropLocations);
+		this.finder = _finder;
+		tsp = new TSPDistance(finder, dropLocations);
 		
 		jobs = jobList.getList();
 		jobs.sort(new RewardComparator()); //This sorts the jobs into reward order
@@ -63,7 +71,7 @@ public class JobSelector {
 
 		//Filters out all Jobs that are not supported by the robot's free weight
 		ArrayList<Job> available = new ArrayList<Job>();
-		tsp = new TSPDistance(this.map, dropLocations);
+		tsp = new TSPDistance(finder, dropLocations);
 		for(int i = 0; i < jobs.size(); i++){
 			if(jobs.get(i).getTotalWeight() <= freeWeight){
 				available.add(jobs.get(i));

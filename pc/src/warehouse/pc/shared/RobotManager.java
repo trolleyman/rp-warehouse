@@ -13,6 +13,8 @@ import rp.util.Pair;
 import warehouse.pc.job.ItemQuantity;
 import warehouse.pc.job.Job;
 import warehouse.pc.job.JobSelector;
+import warehouse.pc.search.CMultiRoutePlanner;
+import warehouse.pc.search.CReserveTable;
 import warehouse.pc.search.RoutePlanner;
 
 public class RobotManager implements Runnable, RobotListener {
@@ -103,7 +105,7 @@ public class RobotManager implements Runnable, RobotListener {
 				// If any robot's next command is Command.COMPLETE_JOB, complete job & recalculate.
 				for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
 					LinkedList<Command> coms = e.getValue().getCommands();
-					if (coms.peekFirst() != null && coms.peekFirst().equals(new Command(CommandType.COMPLETE_JOB))) {
+					if (coms != null && coms.peekFirst() != null && coms.peekFirst().equals(new Command(CommandType.COMPLETE_JOB))) {
 						coms.pollFirst();
 						robotPartialJobs.put(e.getKey(), null);
 						ArrayDeque<Job> jobs = robotJobs.get(e.getKey());
@@ -180,21 +182,40 @@ public class RobotManager implements Runnable, RobotListener {
 		}
 		
 		// Calculate commands
-		// Ignore robots that already have commands.
+		// Ignore robots that already have commands, reserve those spaces.
+		CReserveTable reserve = new CReserveTable();
 		HashMap<Robot, LinkedList<Job>> robotEmptyCommandJobs = new HashMap<>();
 		for (Entry<Robot, CommandQueue> e : robotCommands.entrySet()) {
+			Robot r = e.getKey();
 			if (e.getValue().getCommands().isEmpty()) {
+				// Calculate the robots that have no commands
 				LinkedList<Job> jobs = new LinkedList<>();
 				jobs.add(robotPartialJobs.get(e.getKey()));
 				robotEmptyCommandJobs.put(e.getKey().clone(), jobs);
+			} else {
+				// Reserve positions
+				reserve.reservePositions(new Junction(r.getGridX(), r.getGridY()),
+					e.getValue().getCommands(), 0);
 			}
 		}
-		RoutePlanner planner = new RoutePlanner(mi.getMap(), Robot.MAX_WEIGHT, robotEmptyCommandJobs, mi.getDropList().getList());
-		planner.computeCommands();
+		
+		// Create the multi route planner with specified reserve table.
+		CMultiRoutePlanner planner = new CMultiRoutePlanner(mi.getMap(),
+			mi.getDropList().getList(),
+			mi.getRouteFinder(),
+			reserve);
+		
+		HashMap<Robot, LinkedList<Command>> newRobotCommands = planner.routeRobots(robotEmptyCommandJobs);
 		for (Entry<Robot, CommandQueue> robotCommand : robotCommands.entrySet()) {
-			CommandQueue commands = planner.getCommands(robotCommand.getKey());
+			Robot r = robotCommand.getKey();
+			LinkedList<Command> newCommands = newRobotCommands.get(r);
+			if (newCommands == null)
+				continue;
+			
+			CommandQueue commands = new CommandQueue(newRobotCommands.get(r));
 			if (commands != null) {
 				robotCommand.setValue(commands);
+				mi.updateRobot(r);
 			}
 		}
 		nextStepRecalculate = false;
@@ -346,9 +367,15 @@ public class RobotManager implements Runnable, RobotListener {
 			System.out.println("Robot Manager: Resuming.");
 			// Recalculate all commands - we don't know if the robots have changed position
 			recalculate();
-			recalculateAllRobots = true;
 			paused = false;
 		}
+	}
+	
+	/**
+	 * Recalculate all commands allocated to robots
+	 */
+	public void recalculateAll() {
+		recalculateAllRobots = true;
 	}
 	
 	/**

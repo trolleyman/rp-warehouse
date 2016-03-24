@@ -11,6 +11,7 @@ import warehouse.pc.job.ItemList;
 import warehouse.pc.job.JobList;
 import warehouse.pc.job.JobSelector;
 import warehouse.pc.job.LocationList;
+import warehouse.pc.search.RouteFinder;
 import warehouse.pc.shared.Robot;
 
 /**
@@ -62,6 +63,7 @@ public class MainInterface {
 	private ItemList itemList;
 	private JobList jobList;
 	private DropList dropList;
+	private RouteFinder routeFinder;
 	
 	private MainInterface() {
 		server = new BTServer();
@@ -82,10 +84,16 @@ public class MainInterface {
 		jobList = new JobList("jobs.csv", itemList);
 		dropList = new DropList("drops.csv");
 		
-		jobSelector = new JobSelector(locList, itemList, jobList, dropList, map);
+		routeFinder = new RouteFinder(map);
+		
+		jobSelector = new JobSelector(jobList, dropList, map, routeFinder);
 		
 		robotManager = new RobotManager();
 		this.addRobotListener(robotManager);
+	}
+	
+	public RouteFinder getRouteFinder() {
+		return routeFinder;
 	}
 	
 	/**

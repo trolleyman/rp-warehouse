@@ -75,9 +75,9 @@ public class RobotEditor extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (selectedRobot != null) {
+					MainInterface.get().getRobotManager().recalculateAll();
 					selectedRobot.setX((double)xSpinner.getValue());
 					selectedRobot.setY((double)ySpinner.getValue());
-					MainInterface.get().updateRobot(selectedRobot);
 				}
 			}
 		});
@@ -94,8 +94,8 @@ public class RobotEditor extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (selectedRobot != null) {
+					MainInterface.get().getRobotManager().recalculateAll();
 					selectedRobot.setFacing((double)headingSpinner.getValue());
-					MainInterface.get().updateRobot(selectedRobot);
 				}
 			}
 		});

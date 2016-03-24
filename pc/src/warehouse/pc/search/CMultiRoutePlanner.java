@@ -24,8 +24,8 @@ public class CMultiRoutePlanner {
 	private RouteFinder finder;
 	private CMultiRouteFinder multiFinder;
 	
-	public CMultiRoutePlanner(Map _map, ArrayList<Junction> _bases, RouteFinder _finder) {
-		reserve = new CReserveTable();
+	public CMultiRoutePlanner(Map _map, ArrayList<Junction> _bases, RouteFinder _finder, CReserveTable _reserve) {
+		reserve = _reserve;
 		map = _map;
 		bases = _bases;
 		finder = _finder;
@@ -41,7 +41,12 @@ public class CMultiRoutePlanner {
 	}
 	
 	public LinkedList<Command> routeRobot(Robot r, LinkedList<Job> jobs) {
+		System.out.println("MultiRoutePlanner: Routing robot " + r.getIdentity());
+		long t0 = System.currentTimeMillis();
 		float weight = 0.0f;
+		
+		int startX = r.getGridX();
+		int startY = r.getGridY();
 		
 		int currentX = r.getGridX();
 		int currentY = r.getGridY();
@@ -114,7 +119,11 @@ public class CMultiRoutePlanner {
 		}
 		
 		// Reserve all commands
-		reserve.reservePositions(new Junction(currentX, currentY), allCommands, 0);
+		reserve.reservePositions(new Junction(startX, startY), allCommands, 0);
+		reserve.reservePositionAfter(new Junction(currentX, currentY), allCommands.size());
+		
+		long t1 = System.currentTimeMillis();
+		System.out.println("MultiRoutePlanner: Done routing robot " + r.getIdentity() + " (" + (t1 - t0) + "ms)");
 		
 		return allCommands;
 	}

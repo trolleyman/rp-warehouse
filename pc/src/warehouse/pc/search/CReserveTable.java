@@ -87,6 +87,7 @@ public class CReserveTable {
 			
 			reservePosition(new Junction(currentX, currentY), time + 1);
 			reservePosition(new Junction(currentX, currentY), time);
+			reservePosition(new Junction(currentX, currentY), time - 1);
 		}
 	}
 }
