@@ -37,6 +37,9 @@ public class RobotManager implements Runnable, RobotListener {
 	private volatile boolean recalculateAllRobots;
 	private volatile boolean paused;
 	
+	private volatile boolean step;
+	private volatile Runnable stepRunnable;
+	
 	public RobotManager() {
 		
 	}
@@ -50,6 +53,10 @@ public class RobotManager implements Runnable, RobotListener {
 		recalculateAllRobots = false;
 		running = true;
 		paused = true;
+		step = false;
+		stepRunnable = null;
+		
+		boolean shouldStep = false;
 		
 		while (running) {
 			boolean sleep = false;
@@ -59,7 +66,7 @@ public class RobotManager implements Runnable, RobotListener {
 				//System.out.println("Robot Manager: No robots to manage.");
 			}
 			
-			if (!paused)
+			if (!paused || shouldStep)
 				step();
 			
 			synchronized (this) {
@@ -81,6 +88,17 @@ public class RobotManager implements Runnable, RobotListener {
 					nextStepRecalculate = true;
 				}
 				robotsToRemove.clear();
+				
+				if (shouldStep) {
+					shouldStep = false;
+					step = false;
+					stepRunnable.run();
+				}
+				
+				if (step) {
+					step = false;
+					shouldStep = true;
+				}
 				
 				// If no robots, sleep for a bit
 				if (robotCommands.isEmpty())
@@ -424,6 +442,17 @@ public class RobotManager implements Runnable, RobotListener {
 	public void cancelJobs(Robot robot) {
 		synchronized (this) {
 			robotJobsToCancel.add(robot);
+		}
+	}
+
+	/**
+	 * Steps the RobotManager, and calls a Runnable when done.
+	 * @param run the Runnable
+	 */
+	public void step(Runnable run) {
+		synchronized (this) {
+			step = true;
+			stepRunnable = run;
 		}
 	}
 }

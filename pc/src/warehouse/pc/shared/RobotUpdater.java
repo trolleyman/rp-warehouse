@@ -83,8 +83,10 @@ public class RobotUpdater extends Thread {
 	public void run() {
 		try {
 			Optional<Direction> od = com.toDirection();
-			if (!od.isPresent())
+			if (!od.isPresent()) {
+				robot.setX(robot.getX());
 				return;
+			}
 			
 			Direction d = od.get();
 			RelativeDirection relDir = RelativeDirection.fromTo(robot.getDirection(), d);

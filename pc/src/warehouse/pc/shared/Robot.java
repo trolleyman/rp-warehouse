@@ -180,9 +180,13 @@ public class Robot implements Comparable<Robot> {
 	
 	public void setGridX(int _gridX) {
 		this.gridX = _gridX;
+		
+		update();
 	}
 	public void setGridY(int _gridY) {
 		this.gridY = _gridY;
+		
+		update();
 	}
 	
 	/**

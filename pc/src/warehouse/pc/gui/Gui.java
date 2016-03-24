@@ -253,6 +253,7 @@ public class Gui implements Runnable, RobotListener {
 		res.setBorder(BorderFactory.createTitledBorder("Robot Manager Controls"));
 		JButton pause = new JButton("Pause");
 		JButton resume = new JButton("Resume");
+		JButton step = new JButton("Step");
 		pause.setEnabled(false);
 		
 		pause.addActionListener(new ActionListener() {
@@ -262,6 +263,7 @@ public class Gui implements Runnable, RobotListener {
 				man.pause();
 				pause.setEnabled(false);
 				resume.setEnabled(true);
+				step.setEnabled(true);
 				editor.setIsPaused(true);
 			}
 		});
@@ -272,15 +274,32 @@ public class Gui implements Runnable, RobotListener {
 				man.resume();
 				pause.setEnabled(true);
 				resume.setEnabled(false);
+				step.setEnabled(false);
 				editor.setIsPaused(false);
+			}
+		});
+		step.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent _e) {
+				RobotManager man = MainInterface.get().getRobotManager();
+				resume.setEnabled(false);
+				step.setEnabled(false);
+				man.step(new Runnable() {
+					@Override
+					public void run() {
+						resume.setEnabled(true);
+						step.setEnabled(true);
+					}
+				});
 			}
 		});
 		res.add(pause);
 		res.add(resume);
+		res.add(step);
 		
 		SpringLayout layout = new SpringLayout();
 		res.setLayout(layout);
-		SpringUtilities.makeCompactGrid(res, 1, 2, 6, 6, 6, 6);
+		SpringUtilities.makeCompactGrid(res, 1, 3, 6, 6, 6, 6);
 		res.doLayout();
 		res.setMinimumSize(res.getPreferredSize());
 		res.setMaximumSize(res.getPreferredSize());
