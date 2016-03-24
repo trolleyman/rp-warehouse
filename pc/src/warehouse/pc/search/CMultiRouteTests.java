@@ -26,9 +26,12 @@ public class CMultiRouteTests {
 	public static void main(String[] args) {
 		CMultiRouteTests t = new CMultiRouteTests();
 		
+		// CMultiRouteFinder tests
 		t.test1();
 		t.test2();
 		t.test3();
+		
+		
 	}
 	
 	@Test
@@ -64,6 +67,8 @@ public class CMultiRouteTests {
 		ArrayList<Pair<Junction, Junction>> routeInfo = new ArrayList<>();
 		routeInfo.add(Pair.makePair(new Junction(5, 0), new Junction(0, 0)));
 		routeInfo.add(Pair.makePair(new Junction(5, 3), new Junction(0, 3)));
+		// This robot would be able to path if the maximum waits was 4.
+		// However, it is 3 for performance reasons
 		routeInfo.add(Pair.makePair(new Junction(4, 3), new Junction(3, 1)));
 		
 		testRoutes(map, routeInfo);
@@ -74,21 +79,27 @@ public class CMultiRouteTests {
 		CMultiRouteFinder finder = new CMultiRouteFinder(map, new RouteFinder(map));
 		CReserveTable reserve = new CReserveTable();
 		int i = 0;
+		long tStart = System.currentTimeMillis();
 		for (Pair<Junction, Junction> p : routeInfo) {
 			Junction start = p.getItem1();
 			Junction goal = p.getItem2();
 			
+			long t0 = System.currentTimeMillis();
 			Optional<LinkedList<Command>> op = finder.findRoute(start, goal, reserve, 0);
+			long t1 = System.currentTimeMillis();
 			if (op.isPresent()) {
 				reserve.reservePositions(start, op.get() , 0);
-				reserve.reservePositionAfter(goal, op.get().size());
+				reserve.reservePositionAfter(goal, op.get().size() - 1);
 			} else {
 				reserve.reservePositionAfter(start, 0);
 			}
 			routeResults.add(op);
-			System.out.println("Robot " + i + ": " + op);
+			System.out.printf("Robot %d: %4dms: %s\n", i, t1 - t0, op);
 			i++;
 		}
+		long tEnd = System.currentTimeMillis();
+		long ms = tEnd - tStart;
+		System.out.println("Total: " + ms + "ms");
 		
 		validateResults(map, routeInfo, routeResults);
 	}

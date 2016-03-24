@@ -23,7 +23,7 @@ public class CMultiRouteFinder {
 	}
 	
 	public Optional<LinkedList<Command>> findRoute(Junction start, Junction goal, CReserveTable reserve, int startTime) {
-		HashSet<Junction> closedList = new HashSet<>();
+		HashSet<CState> closedList = new HashSet<>();
 		PriorityQueue<CState> openList = new PriorityQueue<>(new Comparator<CState>() {
 			@Override
 			public int compare(CState s1, CState s2) {
@@ -52,18 +52,19 @@ public class CMultiRouteFinder {
 			// Add sucessors of current to open list.
 			ArrayList<CState> sucessors = current.getSucessors();
 			for (CState s : sucessors) {
-				if (!closedList.contains(new Junction(s.getX(), s.getY()))) {
+				if (!closedList.contains(current)) {
 					openList.add(s);
 				}
 			}
 			
-			closedList.add(new Junction(current.getX(), current.getY()));
+			closedList.add(current);
 		}
 		
 		return Optional.empty();
 	}
 	
 	private int getHeuristic(Junction start, Junction end) {
+		// return finder.getHeuristic(start, end);
 		RoutePackage rp = finder.findRoute(start, end, Direction.Y_POS);
 		if (rp == null)
 			return Integer.MAX_VALUE;
