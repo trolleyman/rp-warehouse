@@ -64,6 +64,12 @@ public class CMultiRouteFinder {
 	}
 	
 	private int getHeuristic(Junction start, Junction end) {
-		return finder.findRoute(start, end, Direction.Y_POS).getCommandList().size();
+		RoutePackage rp = finder.findRoute(start, end, Direction.Y_POS);
+		if (rp == null)
+			return Integer.MAX_VALUE;
+		LinkedList<Command> cl = rp.getCommandList();
+		if (cl == null)
+			return Integer.MAX_VALUE;
+		return cl.size();
 	}
 }

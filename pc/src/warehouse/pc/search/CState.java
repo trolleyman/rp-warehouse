@@ -63,14 +63,15 @@ public class CState {
 	}
 	
 	private Junction getJunction(int x, int y, Direction d) {
-		Junction j = map.getJunction(
+		Junction from = map.getJunction(x, y);
+		Junction to = map.getJunction(
 			transformX(x, CommandType.fromDirection(d)),
 			transformY(y, CommandType.fromDirection(d)));
-		if (j == null)
+		if (to == null)
 			return null;
-		if (reserve.isPositionReserved(j, time + 1)) // Check for reserved positions.
+		if (reserve.isPositionReserved(to, time + 1)) // Check for reserved positions.
 			return null;
-		return j;
+		return from.getJunction(d);
 	}
 	
 	public ArrayList<CState> getSucessors() {
